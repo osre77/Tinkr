@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AssemblyName>Clix2Demo</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Clix2Demo</RootNamespace>
+    <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5EA5DF67-30EB-455F-A820-E730F677A4E1}</ProjectGuid>
+    <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
+    <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Graphics" />
+    <Reference Include="Microsoft.SPOT.Hardware" />
+    <Reference Include="Microsoft.SPOT.IO" />
+    <Reference Include="Microsoft.SPOT.Native">
+    </Reference>
+    <Reference Include="System.IO" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\netmf_skewworks_logo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AphelionCore\AphelionCommonControls\AphelionCommonControls.csproj">
+      <Project>{756FA8AF-72AB-4C64-B479-BDEEDA6E811B}</Project>
+      <Name>AphelionCommonControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AphelionCore\AphelionCore\AphelionCore.csproj">
+      <Project>{DA09A588-2AE0-4966-BACB-3397E5DBEB3F}</Project>
+      <Name>AphelionCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AphelionCore\AphelionExtendedControls\AphelionExtendedControls.csproj">
+      <Project>{24FE22F5-1A2E-4325-AB30-35DA0EFFF189}</Project>
+      <Name>AphelionExtendedControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AphelionCore\AphelionModal\AphelionModal.csproj">
+      <Project>{F25F11AB-6C52-4CF4-BA55-E56D50B3D4CA}</Project>
+      <Name>AphelionModal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AphelionCore\AphelionResources\AphelionResources.csproj">
+      <Project>{207D8B63-02E6-48F9-8489-45C559B0B58A}</Project>
+      <Name>AphelionResources</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
