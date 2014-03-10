@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AssemblyName>Skewworks.NETMF.Controls</AssemblyName>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Skewworks.NETMF.Controls</RootNamespace>
+    <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{756FA8AF-72AB-4C64-B479-BDEEDA6E811B}</ProjectGuid>
+    <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
+    <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
+  <ItemGroup>
+    <Compile Include="Controls\Combobox.cs" />
+    <Compile Include="Controls\Checkbox.cs" />
+    <Compile Include="Containers\Form.cs" />
+    <Compile Include="Containers\Panel.cs" />
+    <Compile Include="Containers\VKB.cs" />
+    <Compile Include="Controls\Button.cs" />
+    <Compile Include="Controls\Label.cs" />
+    <Compile Include="Controls\NumericUpDown.cs" />
+    <Compile Include="Controls\Textbox.cs" />
+    <Compile Include="Controls\Treeview.cs" />
+    <Compile Include="Controls\VirtualKeys.cs" />
+    <Compile Include="Helpers\Enumerations.cs" />
+    <Compile Include="Controls\Filebox.cs" />
+    <Compile Include="Helpers\EventDelegates.cs" />
+    <Compile Include="Helpers\TypeDef.cs" />
+    <Compile Include="Controls\Listbox.cs" />
+    <Compile Include="Controls\ListboxItem.cs" />
+    <Compile Include="Modals\VirtualKeyboard.cs" />
+    <Compile Include="Controls\Picturebox.cs" />
+    <Compile Include="Controls\Progressbar.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Controls\RadioButton.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Modals\SelectionDialog.cs" />
+    <Compile Include="Controls\Scrollbar.cs" />
+    <Compile Include="Controls\Slider.cs" />
+    <Compile Include="Controls\TreeViewNode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Graphics" />
+    <Reference Include="Microsoft.SPOT.Native">
+    </Reference>
+    <Reference Include="System.IO" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\back.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\chk12.tinyfnt" />
+    <None Include="Resources\chk16.tinyfnt" />
+    <None Include="Resources\chk24.tinyfnt" />
+    <None Include="Resources\chk32.tinyfnt" />
+    <None Include="Resources\chk48.tinyfnt" />
+    <None Include="Resources\chk72.tinyfnt" />
+    <None Include="Resources\chk8.tinyfnt" />
+    <None Include="Resources\clear.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\del.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\next.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\return.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shift1.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shift2.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\shift3.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\down.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\left.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\right.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\up.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\file.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AphelionCore\AphelionCore.csproj">
+      <Project>{DA09A588-2AE0-4966-BACB-3397E5DBEB3F}</Project>
+      <Name>AphelionCore</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
