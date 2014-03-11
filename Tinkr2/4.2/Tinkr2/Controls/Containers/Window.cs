@@ -217,7 +217,7 @@ namespace Skewworks.Tinkr.Controls
         /// <summary>
         /// Removes all controls
         /// </summary>
-        public override void ClearChildren(bool DisposeChildren = true)
+        public override void ClearChildren(bool disposeChildren = true)
         {
             pnl.ClearChildren();
         }

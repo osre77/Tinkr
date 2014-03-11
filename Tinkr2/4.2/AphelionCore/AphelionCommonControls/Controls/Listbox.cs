@@ -315,14 +315,14 @@ namespace Skewworks.NETMF.Controls
 
         #region Buttons
 
-        protected override void ButtonPressedMessage(int buttonID, ref bool handled)
+        protected override void ButtonPressedMessage(int buttonId, ref bool handled)
         {
             if (_items == null || _items.Length == 0)
                 return;
 
             _btnDown = true;
 
-            if (buttonID == (int)ButtonIDs.Up)
+            if (buttonId == (int)ButtonIDs.Up)
             {
                 _btnDown = true;
                 _incAmount = -1;
@@ -331,7 +331,7 @@ namespace Skewworks.NETMF.Controls
                 if (SelectedIndex > 0)
                     new Thread(IncDec).Start();
             }
-            else if (buttonID == (int)ButtonIDs.Down)
+            else if (buttonId == (int)ButtonIDs.Down)
             {
                 _btnDown = true;
                 _incAmount = 1;
@@ -344,12 +344,12 @@ namespace Skewworks.NETMF.Controls
             handled = true;
         }
 
-        protected override void ButtonReleasedMessage(int buttonID, ref bool handled)
+        protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
         {
             if (_btnDown)
             {
                 _btnDown = false;
-                if (buttonID == (int)ButtonIDs.Select)
+                if (buttonId == (int)ButtonIDs.Select)
                     OnItemSelected(this, _selIndex);
             } handled = true;            
         }

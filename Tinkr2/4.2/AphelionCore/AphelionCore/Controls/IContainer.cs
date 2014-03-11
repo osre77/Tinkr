@@ -1,5 +1,4 @@
 using System;
-using Microsoft.SPOT;
 
 namespace Skewworks.NETMF.Controls
 {
@@ -15,7 +14,7 @@ namespace Skewworks.NETMF.Controls
         void AddChild(IControl child);
         void Render(rect region, bool flush = false);
         void BringControlToFront(IControl child);
-        void ClearChildren(bool DisposeChildren = true);
+        void ClearChildren(bool disposeChildren = true);
         IControl GetChildByIndex(int index);
         IControl GetChildByName(string name);
         int GetChildIndex(IControl child);

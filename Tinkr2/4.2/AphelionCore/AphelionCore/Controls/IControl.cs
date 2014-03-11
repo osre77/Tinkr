@@ -1,11 +1,9 @@
 using System;
-using Microsoft.SPOT;
 
 namespace Skewworks.NETMF.Controls
 {
     public interface IControl
     {
-
         event OnTap Tap;
         event OnGotFocus GotFocus;
         event OnLostFocus LostFocus;
@@ -44,7 +42,7 @@ namespace Skewworks.NETMF.Controls
         void Invalidate();
         void Invalidate(rect area);
         void Render(bool flush = false);
-        void SendButtonEvent(int buttonID, bool pressed);
+        void SendButtonEvent(int buttonId, bool pressed);
         void SendKeyboardAltKeyEvent(int key, bool pressed);
         void SendKeyboardKeyEvent(char key, bool pressed);
         void SendTouchDown(object sender, point e);

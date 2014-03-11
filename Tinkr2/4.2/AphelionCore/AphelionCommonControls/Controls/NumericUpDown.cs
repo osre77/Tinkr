@@ -295,9 +295,9 @@ namespace Skewworks.NETMF.Controls
 
         #region Button Methods
 
-        protected override void ButtonPressedMessage(int buttonID, ref bool handled)
+        protected override void ButtonPressedMessage(int buttonId, ref bool handled)
         {
-            if (buttonID == (int)ButtonIDs.Up || buttonID == (int)ButtonIDs.Right)
+            if (buttonId == (int)ButtonIDs.Up || buttonId == (int)ButtonIDs.Right)
             {
                 Value = _val + 1;
                 _chgVal = 1;
@@ -306,7 +306,7 @@ namespace Skewworks.NETMF.Controls
                 _changer.Priority = ThreadPriority.AboveNormal;
                 _changer.Start();
             }
-            else if (buttonID == (int)ButtonIDs.Down || buttonID == (int)ButtonIDs.Left)
+            else if (buttonId == (int)ButtonIDs.Down || buttonId == (int)ButtonIDs.Left)
             {
                 Value = _val - 1;
                 _chgVal = -1;
@@ -317,9 +317,9 @@ namespace Skewworks.NETMF.Controls
             }
         }
 
-        protected override void ButtonReleasedMessage(int buttonID, ref bool handled)
+        protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
         {
-            if (buttonID == (int)ButtonIDs.Down || buttonID == (int)ButtonIDs.Up)
+            if (buttonId == (int)ButtonIDs.Down || buttonId == (int)ButtonIDs.Up)
                 _rep = false;
         }
 

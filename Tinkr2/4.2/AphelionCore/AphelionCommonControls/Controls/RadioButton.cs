@@ -107,15 +107,15 @@ namespace Skewworks.NETMF.Controls
 
         #region Button
 
-        protected override void ButtonPressedMessage(int buttonID, ref bool handled)
+        protected override void ButtonPressedMessage(int buttonId, ref bool handled)
         {
-            if (buttonID == (int)ButtonIDs.Click)
+            if (buttonId == (int)ButtonIDs.Click)
                 _sDown = true;
         }
 
-        protected override void ButtonReleasedMessage(int buttonID, ref bool handled)
+        protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
         {
-            if (_sDown && buttonID == (int)ButtonIDs.Click)
+            if (_sDown && buttonId == (int)ButtonIDs.Click)
             {
                 SetThisChecked();
                 _sDown = false;

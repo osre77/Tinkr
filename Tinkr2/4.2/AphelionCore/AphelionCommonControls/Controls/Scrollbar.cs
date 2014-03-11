@@ -67,20 +67,20 @@ namespace Skewworks.NETMF.Controls
 
         #region Buttons
 
-        protected override void ButtonPressedMessage(int buttonID, ref bool handled)
+        protected override void ButtonPressedMessage(int buttonId, ref bool handled)
         {
             if (_orientation == NETMF.Orientation.Horizontal)
             {
-                if (buttonID == (int)ButtonIDs.Left)
+                if (buttonId == (int)ButtonIDs.Left)
                     Value -= 1;
-                else if (buttonID == (int)ButtonIDs.Right)
+                else if (buttonId == (int)ButtonIDs.Right)
                     Value += 1;
             }
             else
             {
-                if (buttonID == (int)ButtonIDs.Up)
+                if (buttonId == (int)ButtonIDs.Up)
                     Value -= 1;
-                else if (buttonID == (int)ButtonIDs.Down)
+                else if (buttonId == (int)ButtonIDs.Down)
                     Value += 1;
             }
         }

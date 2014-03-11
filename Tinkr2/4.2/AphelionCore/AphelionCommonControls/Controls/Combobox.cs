@@ -209,15 +209,15 @@ namespace Skewworks.NETMF.Controls
 
         #region Buttons
 
-        protected override void ButtonPressedMessage(int buttonID, ref bool handled)
+        protected override void ButtonPressedMessage(int buttonId, ref bool handled)
         {
-            if (buttonID == (int)ButtonIDs.Select)
+            if (buttonId == (int)ButtonIDs.Select)
                 _expand = true;
         }
 
-        protected override void ButtonReleasedMessage(int buttonID, ref bool handled)
+        protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
         {
-            if (buttonID == (int)ButtonIDs.Select && _expand)
+            if (buttonId == (int)ButtonIDs.Select && _expand)
             {
                 int iMin = (_items.Length > 5) ? _lineHeight * 5 : _lineHeight * _items.Length;
                 int h = Parent.Height - Y - Height;

@@ -1,5 +1,4 @@
 using System;
-using Microsoft.SPOT;
 
 namespace Skewworks.NETMF
 {
@@ -58,11 +57,13 @@ namespace Skewworks.NETMF
     }
 
     public enum KeyboardLayout
+    // ReSharper disable InconsistentNaming
     {
         QWERTY = 0,
         AZERTY = 1,
         Numeric = 99,
     }
+    // ReSharper restore InconsistentNaming
 
     /// <summary>
     /// Enumeration of Orientations

@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <AssemblyName>Skewworks.NETMF.Tinkr2.Tutorial</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Skewworks.NETMF.Tinkr2.Tutorial</RootNamespace>
+    <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DB80A014-3862-4766-87B3-77B95C36DC54}</ProjectGuid>
+    <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
+    <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
+  <ItemGroup>
+    <Compile Include="Custom Controls\Console.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.SPOT.Graphics" />
+    <Reference Include="Microsoft.SPOT.Hardware" />
+    <Reference Include="Microsoft.SPOT.Native">
+    </Reference>
+    <Reference Include="System.IO" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\AphelionCore\4.2\AphelionCommonControls\AphelionCommonControls.csproj">
+      <Project>{756FA8AF-72AB-4C64-B479-BDEEDA6E811B}</Project>
+      <Name>AphelionCommonControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\AphelionCore\4.2\AphelionCore\AphelionCore.csproj">
+      <Project>{DA09A588-2AE0-4966-BACB-3397E5DBEB3F}</Project>
+      <Name>AphelionCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\AphelionCore\4.2\AphelionCP7Helper\AphelionCP7Helper.csproj">
+      <Project>{E2B7E596-FE39-440B-B48B-0A72C44FCA7A}</Project>
+      <Name>AphelionCP7Helper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\AphelionCore\4.2\AphelionExtendedControls\AphelionExtendedControls.csproj">
+      <Project>{24FE22F5-1A2E-4325-AB30-35DA0EFFF189}</Project>
+      <Name>AphelionExtendedControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\AphelionCore\4.2\AphelionModal\AphelionModal.csproj">
+      <Project>{F25F11AB-6C52-4CF4-BA55-E56D50B3D4CA}</Project>
+      <Name>AphelionModal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\AphelionCore\4.2\AphelionResources\AphelionResources.csproj">
+      <Project>{207D8B63-02E6-48F9-8489-45C559B0B58A}</Project>
+      <Name>AphelionResources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tinkr2Modal\Tinkr2Modal.csproj">
+      <Project>{BD678C54-F812-4A87-8E1F-80568B93C068}</Project>
+      <Name>Tinkr2Modal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tinkr2VDS\Tinkr2VDS.csproj">
+      <Project>{BA1A3E53-7D80-415C-80AB-139AA4378F3D}</Project>
+      <Name>Tinkr2VDS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tinkr2\Tinkr2.csproj">
+      <Project>{4D0ADC4C-D914-45E7-ACAA-581DD721F640}</Project>
+      <Name>Tinkr2</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Form.bin" />
+    <None Include="Resources\Form1.bin" />
+    <None Include="Resources\Form2.bin" />
+    <None Include="Resources\logo.bmp" />
+    <None Include="Resources\wifi.p2i" />
+  </ItemGroup>
+</Project>

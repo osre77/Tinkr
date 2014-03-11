@@ -315,18 +315,18 @@ namespace Skewworks.NETMF.Controls
 
         #region Button Invokes
 
-        protected override void ButtonPressedMessage(int buttonID, ref bool handled)
+        protected override void ButtonPressedMessage(int buttonId, ref bool handled)
         {
-            if (buttonID == (int)ButtonIDs.Select || buttonID == (int)ButtonIDs.Click)
+            if (buttonId == (int)ButtonIDs.Select || buttonId == (int)ButtonIDs.Click)
             {
                 _state = PressState.Pressed;
                 Invalidate();
             }
         }
 
-        protected override void ButtonReleasedMessage(int buttonID, ref bool handled)
+        protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
         {
-            if ((buttonID == (int)ButtonIDs.Select && _state == PressState.Pressed) || (buttonID == (int)ButtonIDs.Click && _state == PressState.Pressed))
+            if ((buttonId == (int)ButtonIDs.Select && _state == PressState.Pressed) || (buttonId == (int)ButtonIDs.Click && _state == PressState.Pressed))
             {
                 _state = PressState.Normal;
                 Invalidate();

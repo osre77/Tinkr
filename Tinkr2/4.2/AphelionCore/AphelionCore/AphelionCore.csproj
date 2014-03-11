@@ -50,7 +50,7 @@
     <Compile Include="Controls\IContainer.cs" />
     <Compile Include="Controls\IControl.cs" />
     <Compile Include="Helpers\Overlay.cs" />
-    <Compile Include="Controls\NETMFApplication.cs" />
+    <Compile Include="Applications\NETMFApplication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\ScrollableControl.cs" />
     <Compile Include="Resources.Designer.cs">

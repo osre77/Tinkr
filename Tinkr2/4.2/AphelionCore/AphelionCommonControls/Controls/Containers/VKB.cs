@@ -584,28 +584,28 @@ namespace Skewworks.NETMF.Controls
 
         protected virtual void ButtonReleasedMessage(int buttonID, ref bool handled) { }
 
-        public void SendButtonEvent(int buttonID, bool pressed)
+        public void SendButtonEvent(int buttonId, bool pressed)
         {
             bool handled = false;
             if (pressed)
             {
-                ButtonPressedMessage(buttonID, ref handled);
+                ButtonPressedMessage(buttonId, ref handled);
                 if (handled)
                     return;
 
-                OnButtonPressed(this, buttonID);
-                if (buttonID == (int)ButtonIDs.Click || buttonID == (int)ButtonIDs.Select)
+                OnButtonPressed(this, buttonId);
+                if (buttonId == (int)ButtonIDs.Click || buttonId == (int)ButtonIDs.Select)
                     SendTouchDown(this, Core.MousePosition);
             }
             else
             {
-                ButtonReleasedMessage(buttonID, ref handled);
+                ButtonReleasedMessage(buttonId, ref handled);
                 if (handled)
                     return;
 
-                if (buttonID == (int)ButtonIDs.Click || buttonID == (int)ButtonIDs.Select)
+                if (buttonId == (int)ButtonIDs.Click || buttonId == (int)ButtonIDs.Select)
                     SendTouchUp(this, Core.MousePosition);
-                OnButtonReleased(this, buttonID);
+                OnButtonReleased(this, buttonId);
             }
         }
 
@@ -1032,7 +1032,7 @@ namespace Skewworks.NETMF.Controls
         /// <summary>
         /// Removes all controls
         /// </summary>
-        public virtual void ClearChildren(bool DisposeChildren = true)
+        public virtual void ClearChildren(bool disposeChildren = true)
         {
             
         }

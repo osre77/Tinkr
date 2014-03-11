@@ -316,12 +316,12 @@ namespace Skewworks.Tinkr.Controls
         #region Buttons
 
         bool _btnDown;
-        protected override void ButtonPressedMessage(int buttonID, ref bool handled)
+        protected override void ButtonPressedMessage(int buttonId, ref bool handled)
         {
             if (!_expanded || _menus == null || _menus.Length == 0)
                 return;
 
-            if (buttonID == (int)ButtonIDs.Up)
+            if (buttonId == (int)ButtonIDs.Up)
             {
                 _btnDown = true;
                 _selIndex -= 1;
@@ -329,7 +329,7 @@ namespace Skewworks.Tinkr.Controls
                     _selIndex = 0;
                 Invalidate();
             }
-            else if (buttonID == (int)ButtonIDs.Down)
+            else if (buttonId == (int)ButtonIDs.Down)
             {
                 _btnDown = true;
                 _selIndex += 1;
@@ -341,12 +341,12 @@ namespace Skewworks.Tinkr.Controls
             handled = true;
         }
 
-        protected override void ButtonReleasedMessage(int buttonID, ref bool handled)
+        protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
         {
             if (_btnDown)
             {
                 _btnDown = false;
-                if (buttonID == (int)ButtonIDs.Select)
+                if (buttonId == (int)ButtonIDs.Select)
                 {
                     ShowHideDock();
                     _menus[_selIndex].SendTouchDown(this, new point(_menus[_selIndex].X, _menus[_selIndex].Y));
