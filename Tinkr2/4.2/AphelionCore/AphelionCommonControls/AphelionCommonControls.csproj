@@ -3,7 +3,7 @@
   <PropertyGroup>
     <AssemblyName>Skewworks.NETMF.Controls</AssemblyName>
     <OutputType>Library</OutputType>
-    <RootNamespace>Skewworks.NETMF.Controls</RootNamespace>
+    <RootNamespace>Skewworks.NETMF</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -33,32 +33,32 @@
   <ItemGroup>
     <Compile Include="Controls\Combobox.cs" />
     <Compile Include="Controls\Checkbox.cs" />
-    <Compile Include="Containers\Form.cs" />
-    <Compile Include="Containers\Panel.cs" />
-    <Compile Include="Containers\VKB.cs" />
+    <Compile Include="Controls\Containers\Form.cs" />
+    <Compile Include="Controls\Containers\Panel.cs" />
+    <Compile Include="Controls\Containers\VKB.cs" />
     <Compile Include="Controls\Button.cs" />
     <Compile Include="Controls\Label.cs" />
     <Compile Include="Controls\NumericUpDown.cs" />
     <Compile Include="Controls\Textbox.cs" />
     <Compile Include="Controls\Treeview.cs" />
     <Compile Include="Controls\VirtualKeys.cs" />
-    <Compile Include="Helpers\Enumerations.cs" />
+    <Compile Include="Controls\Helpers\Enumerations.cs" />
     <Compile Include="Controls\Filebox.cs" />
-    <Compile Include="Helpers\EventDelegates.cs" />
-    <Compile Include="Helpers\TypeDef.cs" />
+    <Compile Include="Controls\Helpers\EventDelegates.cs" />
+    <Compile Include="Controls\Helpers\TypeDef.cs" />
     <Compile Include="Controls\Listbox.cs" />
     <Compile Include="Controls\ListboxItem.cs" />
-    <Compile Include="Modals\VirtualKeyboard.cs" />
+    <Compile Include="Modal\VirtualKeyboard.cs" />
     <Compile Include="Controls\Picturebox.cs" />
     <Compile Include="Controls\Progressbar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\RadioButton.cs" />
-    <Compile Include="Resources.Designer.cs">
+    <Compile Include="Controls\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Modals\SelectionDialog.cs" />
+    <Compile Include="Modal\SelectionDialog.cs" />
     <Compile Include="Controls\Scrollbar.cs" />
     <Compile Include="Controls\Slider.cs" />
     <Compile Include="Controls\TreeViewNode.cs" />
@@ -70,59 +70,59 @@
     <Reference Include="System.IO" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
+    <EmbeddedResource Include="Controls\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\back.gif" />
+    <None Include="Controls\Resources\back.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\chk12.tinyfnt" />
-    <None Include="Resources\chk16.tinyfnt" />
-    <None Include="Resources\chk24.tinyfnt" />
-    <None Include="Resources\chk32.tinyfnt" />
-    <None Include="Resources\chk48.tinyfnt" />
-    <None Include="Resources\chk72.tinyfnt" />
-    <None Include="Resources\chk8.tinyfnt" />
-    <None Include="Resources\clear.gif" />
+    <None Include="Controls\Resources\chk12.tinyfnt" />
+    <None Include="Controls\Resources\chk16.tinyfnt" />
+    <None Include="Controls\Resources\chk24.tinyfnt" />
+    <None Include="Controls\Resources\chk32.tinyfnt" />
+    <None Include="Controls\Resources\chk48.tinyfnt" />
+    <None Include="Controls\Resources\chk72.tinyfnt" />
+    <None Include="Controls\Resources\chk8.tinyfnt" />
+    <None Include="Controls\Resources\clear.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\del.gif" />
+    <None Include="Controls\Resources\del.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\next.gif" />
+    <None Include="Controls\Resources\next.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\return.gif" />
+    <None Include="Controls\Resources\return.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\shift1.gif" />
+    <None Include="Controls\Resources\shift1.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\shift2.gif" />
+    <None Include="Controls\Resources\shift2.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\shift3.gif" />
+    <None Include="Controls\Resources\shift3.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\down.gif" />
+    <None Include="Controls\Resources\down.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\left.gif" />
+    <None Include="Controls\Resources\left.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\right.gif" />
+    <None Include="Controls\Resources\right.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\up.gif" />
+    <None Include="Controls\Resources\up.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\file.gif" />
+    <None Include="Controls\Resources\file.gif" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\folder.gif" />
+    <None Include="Controls\Resources\folder.gif" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AphelionCore\AphelionCore.csproj">

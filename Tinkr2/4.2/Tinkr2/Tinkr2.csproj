@@ -33,24 +33,24 @@
     <Compile Include="Controls\Appbar.cs" />
     <Compile Include="Controls\AppbarMenuItem.cs" />
     <Compile Include="Controls\AppbarIcon.cs" />
-    <Compile Include="Containers\SlidePanel.cs" />
-    <Compile Include="Containers\SlidePanelDialog.cs" />
+    <Compile Include="Controls\Containers\SlidePanel.cs" />
+    <Compile Include="Controls\Containers\SlidePanelDialog.cs" />
     <Compile Include="Controls\GraphicLock.cs" />
     <Compile Include="Controls\Listview.cs" />
     <Compile Include="Controls\TextArea.cs" />
     <Compile Include="Enumerations.cs" />
     <Compile Include="Controls\LineGraph.cs" />
     <Compile Include="EventDelegates.cs" />
-    <Compile Include="Sub Controls\LineGraphItem.cs" />
-    <Compile Include="Sub Controls\ListviewItem.cs" />
-    <Compile Include="Sub Controls\ListviewColumn.cs" />
+    <Compile Include="Controls\Sub Controls\LineGraphItem.cs" />
+    <Compile Include="Controls\Sub Controls\ListviewItem.cs" />
+    <Compile Include="Controls\Sub Controls\ListviewColumn.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Containers\Window.cs" />
+    <Compile Include="Controls\Containers\Window.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.SPOT.Graphics" />

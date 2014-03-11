@@ -31,8 +31,8 @@
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
-    <Compile Include="Base Classes\Container.cs" />
-    <Compile Include="Base Classes\Control.cs" />
+    <Compile Include="Controls\Container.cs" />
+    <Compile Include="Controls\Control.cs" />
     <Compile Include="Core\Core.cs" />
     <Compile Include="Core\Enumerations.cs" />
     <Compile Include="Core\EventDelegates.cs" />
@@ -45,14 +45,14 @@
     <Compile Include="Helpers\StringSorter.cs" />
     <Compile Include="Helpers\SystemColors.cs" />
     <Compile Include="Helpers\XMLEx.cs" />
-    <Compile Include="Image32\Image32.cs" />
-    <Compile Include="Image32\TypeDef.cs" />
-    <Compile Include="Interfaces\IContainer.cs" />
-    <Compile Include="Interfaces\IControl.cs" />
+    <Compile Include="Graphics\Image32.cs" />
+    <Compile Include="Graphics\TypeDef.cs" />
+    <Compile Include="Controls\IContainer.cs" />
+    <Compile Include="Controls\IControl.cs" />
     <Compile Include="Helpers\Overlay.cs" />
-    <Compile Include="Base Classes\NETMFApplication.cs" />
+    <Compile Include="Controls\NETMFApplication.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Base Classes\ScrollableControl.cs" />
+    <Compile Include="Controls\ScrollableControl.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
