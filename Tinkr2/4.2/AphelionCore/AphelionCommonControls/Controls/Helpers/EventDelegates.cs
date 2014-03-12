@@ -1,7 +1,5 @@
 using System;
 
-using Microsoft.SPOT;
-
 namespace Skewworks.NETMF.Controls
 {
 
@@ -21,7 +19,7 @@ namespace Skewworks.NETMF.Controls
     public delegate void OnNodeCollapsed(object sender, TreeviewNode node);
 
     [Serializable]
-    public delegate void OnPathChanged(object sender, string Value);
+    public delegate void OnPathChanged(object sender, string value);
 
     [Serializable]
     public delegate void OnProgressChanged(Object sender, long value);
@@ -30,7 +28,7 @@ namespace Skewworks.NETMF.Controls
     public delegate void OnTextEditorStart(object sender, ref TextEditorArgs args);
 
     [Serializable]
-    public delegate void OnTextEditorClosing(object sender, ref string Text, ref bool Cancel);
+    public delegate void OnTextEditorClosing(object sender, ref string text, ref bool cancel);
 
     [Serializable]
     public delegate void OnVirtualKeysDone(object sender);

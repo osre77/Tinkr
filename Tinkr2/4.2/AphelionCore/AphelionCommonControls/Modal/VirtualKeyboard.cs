@@ -7,82 +7,81 @@ using Skewworks.NETMF.Controls;
 
 namespace Skewworks.NETMF.Modal
 {
-    [Serializable]
-    public class VirtualKeyboard
-    {
+   [Serializable]
+   public class VirtualKeyboard
+   {
 
-        #region Variables
+      #region Variables
 
-        private static ManualResetEvent _activeBlock = null;            // Used to display Modal Forms
+      private static ManualResetEvent _activeBlock;            // Used to display Modal Forms
 
-        #endregion
+      #endregion
 
-        #region Events
+      #region Events
 
-        public event OnTextEditorClosing TextEditorClosing;
-        protected virtual void OnTextEditorClosing(object sender, ref string Text, ref bool Cancel)
-        {
-            if (TextEditorClosing != null)
-                TextEditorClosing(sender, ref Text, ref Cancel);
-        }
+      public event OnTextEditorClosing TextEditorClosing;
+      protected virtual void OnTextEditorClosing(object sender, ref string text, ref bool cancel)
+      {
+         if (TextEditorClosing != null)
+            TextEditorClosing(sender, ref text, ref cancel);
+      }
 
-        #endregion
+      #endregion
 
-        #region Public Methods
+      #region Public Methods
 
-        /// <summary>
-        /// Displays virtual keyboard (blocking, modal)
-        /// </summary>
-        /// <param name="Font"></param>
-        /// <param name="DefaultValue"></param>
-        /// <param name="PasswordChar"></param>
-        /// <param name="Multiline"></param>
-        /// <param name="Layout"></param>
-        /// <param name="Title"></param>
-        /// <returns></returns>
-        public string Show(Font Font, string DefaultValue = "", char PasswordChar = ' ', KeyboardLayout Layout = KeyboardLayout.QWERTY, string Title = null)
-        {
-            IContainer prv = Core.ActiveContainer;
+      /// <summary>
+      /// Displays virtual keyboard (blocking, modal)
+      /// </summary>
+      /// <param name="font"></param>
+      /// <param name="defaultValue"></param>
+      /// <param name="passwordChar"></param>
+      /// <param name="layout"></param>
+      /// <param name="title"></param>
+      /// <returns></returns>
+      public string Show(Font font, string defaultValue = "", char passwordChar = ' ', KeyboardLayout layout = KeyboardLayout.QWERTY, string title = null)
+      {
+         IContainer prv = Core.ActiveContainer;
 
-            VKB vkb = new VKB(Font, DefaultValue, PasswordChar, Layout, Title);
-            vkb.VirtualKeysDone += new OnVirtualKeysDone((object sender) => new Thread(CloseEditor).Start());
-            Core.ActiveContainer = vkb;
+         var vkb = new Vkb(font, defaultValue, passwordChar, layout, title);
+         vkb.VirtualKeysDone += delegate { new Thread(CloseEditor).Start(); };
+         Core.ActiveContainer = vkb;
 
-            ManualResetEvent localBlocker = new ManualResetEvent(false);
+         var localBlocker = new ManualResetEvent(false);
 
-            _activeBlock = localBlocker;
+         _activeBlock = localBlocker;
 
-            // Wait for Result
-            localBlocker.Reset();
-            while (!localBlocker.WaitOne(1000, false))
-                ;
+         // Wait for Result
+         localBlocker.Reset();
+         while (!localBlocker.WaitOne(1000, false))
+         { }
 
-            vkb._continue = false;
-            // Unblock
-            _activeBlock = null;
+         vkb.Continue = false;
+         // Unblock
+         _activeBlock = null;
 
-            Core.ActiveContainer = prv;
-            return vkb.Text;
-        }
+         Core.ActiveContainer = prv;
+         return vkb.Text;
+      }
 
-        #endregion
+      #endregion
 
-        #region Private Methods
+      #region Private Methods
 
-        private void CloseEditor()
-        {
-            bool bCancel = false;
-            VKB vkb = (VKB)Core.ActiveContainer;
-            string txt = vkb.Text;
+      private void CloseEditor()
+      {
+         bool bCancel = false;
+         var vkb = (Vkb)Core.ActiveContainer;
+         string txt = vkb.Text;
 
-            OnTextEditorClosing(this, ref txt, ref bCancel);
-            vkb.Text = txt;
+         OnTextEditorClosing(this, ref txt, ref bCancel);
+         vkb.Text = txt;
 
-            if (!bCancel)
-                _activeBlock.Set();
-        }
+         if (!bCancel)
+            _activeBlock.Set();
+      }
 
-        #endregion
+      #endregion
 
-    }
+   }
 }

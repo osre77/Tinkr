@@ -124,9 +124,9 @@ namespace Skewworks.NETMF.Controls
 
         #region Button Methods
 
-        protected override void ButtonPressedMessage(int buttonID, ref bool handled)
+        protected override void ButtonPressedMessage(int buttonId, ref bool handled)
         {
-            if (buttonID == (int)ButtonIDs.Left)
+            if (buttonId == (int)ButtonIDs.Left)
             {
                 int newSel = _selIndex - 1;
                 if (newSel < 0)
@@ -136,7 +136,7 @@ namespace Skewworks.NETMF.Controls
                 handled = true;
                 return;
             }
-            else if (buttonID == (int)ButtonIDs.Right)
+            else if (buttonId == (int)ButtonIDs.Right)
             {
                 int newSel = _selIndex + 1;
                 if (newSel > Children.Length - 1)
@@ -150,7 +150,7 @@ namespace Skewworks.NETMF.Controls
             if (Children != null)
             {
                 if (ActiveChild != null)
-                    ActiveChild.SendButtonEvent(buttonID, true);
+                    ActiveChild.SendButtonEvent(buttonId, true);
                 else
                 {
                     for (int i = 0; i < Children.Length; i++)
@@ -158,7 +158,7 @@ namespace Skewworks.NETMF.Controls
                         if (Children[i].ScreenBounds.Contains(Core.MousePosition))
                         {
                             handled = true;
-                            Children[i].SendButtonEvent(buttonID, true);
+                            Children[i].SendButtonEvent(buttonId, true);
                             break;
                         }
                     }
@@ -166,12 +166,12 @@ namespace Skewworks.NETMF.Controls
             }
         }
 
-        protected override void ButtonReleasedMessage(int buttonID, ref bool handled)
+        protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
         {
             if (Children != null)
             {
                 if (ActiveChild != null)
-                    ActiveChild.SendButtonEvent(buttonID, false);
+                    ActiveChild.SendButtonEvent(buttonId, false);
                 else
                 {
                     for (int i = 0; i < Children.Length; i++)
@@ -179,7 +179,7 @@ namespace Skewworks.NETMF.Controls
                         if (Children[i].ScreenBounds.Contains(Core.MousePosition))
                         {
                             handled = true;
-                            Children[i].SendButtonEvent(buttonID, false);
+                            Children[i].SendButtonEvent(buttonId, false);
                             break;
                         }
                     }

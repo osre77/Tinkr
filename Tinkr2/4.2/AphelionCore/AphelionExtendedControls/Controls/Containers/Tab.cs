@@ -124,12 +124,12 @@ namespace Skewworks.NETMF.Controls
 
         #region Button Methods
 
-        protected override void ButtonPressedMessage(int buttonID, ref bool handled)
+        protected override void ButtonPressedMessage(int buttonId, ref bool handled)
         {
             if (Children != null)
             {
                 if (ActiveChild != null)
-                    ActiveChild.SendButtonEvent(buttonID, true);
+                    ActiveChild.SendButtonEvent(buttonId, true);
                 else
                 {
                     for (int i = 0; i < Children.Length; i++)
@@ -137,7 +137,7 @@ namespace Skewworks.NETMF.Controls
                         if (Children[i].ScreenBounds.Contains(Core.MousePosition))
                         {
                             handled = true;
-                            Children[i].SendButtonEvent(buttonID, true);
+                            Children[i].SendButtonEvent(buttonId, true);
                             break;
                         }
                     }
@@ -145,12 +145,12 @@ namespace Skewworks.NETMF.Controls
             }
         }
 
-        protected override void ButtonReleasedMessage(int buttonID, ref bool handled)
+        protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
         {
             if (Children != null)
             {
                 if (ActiveChild != null)
-                    ActiveChild.SendButtonEvent(buttonID, false);
+                    ActiveChild.SendButtonEvent(buttonId, false);
                 else
                 {
                     for (int i = 0; i < Children.Length; i++)
@@ -158,7 +158,7 @@ namespace Skewworks.NETMF.Controls
                         if (Children[i].ScreenBounds.Contains(Core.MousePosition))
                         {
                             handled = true;
-                            Children[i].SendButtonEvent(buttonID, false);
+                            Children[i].SendButtonEvent(buttonId, false);
                             break;
                         }
                     }
