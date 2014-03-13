@@ -1,402 +1,411 @@
 using System;
 using System.Collections;
-
 using Microsoft.SPOT;
 using Microsoft.SPOT.Presentation.Media;
-
 using Skewworks.NETMF.Resources;
 
+// ReSharper disable StringIndexOfIsCultureSpecific.1
+// ReSharper disable StringIndexOfIsCultureSpecific.2
 namespace Skewworks.NETMF.Controls
 {
-    [Serializable]
-    public class RichTextLabel : Control
-    {
+   [Serializable]
+   public class RichTextLabel : Control
+   {
 
-        #region Structures
+      #region Structures
 
-        [Serializable]
-        private struct RichText
-        {
-            public Font Font;
-            public bool Italic;
-            public bool Bold;
-            public bool Underline;
-            public string Text;
-            public Color Color;
-            public RichText(string Text, Font Font, bool Bold, bool Italic, bool Underline, Color Color)
-            {
-                this.Text = Text;
-                this.Font = Font;
-                this.Bold = Bold;
-                this.Italic = Italic;
-                this.Underline = Underline;
-                this.Color = Color;
-            }
-        }
+      [Serializable]
+      private struct RichText
+      {
+         public readonly Font Font;
+         // ReSharper disable NotAccessedField.Local
+         // ReSharper disable MemberCanBePrivate.Local
+         public readonly bool Italic;
+         public readonly bool Bold;
+         // ReSharper restore MemberCanBePrivate.Local
+         // ReSharper restore NotAccessedField.Local
+         public readonly bool Underline;
+         public readonly string Text;
+         public readonly Color Color;
 
-        #endregion
+         public RichText(string text, Font font, bool bold, bool italic, bool underline, Color color)
+         {
+            Text = text;
+            Font = font;
+            Bold = bold;
+            Italic = italic;
+            Underline = underline;
+            Color = color;
+         }
+      }
 
-        #region Variables
+      #endregion
 
-        private string _text;
-        private bool _autosize;
-        private Color _color;
-        private ArrayList _parts;
-        private Font _font;
+      #region Variables
 
-        #endregion
+      private string _text;
+      //private bool _autosize;
+      private readonly Color _color;
+      private ArrayList _parts;
+      private readonly Font _font;
 
-        #region Constructors
+      #endregion
 
-        public RichTextLabel(string name, string text, Font font, int x, int y)
-        {
-            Name = name;
-            X = x;
-            Y = y;
-            _font = font;
-            _text = text;
+      #region Constructors
+
+      public RichTextLabel(string name, string text, Font font, int x, int y)
+      {
+         Name = name;
+         // ReSharper disable DoNotCallOverridableMethodsInConstructor
+         X = x;
+         Y = y;
+         // ReSharper restore DoNotCallOverridableMethodsInConstructor
+         _font = font;
+         _text = text;
+         ParseText();
+      }
+
+      public RichTextLabel(string name, string text, Font font, int x, int y, int width, int height)
+      {
+         Name = name;
+         // ReSharper disable DoNotCallOverridableMethodsInConstructor
+         X = x;
+         Y = y;
+         Width = width;
+         Height = height;
+         // ReSharper restore DoNotCallOverridableMethodsInConstructor
+         //_autosize = false;
+         _font = font;
+         _text = text;
+         ParseText();
+      }
+
+      public RichTextLabel(string name, string text, Font font, Color foreColor, int x, int y, int width, int height)
+      {
+         _text = text;
+         Name = name;
+         // ReSharper disable DoNotCallOverridableMethodsInConstructor
+         X = x;
+         Y = y;
+         Width = width;
+         Height = height;
+         // ReSharper restore DoNotCallOverridableMethodsInConstructor
+         _font = font;
+         _color = foreColor;
+         //_autosize = false;
+         ParseText();
+      }
+
+      #endregion
+
+      #region Properties
+
+      public override bool CanFocus
+      {
+         get { return false; }
+      }
+
+      public string Text
+      {
+         get { return _text; }
+         set
+         {
+            if (_text == value)
+               return;
+            _text = value;
             ParseText();
-        }
+            Invalidate();
+         }
+      }
 
-        public RichTextLabel(string name, string text, Font font, int x, int y, int width, int height)
-        {
-            Name = name;
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-            _autosize = false;
-            _font = font;
-            _text = text;
-            ParseText();
-        }
+      #endregion
 
-        public RichTextLabel(string name, string text, Font font, Color foreColor, int x, int y, int width, int height)
-        {
-            _text = text;
-            Name = name;
-            X = x;
-            Y = y;
-            Width = width;
-            Height = height;
-            _font = font;
-            _color = foreColor;
-            _autosize = false;
-            ParseText();
-        }
+      #region GUI
 
-        #endregion
+      protected override void OnRender(int x, int y, int w, int h)
+      {
+         for (int i = 0; i < _parts.Count; i++)
+         {
+            var rt = (RichText)_parts[i];
 
-        #region Properties
-
-        public override bool CanFocus
-        {
-            get { return false; }
-        }
-
-        public string Text
-        {
-            get { return _text; }
-            set
+            // Break text into pieces
+            string[] bits = rt.Text.Split(' ');
+            for (int j = 0; j < bits.Length; j++)
             {
-                if (_text == value)
-                    return;
-                _text = value;
-                ParseText();
-                Invalidate();
+               if (j < bits.Length - 1)
+                  bits[j] += " ";
+
+               int lw = FontManager.ComputeExtentEx(rt.Font, bits[j]).Width;
+               int e = x + lw;
+               if (e > Left + Width)
+               {
+                  x = Left;
+                  y += rt.Font.Height;
+                  if (y > Top + Height) break;
+               }
+
+               if (rt.Underline)
+               {
+                  int ly = rt.Font.Height + y - rt.Font.Descent + 1;
+                  Core.Screen.DrawLine(_color, 1, x, ly, x + lw, ly);
+               }
+
+               Core.Screen.DrawText(bits[j], rt.Font, rt.Color, x, y);
+               x += FontManager.ComputeExtentEx(rt.Font, bits[j]).Width;
+
             }
-        }
+         }
+      }
 
-        #endregion
+      #endregion
 
-        #region GUI
+      #region Text Parsing
 
-        protected override void OnRender(int x, int y, int w, int h)
-        {
-            RichText rt;
-            int lw, ly;
+      private Font FontByName(string name, bool bold, bool italic)
+      {
+         switch (name.ToLower())
+         {
+            case "Droid8":
+               if (bold && italic) return Fonts.Droid8BoldItalic;
+               if (bold) return Fonts.Droid8Bold;
+               if (italic) return Fonts.Droid8Italic;
+               return Fonts.Droid8;
+            case "Droid9":
+               if (bold && italic) return Fonts.Droid9BoldItalic;
+               if (bold) return Fonts.Droid9Bold;
+               if (italic) return Fonts.Droid9Italic;
+               return Fonts.Droid9;
+            case "Droid11":
+               if (bold && italic) return Fonts.Droid11BoldItalic;
+               if (bold) return Fonts.Droid11Bold;
+               if (italic) return Fonts.Droid11Italic;
+               return Fonts.Droid11;
+            case "Droid12":
+               if (bold && italic) return Fonts.Droid12BoldItalic;
+               if (bold) return Fonts.Droid12Bold;
+               if (italic) return Fonts.Droid12Italic;
+               return Fonts.Droid12;
+            default:
+               if (bold && italic) return Fonts.Droid16BoldItalic;
+               if (bold) return Fonts.Droid16Bold;
+               if (italic) return Fonts.Droid16Italic;
+               return Fonts.Droid16;
+         }
+      }
 
-            for (int i = 0; i < _parts.Count; i++)
+      private void ParseText()
+      {
+         Color col = _color;
+         Font fnt = _font;
+         bool bBold = false;
+         bool bItalic = false;
+         bool bUnderline = false;
+         int iStart = 0;
+         string txt = _text;
+         var fonts = new ArrayList();
+         var cols = new ArrayList();
+
+
+         // Reset Array
+         _parts = new ArrayList();
+
+         while (true)
+         {
+            // Get the next index of a Less Than
+            int i = txt.IndexOf("<", iStart);
+            if (i < 0) break;
+
+            // See if we care about it
+            if (txt.Substring(i + 1, 1) == "/")
             {
-                rt = (RichText)_parts[i];
+               // We're looking for a close here
+               if (txt.Substring(i, 4).ToLower() == "</b>")
+               {
+                  if (i > 0)
+                     _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
 
+                  bBold = false;
+                  txt = txt.Substring(i + 4);
+                  iStart = 0;
+               }
+               else if (txt.Substring(i, 4).ToLower() == "</i>")
+               {
+                  if (i > 0)
+                     _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
+                  bItalic = false;
+                  txt = txt.Substring(i + 4);
+                  iStart = 0;
+               }
+               else if (txt.Substring(i, 4).ToLower() == "</u>")
+               {
+                  if (i > 0)
+                     _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
+                  bUnderline = false;
+                  txt = txt.Substring(i + 4);
+                  iStart = 0;
+               }
+               else if (txt.Substring(i, 7) == "</font>")
+               {
+                  if (i > 0)
+                     _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
 
-                // Break text into pieces
-                string[] bits = rt.Text.Split(' ');
-                int e;
-                for (int j = 0; j < bits.Length; j++)
-                {
-                    if (j < bits.Length - 1)
-                        bits[j] += " ";
+                  fonts.RemoveAt(fonts.Count - 1);
+                  if (fonts.Count > 0)
+                     fnt = (Font)fonts[fonts.Count - 1];
+                  else
+                     fnt = _font;
 
-                    lw = FontManager.ComputeExtentEx(rt.Font, bits[j]).Width;
-                    e = x + lw;
-                    if (e > Left + Width)
-                    {
-                        x = Left;
-                        y += rt.Font.Height;
-                        if (y > Top + Height) break;
-                    }
+                  txt = txt.Substring(i + 7);
+                  iStart = 0;
+               }
+               else if (txt.Substring(i, 8) == "</color>")
+               {
+                  if (i > 0)
+                     _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
 
-                    if (rt.Underline)
-                    {
-                        ly = rt.Font.Height + y - rt.Font.Descent + 1;
-                        Core.Screen.DrawLine(_color, 1, x, ly, x + lw, ly);
-                    }
+                  cols.RemoveAt(cols.Count - 1);
+                  if (cols.Count > 0)
+                     col = (Color)cols[cols.Count - 1];
+                  else
+                     col = _color;
 
-                    Core.Screen.DrawText(bits[j], rt.Font, rt.Color, x, y);
-                    x += FontManager.ComputeExtentEx(rt.Font, bits[j]).Width;
-
-                }
+                  txt = txt.Substring(i + 8);
+                  iStart = 0;
+               }
+               else
+                  iStart = i + 1;
             }
-        }
-
-        #endregion
-
-        #region Text Parsing
-
-        private Font FontByName(string name, bool bold, bool italic)
-        {
-            switch (name.ToLower())
+            else
             {
-                case "Droid8":
-                    if (bold && italic) return Fonts.Droid8BoldItalic;
-                    if (bold) return Fonts.Droid8Bold;
-                    if (italic) return Fonts.Droid8Italic;
-                    return Fonts.Droid8;
-                case "Droid9":
-                    if (bold && italic) return Fonts.Droid9BoldItalic;
-                    if (bold) return Fonts.Droid9Bold;
-                    if (italic) return Fonts.Droid9Italic;
-                    return Fonts.Droid9;
-                case "Droid11":
-                    if (bold && italic) return Fonts.Droid11BoldItalic;
-                    if (bold) return Fonts.Droid11Bold;
-                    if (italic) return Fonts.Droid11Italic;
-                    return Fonts.Droid11;
-                case "Droid12":
-                    if (bold && italic) return Fonts.Droid12BoldItalic;
-                    if (bold) return Fonts.Droid12Bold;
-                    if (italic) return Fonts.Droid12Italic;
-                    return Fonts.Droid12;
-                default:
-                    if (bold && italic) return Fonts.Droid16BoldItalic;
-                    if (bold) return Fonts.Droid16Bold;
-                    if (italic) return Fonts.Droid16Italic;
-                    return Fonts.Droid16;
-            }
-        }
 
-        private void ParseText()
-        {
-            Color col = _color;
-            Font fnt = _font;
-            bool bBold = false;
-            bool bItalic = false;
-            bool bUnderline = false;
-            int i;
-            int iStart = 0;
-            string txt = _text;
-            ArrayList fonts = new ArrayList();
-            ArrayList cols = new ArrayList();
+               // We're looking for a start here
+               if (txt.Substring(i, 3).ToLower() == "<b>")
+               {
+                  if (i > 0)
+                     _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
+                  bBold = true;
+                  iStart = 0;
+                  txt = txt.Substring(i + 3);
+               }
+               else if (txt.Substring(i, 3).ToLower() == "<i>")
+               {
+                  if (i > 0)
+                     _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
+                  bItalic = true;
+                  txt = txt.Substring(i + 3);
+                  iStart = 0;
+               }
+               else if (txt.Substring(i, 3).ToLower() == "<u>")
+               {
+                  if (i > 0)
+                     _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
+                  bUnderline = true;
+                  txt = txt.Substring(i + 3);
+                  iStart = 0;
+               }
+               else if (txt.Substring(i, 6).ToLower() == "<font ")
+               {
+                  int end = txt.IndexOf(">", i);   // Find the end of the tag
 
+                  if (end > 0)
+                  {
+                     // Get the segment and replace double quotes with single quotes
+                     string strName = Strings.Replace(txt.Substring(i + 6, end - i - 6), "\"", "'");
 
-            // Reset Array
-            _parts = new ArrayList();
-
-            while (true)
-            {
-                // Get the next index of a Less Than
-                i = txt.IndexOf("<", iStart);
-                if (i < 0) break;
-
-                // See if we care about it
-                if (txt.Substring(i + 1, 1) == "/")
-                {
-                    // We're looking for a close here
-                    if (txt.Substring(i, 4).ToLower() == "</b>")
-                    {
-                        if (i > 0)
-                            _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-
-                        bBold = false;
-                        txt = txt.Substring(i + 4);
-                        iStart = 0;
-                    }
-                    else if (txt.Substring(i, 4).ToLower() == "</i>")
-                    {
-                        if (i > 0)
-                            _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-                        bItalic = false;
-                        txt = txt.Substring(i + 4);
-                        iStart = 0;
-                    }
-                    else if (txt.Substring(i, 4).ToLower() == "</u>")
-                    {
-                        if (i > 0)
-                            _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-                        bUnderline = false;
-                        txt = txt.Substring(i + 4);
-                        iStart = 0;
-                    }
-                    else if (txt.Substring(i, 7) == "</font>")
-                    {
-                        if (i > 0)
-                            _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-
-                        fonts.RemoveAt(fonts.Count - 1);
-                        if (fonts.Count > 0)
-                            fnt = (Font)fonts[fonts.Count - 1];
-                        else
-                            fnt = _font;
-
-                        txt = txt.Substring(i + 7);
-                        iStart = 0;
-                    }
-                    else if (txt.Substring(i, 8) == "</color>")
-                    {
-                        if (i > 0)
-                            _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-
-                        cols.RemoveAt(cols.Count - 1);
-                        if (cols.Count > 0)
-                            col = (Color)cols[cols.Count - 1];
-                        else
-                            col = _color;
-
-                        txt = txt.Substring(i + 8);
-                        iStart = 0;
-                    }
-                    else
-                        iStart = i + 1;
-                }
-                else
-                {
-
-                    // We're looking for a start here
-                    if (txt.Substring(i, 3).ToLower() == "<b>")
-                    {
-                        if (i > 0)
-                            _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-                        bBold = true;
-                        iStart = 0;
-                        txt = txt.Substring(i + 3);
-                    }
-                    else if (txt.Substring(i, 3).ToLower() == "<i>")
-                    {
-                        if (i > 0)
-                            _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-                        bItalic = true;
-                        txt = txt.Substring(i + 3);
-                        iStart = 0;
-                    }
-                    else if (txt.Substring(i, 3).ToLower() == "<u>")
-                    {
-                        if (i > 0)
-                            _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-                        bUnderline = true;
-                        txt = txt.Substring(i + 3);
-                        iStart = 0;
-                    }
-                    else if (txt.Substring(i, 6).ToLower() == "<font ")
-                    {
-                        int end = txt.IndexOf(">", i);   // Find the end of the tag
-
-                        if (end > 0)
+                     int e = strName.IndexOf("'");
+                     if (e >= 0)
+                     {
+                        strName = strName.Substring(e + 1);
+                        e = strName.IndexOf("'");
+                        if (e > 0)
                         {
-                            // Get the segment and replace double quotes with single quotes
-                            string strName = Strings.Replace(txt.Substring(i + 6, end - i - 6), "\"", "'");
+                           strName = strName.Substring(0, e);
 
-                            int e = strName.IndexOf("'");
-                            if (e >= 0)
-                            {
-                                strName = strName.Substring(e + 1);
-                                e = strName.IndexOf("'");
-                                if (e > 0)
-                                {
-                                    strName = strName.Substring(0, e);
+                           // Valid Tag; add and trim
+                           if (i > 0)
+                              _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
+                           txt = txt.Substring(end + 1);
+                           iStart = 0;
 
-                                    // Valid Tag; add and trim
-                                    if (i > 0)
-                                        _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-                                    txt = txt.Substring(end + 1);
-                                    iStart = 0;
-
-                                    // Add Font
-                                    fnt = FontByName(strName, bBold, bItalic);
-                                    fonts.Add(strName);
-
-                                }
-                                else
-                                    iStart = i + 1; // Invalid tag
-                            }
-                            else
-                                iStart = i + 1; // Invalid tag
+                           // Add Font
+                           fnt = FontByName(strName, bBold, bItalic);
+                           fonts.Add(strName);
 
                         }
                         else
-                            iStart = i + 1; // Invalid tag
-                    }
-                    else if (txt.Substring(i, 7).ToLower() == "<color ")
-                    {
-                        int end = txt.IndexOf(">", i);   // Find the end of the tag
+                           iStart = i + 1; // Invalid tag
+                     }
+                     else
+                        iStart = i + 1; // Invalid tag
 
-                        if (end > 0)
+                  }
+                  else
+                     iStart = i + 1; // Invalid tag
+               }
+               else if (txt.Substring(i, 7).ToLower() == "<color ")
+               {
+                  int end = txt.IndexOf(">", i);   // Find the end of the tag
+
+                  if (end > 0)
+                  {
+                     // Get the segment and replace double quotes with single quotes
+                     string strName = Strings.Replace(txt.Substring(i + 7, end - i - 7), "\"", "'");
+
+                     int e = strName.IndexOf("'");
+                     if (e >= 0)
+                     {
+                        strName = strName.Substring(e + 1);
+                        e = strName.IndexOf("'");
+                        if (e >= 0)
                         {
-                            // Get the segment and replace double quotes with single quotes
-                            string strName = Strings.Replace(txt.Substring(i + 7, end - i - 7), "\"", "'");
+                           strName = strName.Substring(0, e);
 
-                            int e = strName.IndexOf("'");
-                            if (e >= 0)
-                            {
-                                strName = strName.Substring(e + 1);
-                                e = strName.IndexOf("'");
-                                if (e >= 0)
-                                {
-                                    strName = strName.Substring(0, e);
+                           // Valid Tag; add and trim
+                           if (i > 0)
+                              _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
+                           txt = txt.Substring(end + 1);
+                           iStart = 0;
 
-                                    // Valid Tag; add and trim
-                                    if (i > 0)
-                                        _parts.Add(new RichText(txt.Substring(0, i), fnt, bBold, bItalic, bUnderline, col));
-                                    txt = txt.Substring(end + 1);
-                                    iStart = 0;
+                           // Add Color
+                           if (strName.IndexOf(',') > 0)
+                           {
+                              col = Colors.FromString(strName);
+                              cols.Add(col);
+                           }
+                           else
+                           {
+                              try
+                              {
+                                 col = Colors.FromValue(strName);
+                                 cols.Add(col);
+                              }
+                              // ReSharper disable once EmptyGeneralCatchClause
+                              catch
+                              { }
+                           }
 
-                                    // Add Color
-                                    if (strName.IndexOf(',') > 0)
-                                    {
-                                        col = Colors.FromString(strName);
-                                        cols.Add(col);
-                                    }
-                                    else
-                                    {
-                                        try
-                                        {
-                                            col = Colors.FromValue(strName);
-                                            cols.Add(col);
-                                        }
-                                        catch (Exception) { }
-                                    }
-
-                                }
-                                else
-                                    iStart = i + 1; // Invalid tag
-                            }
-                            else
-                                iStart = i + 1; // Invalid tag
                         }
                         else
-                            iStart = i + 1; // Invalid tag
-                    }
-                    else
-                        iStart = i + 1;
-                }
+                           iStart = i + 1; // Invalid tag
+                     }
+                     else
+                        iStart = i + 1; // Invalid tag
+                  }
+                  else
+                     iStart = i + 1; // Invalid tag
+               }
+               else
+                  iStart = i + 1;
             }
+         }
 
-            if (txt.Length > 0)
-                _parts.Add(new RichText(txt, fnt, bBold, bItalic, bUnderline, col));
-        }
+         if (txt.Length > 0)
+            _parts.Add(new RichText(txt, fnt, bBold, bItalic, bUnderline, col));
+      }
 
-        #endregion
+      #endregion
 
-    }
+   }
 }
+// ReSharper restore StringIndexOfIsCultureSpecific.1
+// ReSharper restore StringIndexOfIsCultureSpecific.2
