@@ -1,53 +1,50 @@
 using System;
-using Microsoft.SPOT;
 
 namespace Skewworks.Tinkr.Controls
 {
-    [Serializable]
-    public class ListviewItem
-    {
+   [Serializable]
+   public class ListviewItem
+   {
 
-        #region Variables
+      #region Variables
 
-        protected internal string[] _values;
-        private object _tag;
+      private string[] _values;
+      private object _tag;
 
-        #endregion
+      #endregion
 
-        #region Constructors
+      #region Constructors
 
-        public ListviewItem(string value)
-        {
-            _values = new string[] { value };
-        }
+      public ListviewItem(string value)
+      {
+         _values = new[] { value };
+      }
 
-        public ListviewItem(string[] values)
-        {
-            _values = values;
-        }
+      public ListviewItem(string[] values)
+      {
+         _values = values;
+      }
 
-        #endregion
+      #endregion
 
-        #region Properties
+      #region Properties
 
-        public object Tag
-        {
-            get { return _tag; }
-            set { _tag = value; }
-        }
+      public object Tag
+      {
+         get { return _tag; }
+         set { _tag = value; }
+      }
 
-        public string[] Values
-        {
-            get { return _values; }
-            set
-            {
-                if (_values == value)
-                    return;
-                _values = value;
-            }
-        }
+      public string[] Values
+      {
+         get { return _values; }
+         set
+         {
+            _values = value;
+         }
+      }
 
-        #endregion
+      #endregion
 
-    }
+   }
 }

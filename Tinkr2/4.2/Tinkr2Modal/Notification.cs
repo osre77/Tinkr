@@ -13,18 +13,19 @@ namespace Skewworks.Tinkr.Modal
         public static void Show(string text, Font font)
         {
             size sz = FontManager.ComputeExtentEx(font, text);
-            Overlay ov = new Overlay();
-
-            ov.Size = new size(sz.Width + 16, sz.Height + 8);
-            ov.Position = new point(Core.ScreenWidth / 2 - ov.Size.Width / 2, 8);
-            ov.Image = null;
-            ov.BackColor = Colors.Black;
-            ov.BorderColor = Colors.White;
-            ov.ForeColor = Colors.White;
-            ov.Text = text;
-            ov.Opacity = 256;
-            ov.FadeAfter = 1.5;
-            ov.Font = font;
+           var ov = new Overlay
+           {
+              Size = new size(sz.Width + 16, sz.Height + 8),
+              Image = null,
+              BackColor = Colors.Black,
+              BorderColor = Colors.White,
+              ForeColor = Colors.White,
+              Text = text,
+              Opacity = 256,
+              FadeAfter = 1.5,
+              Font = font
+           };
+           ov.Position = new point(Core.ScreenWidth / 2 - ov.Size.Width / 2, 8);
 
             new Thread(() => Core.ScreenOverlay = ov).Start();
         }
@@ -38,7 +39,7 @@ namespace Skewworks.Tinkr.Modal
             }
 
             size sz = FontManager.ComputeExtentEx(font, text);
-            Overlay ov = new Overlay();
+            var ov = new Overlay();
 
             sz.Width += image.Width + 8;
             if (sz.Height < image.Height)

@@ -1,6 +1,4 @@
 using System;
-using Microsoft.SPOT;
-
 using Skewworks.NETMF;
 
 namespace Skewworks.Tinkr

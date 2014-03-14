@@ -1,10 +1,7 @@
 using System;
-
-using Microsoft.SPOT;
 using Microsoft.SPOT.Presentation.Media;
 
 using Skewworks.NETMF;
-using Skewworks.NETMF.Controls;
 
 namespace Skewworks.Tinkr.Controls
 {
@@ -32,7 +29,7 @@ namespace Skewworks.Tinkr.Controls
         public LineGraphItem(Color color, precisionpoint point)
         {
             _color = color;
-            _pts = new precisionpoint[] { point };
+            _pts = new[] { point };
             _visible = true;
         }
 
@@ -101,11 +98,13 @@ namespace Skewworks.Tinkr.Controls
 
         public void AddPoint(precisionpoint point)
         {
-            if (_pts == null)
-                _pts = new precisionpoint[] { point };
+           if (_pts == null)
+           {
+              _pts = new[] { point };
+           }
             else
             {
-                precisionpoint[] tmp = new precisionpoint[_pts.Length + 1];
+                var tmp = new precisionpoint[_pts.Length + 1];
                 Array.Copy(_pts, tmp, _pts.Length);
                 tmp[tmp.Length - 1] = point;
                 _pts = tmp;
@@ -121,7 +120,7 @@ namespace Skewworks.Tinkr.Controls
                 _pts = points;
             else
             {
-                precisionpoint[] tmp = new precisionpoint[_pts.Length + points.Length];
+                var tmp = new precisionpoint[_pts.Length + points.Length];
                 Array.Copy(_pts, tmp, _pts.Length);
                 Array.Copy(points, 0, tmp, _pts.Length, points.Length);
                 _pts = tmp;
@@ -145,7 +144,7 @@ namespace Skewworks.Tinkr.Controls
 
             for (int i = 0; i < _pts.Length; i++)
             {
-                if (_pts[i].X == point.X && _pts[i].Y == point.Y)
+                if (Math.Abs(_pts[i].X - point.X) <= Single.Epsilon && Math.Abs(_pts[i].Y - point.Y) <= Single.Epsilon)
                 {
                     RemovePointAt(i);
                     return;
@@ -162,7 +161,7 @@ namespace Skewworks.Tinkr.Controls
                 _pts = null;
             else
             {
-                precisionpoint[] tmp = new precisionpoint[_pts.Length - 1];
+                var tmp = new precisionpoint[_pts.Length - 1];
                 int c = 0;
                 for (int i = 0; i < _pts.Length; i++)
                 {
