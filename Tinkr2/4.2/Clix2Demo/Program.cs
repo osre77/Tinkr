@@ -60,7 +60,7 @@ namespace Clix2Demo
             }
 
             string[] files = new string[] { "banner2.jpg", "Clix.docx", "Clix.pdf", "EULA.rtf", "welcome2.jpg" };
-            int[] bytes = new int[] { 9, 673, 864, 39, 121, 53, 53, 17 };
+            int[] bytes = new int[] { 9, 673, 720, 39, 121, 53, 53, 17 };
             byte[] b;
             for (int i = 0; i < files.Length; i++)
             {
