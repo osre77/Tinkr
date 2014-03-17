@@ -345,19 +345,20 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch Invokes
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          _state = PressState.Pressed;
          Invalidate();
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (Touching)
          {
             _state = PressState.Normal;
             Invalidate();
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -387,6 +388,7 @@ namespace Skewworks.NETMF.Controls
                }
             }
          }
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
@@ -394,10 +396,10 @@ namespace Skewworks.NETMF.Controls
       #region GUI
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
-         _font.ComputeTextInRect(_text, out w, out h, Width - 6);
+         _font.ComputeTextInRect(_text, out width, out height, Width - 6);
 
          // Draw Background
          if (Enabled)
@@ -409,8 +411,8 @@ namespace Skewworks.NETMF.Controls
                if (_img != null)
                   DrawBackground();
 
-               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2) - 1, Width - 9, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _pressedShd, _font);
-               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2), Width - 8, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _pfore, _font);
+               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2) - 1, Width - 9, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _pressedShd, _font);
+               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2), Width - 8, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _pfore, _font);
                Core.ShadowRegionInset(Left, Top, Width, Height);
             }
             else
@@ -420,8 +422,8 @@ namespace Skewworks.NETMF.Controls
                if (_img != null)
                   DrawBackground();
 
-               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2) + 1, Width - 7, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, Colors.White, _font);
-               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2), Width - 8, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _nfore, _font);
+               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2) + 1, Width - 7, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, Colors.White, _font);
+               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2), Width - 8, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _nfore, _font);
             }
          }
          else
@@ -431,7 +433,7 @@ namespace Skewworks.NETMF.Controls
             if (_img != null)
                DrawBackground();
 
-            Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2), Width - 8, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _nfore, _font);
+            Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2), Width - 8, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _nfore, _font);
          }
 
 
@@ -514,9 +516,11 @@ namespace Skewworks.NETMF.Controls
 
                Core.Screen.StretchImage(Left + dX, Top + dY, _img, dsW, dsH, 256);
                break;
+
             case ScaleMode.Stretch:
                Core.Screen.StretchImage(Left, Top, _img, w, h, 256);
                break;
+
             case ScaleMode.Tile:
                Core.Screen.TileImage(Left, Top, _img, w, h, 256);
                break;

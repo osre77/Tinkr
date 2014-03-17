@@ -3,6 +3,9 @@ using Microsoft.SPOT.Presentation.Media;
 
 namespace Skewworks.NETMF
 {
+   /// <summary>
+   /// Class for managing colors.
+   /// </summary>
    [Serializable]
    public static class Colors
    {
@@ -116,8 +119,8 @@ namespace Skewworks.NETMF
       /// <summary>
       /// Creates a color from an RGB string
       /// </summary>
-      /// <param name="colVal"></param>
-      /// <returns></returns>
+      /// <param name="colVal">String to convert to color. For example 255,0,0 will result in Red.</param>
+      /// <returns>Returns the color value.</returns>
       public static Color FromString(string colVal)
       {
          string[] vals = colVal.Split(',');

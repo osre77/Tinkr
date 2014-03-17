@@ -253,6 +253,7 @@ namespace Skewworks.NETMF.Controls
             handled = true;
             ActiveChild.SendKeyboardAltKeyEvent(key, pressed);
          }
+         base.KeyboardAltKeyMessage(key, pressed, ref handled);
       }
 
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
@@ -262,13 +263,14 @@ namespace Skewworks.NETMF.Controls
             handled = true;
             ActiveChild.SendKeyboardKeyEvent(key, pressed);
          }
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch Methods
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          // Check Controls
          if (Children != null)
@@ -277,10 +279,10 @@ namespace Skewworks.NETMF.Controls
             {
                for (int i = Children.Length - 1; i >= 0; i--)
                {
-                  if (Children[i].Visible && Children[i].HitTest(e))
+                  if (Children[i].Visible && Children[i].HitTest(point))
                   {
                      ActiveChild = Children[i];
-                     Children[i].SendTouchDown(this, e);
+                     Children[i].SendTouchDown(this, point);
                      handled = true;
                      return;
                   }
@@ -298,104 +300,111 @@ namespace Skewworks.NETMF.Controls
          _touch = true;
       }
 
-      protected override void TouchGestureMessage(object sender, TouchType e, float force, ref bool handled)
+      protected override void TouchGestureMessage(object sender, TouchType type, float force, ref bool handled)
       {
          if (ActiveChild != null)
          {
             handled = true;
-            ActiveChild.SendTouchGesture(sender, e, force);
+            ActiveChild.SendTouchGesture(sender, type, force);
          }
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
-         if (_touch)
+         try
          {
-            bool bUpdated = false;
-
-            int diffY = 0;
-            int diffX = 0;
-
-            // Scroll Y
-            if (_maxY > Height)
+            if (_touch)
             {
-               diffY = e.Y - LastTouch.Y;
+               bool bUpdated = false;
 
-               if (diffY > 0 && _minY < Top)
-               {
-                  diffY = System.Math.Min(diffY, _minY + Top);
-                  bUpdated = true;
-               }
-               else if (diffY < 0 && _maxY > Height)
-               {
-                  diffY = System.Math.Min(-diffY, _maxY - _minY - Height);
-                  bUpdated = true;
-               }
-               else
-                  diffY = 0;
+               int diffY = 0;
+               int diffX = 0;
 
-               _moving = true;
-            }
-
-            // Scroll X
-            if (_maxX > Width)
-            {
-               diffX = e.X - LastTouch.X;
-
-               if (diffX > 0 && _minX < Left)
+               // Scroll Y
+               if (_maxY > Height)
                {
-                  diffX = System.Math.Min(diffX, _minX + Left);
-                  bUpdated = true;
-               }
-               else if (diffX < 0 && _maxX > Width)
-               {
-                  diffX = System.Math.Min(-diffX, _maxX - _minX - Width);
-                  bUpdated = true;
-               }
-               else
-                  diffX = 0;
+                  diffY = point.Y - LastTouch.Y;
 
-               _moving = true;
-               handled = true;
-            }
-
-            LastTouch = e;
-            if (bUpdated)
-            {
-               var ptOff = new point(diffX, diffY);
-               for (int i = 0; i < Children.Length; i++)
-               {
-                  Children[i].UpdateOffsets(ptOff);
-               }
-               Render(true);
-               handled = true;
-            }
-            else if (_moving)
-               Render(true);
-         }
-         else
-         {
-            // Check Controls
-            if (ActiveChild != null && ActiveChild.Touching)
-            {
-               ActiveChild.SendTouchMove(this, e);
-               handled = true;
-               return;
-            }
-            if (Children != null)
-            {
-               for (int i = Children.Length - 1; i >= 0; i--)
-               {
-                  if (Children[i].Touching || Children[i].HitTest(e))
+                  if (diffY > 0 && _minY < Top)
                   {
-                     Children[i].SendTouchMove(this, e);
+                     diffY = System.Math.Min(diffY, _minY + Top);
+                     bUpdated = true;
+                  }
+                  else if (diffY < 0 && _maxY > Height)
+                  {
+                     diffY = System.Math.Min(-diffY, _maxY - _minY - Height);
+                     bUpdated = true;
+                  }
+                  else
+                     diffY = 0;
+
+                  _moving = true;
+               }
+
+               // Scroll X
+               if (_maxX > Width)
+               {
+                  diffX = point.X - LastTouch.X;
+
+                  if (diffX > 0 && _minX < Left)
+                  {
+                     diffX = System.Math.Min(diffX, _minX + Left);
+                     bUpdated = true;
+                  }
+                  else if (diffX < 0 && _maxX > Width)
+                  {
+                     diffX = System.Math.Min(-diffX, _maxX - _minX - Width);
+                     bUpdated = true;
+                  }
+                  else
+                     diffX = 0;
+
+                  _moving = true;
+                  handled = true;
+               }
+
+               LastTouch = point;
+               if (bUpdated)
+               {
+                  var ptOff = new point(diffX, diffY);
+                  for (int i = 0; i < Children.Length; i++)
+                  {
+                     Children[i].UpdateOffsets(ptOff);
+                  }
+                  Render(true);
+                  handled = true;
+               }
+               else if (_moving)
+                  Render(true);
+            }
+            else
+            {
+               // Check Controls
+               if (ActiveChild != null && ActiveChild.Touching)
+               {
+                  ActiveChild.SendTouchMove(this, point);
+                  handled = true;
+                  return;
+               }
+               if (Children != null)
+               {
+                  for (int i = Children.Length - 1; i >= 0; i--)
+                  {
+                     if (Children[i].Touching || Children[i].HitTest(point))
+                     {
+                        Children[i].SendTouchMove(this, point);
+                     }
                   }
                }
             }
          }
+         finally
+         {
+            base.TouchMoveMessage(sender, point, ref handled);
+         }
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          _touch = false;
 
@@ -403,28 +412,31 @@ namespace Skewworks.NETMF.Controls
          {
             _moving = false;
             Render(true);
-            return;
          }
-         // Check Controls
-         if (Children != null)
+         else
          {
-            for (int i = Children.Length - 1; i >= 0; i--)
+            // Check Controls
+            if (Children != null)
             {
-               try
+               for (int i = Children.Length - 1; i >= 0; i--)
                {
-                  if (Children[i].HitTest(e) && !handled)
+                  try
                   {
-                     handled = true;
-                     Children[i].SendTouchUp(this, e);
+                     if (Children[i].HitTest(point) && !handled)
+                     {
+                        handled = true;
+                        Children[i].SendTouchUp(this, point);
+                     }
+                     else if (Children[i].Touching)
+                        Children[i].SendTouchUp(this, point);
                   }
-                  else if (Children[i].Touching)
-                     Children[i].SendTouchUp(this, e);
+                  // ReSharper disable once EmptyGeneralCatchClause
+                  catch // This can happen if the user clears the Form during a tap
+                  {}
                }
-// ReSharper disable once EmptyGeneralCatchClause
-               catch // This can happen if the user clears the Form during a tap
-               { }
             }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -467,6 +479,8 @@ namespace Skewworks.NETMF.Controls
 
          if (_border)
             Core.Screen.DrawRectangle(Core.SystemColors.BorderColor, 1, Left, Top, Width, Height, 0, 0, 0, 0, 0, 0, 0, 0, 256);
+
+         base.OnRender(x, y, width, height);
       }
 
       #endregion

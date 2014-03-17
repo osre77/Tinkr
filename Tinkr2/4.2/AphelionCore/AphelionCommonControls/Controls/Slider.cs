@@ -69,9 +69,9 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch Invokes
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
-         if (_grpRect.Contains(e))
+         if (_grpRect.Contains(point))
          {
             //_mX = e.X;
             //_mY = e.Y;
@@ -80,28 +80,30 @@ namespace Skewworks.NETMF.Controls
          }
 
          if (_orientation == Orientation.Horizontal)
-            Value = _val + ((e.X < _grpRect.X) ? -_lrg : _lrg);
+            Value = _val + ((point.X < _grpRect.X) ? -_lrg : _lrg);
          else
-            Value = _val + ((e.Y < _grpRect.Y) ? -_lrg : _lrg);
+            Value = _val + ((point.Y < _grpRect.Y) ? -_lrg : _lrg);
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
-         if (!_gDown)
-            return;
+         if (_gDown)
+         {
+            if (_orientation == Orientation.Horizontal)
+               Value = _min + (int)((_max - _min) * ((float)point.X) / (Width - _gripSize));
+            else
+               Value = _min + (int)((_max - _min) * ((float)point.Y) / (Height - _gripSize));
 
-         if (_orientation == Orientation.Horizontal)
-            Value = _min + (int)((_max - _min) * ((float)e.X) / (Width - _gripSize));
-         else
-            Value = _min + (int)((_max - _min) * ((float)e.Y) / (Height - _gripSize));
-
-         //_mX = e.X;
-         //_mY = e.Y;   
+            //_mX = e.X;
+            //_mY = e.Y;   
+         }
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          _gDown = false;
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -267,7 +269,7 @@ namespace Skewworks.NETMF.Controls
       }
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
          int iOffset;

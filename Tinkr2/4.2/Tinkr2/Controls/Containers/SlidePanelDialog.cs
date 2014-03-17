@@ -239,15 +239,12 @@ namespace Skewworks.Tinkr.Controls
 
       protected override void KeyboardAltKeyMessage(int key, bool pressed, ref bool handled)
       {
-
          if (ActiveChild != null)
          {
             handled = true;
             ActiveChild.SendKeyboardAltKeyEvent(key, pressed);
-            return;
          }
-
-         if (pressed)
+         else if (pressed)
          {
             if (key == 80)
             {
@@ -258,9 +255,8 @@ namespace Skewworks.Tinkr.Controls
                SelectedIndex = newSel;
 
                handled = true;
-               return;
             }
-            if (key == 79)
+            else if (key == 79)
             {
                // Right
                int newSel = _selIndex + 1;
@@ -271,6 +267,7 @@ namespace Skewworks.Tinkr.Controls
                handled = true;
             }
          }
+         base.KeyboardAltKeyMessage(key, pressed, ref handled);
       }
 
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
@@ -280,13 +277,14 @@ namespace Skewworks.Tinkr.Controls
             handled = true;
             ActiveChild.SendKeyboardKeyEvent(key, pressed);
          }
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch Methods
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          // Check Controls
          if (Children != null)
@@ -298,18 +296,18 @@ namespace Skewworks.Tinkr.Controls
             for (int i = 0; i < Children.Length; i++)
             {
                var tab = (SlidePanel)Children[i];
-               if (tab.DispRect.Contains(e))
+               if (tab.DispRect.Contains(point))
                {
                   _selDown = i;
                   break;
                }
             }
 
-            if (Children[_selIndex].Visible && Children[_selIndex].HitTest(e))
+            if (Children[_selIndex].Visible && Children[_selIndex].HitTest(point))
             {
                ActiveChild = Children[_selIndex];
 
-               Children[_selIndex].SendTouchDown(this, e);
+               Children[_selIndex].SendTouchDown(this, point);
                return;
             }
          }
@@ -317,19 +315,19 @@ namespace Skewworks.Tinkr.Controls
          ActiveChild = null;
       }
 
-      protected override void TouchGestureMessage(object sender, TouchType e, float force, ref bool handled)
+      protected override void TouchGestureMessage(object sender, TouchType type, float force, ref bool handled)
       {
          if (Children == null)
             return;
 
-         if (e == TouchType.GestureRight)
+         if (type == TouchType.GestureRight)
          {
             int newSel = _selIndex - 1;
             if (newSel < 0)
                newSel = Children.Length - 1;
             SelectedIndex = newSel;
          }
-         else if (e == TouchType.GestureLeft)
+         else if (type == TouchType.GestureLeft)
          {
             int newSel = _selIndex + 1;
             if (newSel > Children.Length - 1)
@@ -340,28 +338,28 @@ namespace Skewworks.Tinkr.Controls
          if (ActiveChild != null)
          {
             handled = true;
-            ActiveChild.SendTouchGesture(sender, e, force);
+            ActiveChild.SendTouchGesture(sender, type, force);
          }
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          // Check Controls
          if (ActiveChild != null && ActiveChild.Touching)
          {
-            ActiveChild.SendTouchMove(this, new point(e.X - ActiveChild.Left, e.Y - ActiveChild.Top));
-            return;
+            ActiveChild.SendTouchMove(this, new point(point.X - ActiveChild.Left, point.Y - ActiveChild.Top));
          }
-         if (Children != null)
+         else if (Children != null)
          {
-            if (Children[_selIndex].HitTest(e))
+            if (Children[_selIndex].HitTest(point))
             {
-               Children[_selIndex].SendTouchMove(this, e);
+               Children[_selIndex].SendTouchMove(this, point);
             }
          }
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          //bool ret = false;
          //bool ignoreUp = false;
@@ -372,20 +370,24 @@ namespace Skewworks.Tinkr.Controls
             if (_selDown != -1)
             {
                var tab = (SlidePanel)Children[_selDown];
-               if (tab.DispRect.Contains(e))
+               if (tab.DispRect.Contains(point))
+               {
                   SelectedIndex = _selDown;
+               }
             }
             else
             {
                try
                {
-                  if (Children[_selIndex].HitTest(e))// && !ignoreUp && !ret)
+                  if (Children[_selIndex].HitTest(point))// && !ignoreUp && !ret)
                   {
                      //ret = true;
-                     Children[_selIndex].SendTouchUp(this, e);
+                     Children[_selIndex].SendTouchUp(this, point);
                   }
                   else if (Children[_selIndex].Touching)
-                     Children[_selIndex].SendTouchUp(this, e);
+                  {
+                     Children[_selIndex].SendTouchUp(this, point);
+                  }
                }
                // ReSharper disable once EmptyGeneralCatchClause
                catch
@@ -394,6 +396,7 @@ namespace Skewworks.Tinkr.Controls
                }
             }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -464,26 +467,26 @@ namespace Skewworks.Tinkr.Controls
       }
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
          if (_shadow)
          {
             x = Left + 4;
             y = Top + 4;
-            w = Width - 8;
-            h = Height - 8;
-            Core.ShadowRegion(x, y, w, h);
+            width = Width - 8;
+            height = Height - 8;
+            Core.ShadowRegion(x, y, width, height);
          }
          else
          {
             x = Left;
             y = Top;
-            w = Width;
-            h = Height;
+            width = Width;
+            height = Height;
          }
 
-         Core.Screen.DrawRectangle(0, 0, x, y, w, h, 0, 0, Colors.White, 0, 0, Colors.White, 0, 0, 256);
+         Core.Screen.DrawRectangle(0, 0, x, y, width, height, 0, 0, Colors.White, 0, 0, Colors.White, 0, 0, 256);
 
          if (Children != null)
          {
@@ -492,12 +495,12 @@ namespace Skewworks.Tinkr.Controls
             int btmHeight = _inactive.Height + _font.Height + 38;
 
             // Draw text
-            int tY = y + h - _inactive.Height - 28 - _font.Height;
-            Core.Screen.DrawTextInRect(sp.Title, x + 4, tY, w - 8, _font.Height, Bitmap.DT_AlignmentCenter, _fore, _font);
+            int tY = y + height - _inactive.Height - 28 - _font.Height;
+            Core.Screen.DrawTextInRect(sp.Title, x + 4, tY, width - 8, _font.Height, Bitmap.DT_AlignmentCenter, _fore, _font);
             tY += _font.Height + 20;
 
             // Draw pips
-            int tX = x + (w / 2 - (Children.Length * (_active.Width + 5)) / 2);
+            int tX = x + (width / 2 - (Children.Length * (_active.Width + 5)) / 2);
             for (i = 0; i < Children.Length; i++)
             {
                if (i == _selIndex)
@@ -520,8 +523,8 @@ namespace Skewworks.Tinkr.Controls
                sp.X = 4;
                sp.Y = 4;
             }
-            sp.Width = w;
-            sp.Height = h - btmHeight;
+            sp.Width = width;
+            sp.Height = height - btmHeight;
             sp.BeingDisplayed = true;
             sp.Render();
          }

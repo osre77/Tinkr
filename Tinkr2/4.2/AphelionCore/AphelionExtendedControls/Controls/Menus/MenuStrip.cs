@@ -191,51 +191,52 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          if (_items == null)
             return;
 
          for (int i = 0; i < _items.Length; i++)
          {
-            if (_items[i].ScreenBounds.Contains(e))
+            if (_items[i].ScreenBounds.Contains(point))
             {
                Parent.Suspended = true;
-               _items[i].SendTouchDown(this, e);
+               _items[i].SendTouchDown(this, point);
                Parent.Suspended = false;
                return;
             }
          }
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
-         if (_items == null)
-            return;
-
-         for (int i = 0; i < _items.Length; i++)
+         if (_items != null)
          {
-            if (_items[i].ScreenBounds.Contains(e) && _items[i].Touching)
+            for (int i = 0; i < _items.Length; i++)
             {
-               if (_items[i].Items != null)
+               if (_items[i].ScreenBounds.Contains(point) && _items[i].Touching)
                {
-                  var cm = new ContextMenu(Name + "_cm", _font, _items[i].Items);
-                  cm.LostFocus += s => Collapse();
-                  _items[i].Expanded = true;
-                  cm.Show(Parent, _items[i].ScreenBounds.X, Top + Height);
+                  if (_items[i].Items != null)
+                  {
+                     var cm = new ContextMenu(Name + "_cm", _font, _items[i].Items);
+                     cm.LostFocus += s => Collapse();
+                     _items[i].Expanded = true;
+                     cm.Show(Parent, _items[i].ScreenBounds.X, Top + Height);
+                  }
+                  else
+                  {
+                     _items[i].SendTouchUp(this, point);
+                     Invalidate();
+                  }
                }
-               else
+               else if (_items[i].Touching)
                {
-                  _items[i].SendTouchUp(this, e);
+                  _items[i].SendTouchUp(this, point);
                   Invalidate();
                }
             }
-            else if (_items[i].Touching)
-            {
-               _items[i].SendTouchUp(this, e);
-               Invalidate();
-            }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -257,7 +258,7 @@ namespace Skewworks.NETMF.Controls
       }
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
          Core.Screen.DrawRectangle(Core.SystemColors.BorderColor, 1, Left, Top, Width, Height, 0, 0, Core.SystemColors.ControlTop, Left, Top,
@@ -271,20 +272,20 @@ namespace Skewworks.NETMF.Controls
 
          for (int i = 0; i < _items.Length; i++)
          {
-            w = FontManager.ComputeExtentEx(_font, _items[i].Text).Width;
+            width = FontManager.ComputeExtentEx(_font, _items[i].Text).Width;
             _items[i].X = x - 4;
             _items[i].Y = Top;
             _items[i].Height = Height;
-            _items[i].Width = w + 8;
+            _items[i].Width = width + 8;
             _items[i].Parent = Parent;
             if (_items[i].Touching || _items[i].Expanded)
             {
-               Core.Screen.DrawRectangle(0, 0, x - 4, Top + 1, w + 8, Height - 2, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 256);
+               Core.Screen.DrawRectangle(0, 0, x - 4, Top + 1, width + 8, Height - 2, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 256);
                Core.Screen.DrawText(_items[i].Text, _font, Core.SystemColors.SelectedFontColor, x, y);
             }
             else
                Core.Screen.DrawText(_items[i].Text, _font, Core.SystemColors.FontColor, x, y);
-            x += w + 9;
+            x += width + 9;
          }
 
       }

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Topics>
+  <Topic id="2065989a-9306-4064-a270-4d71f243dd71" visible="True" isDefault="true" isSelected="true" title="Welcome to Tinkr">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="Welcome" />
+    </HelpKeywords>
+  </Topic>
+  <Topic id="433ff75c-7273-4c8c-90c4-e8000b44190e" visible="True" isExpanded="true" title="Version History">
+    <HelpKeywords>
+      <HelpKeyword index="K" term="version, history" />
+    </HelpKeywords>
+    <Topic id="80273748-d55b-4d55-81b0-0a1629d9ca95" visible="True" title="Version 2.5.0.0">
+      <HelpKeywords>
+        <HelpKeyword index="K" term="version, 2.5.0.0" />
+      </HelpKeywords>
+    </Topic>
+  </Topic>
+</Topics>

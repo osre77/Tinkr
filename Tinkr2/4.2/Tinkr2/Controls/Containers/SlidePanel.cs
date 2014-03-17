@@ -181,6 +181,7 @@ namespace Skewworks.Tinkr.Controls
             handled = true;
             ActiveChild.SendKeyboardAltKeyEvent(key, pressed);
          }
+         base.KeyboardAltKeyMessage(key, pressed, ref handled);
       }
 
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
@@ -190,13 +191,14 @@ namespace Skewworks.Tinkr.Controls
             handled = true;
             ActiveChild.SendKeyboardKeyEvent(key, pressed);
          }
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch Methods
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          // Check Controls
          if (Children != null)
@@ -205,10 +207,10 @@ namespace Skewworks.Tinkr.Controls
             {
                for (int i = Children.Length - 1; i >= 0; i--)
                {
-                  if (Children[i].Visible && Children[i].HitTest(e))
+                  if (Children[i].Visible && Children[i].HitTest(point))
                   {
                      ActiveChild = Children[i];
-                     Children[i].SendTouchDown(this, e);
+                     Children[i].SendTouchDown(this, point);
                      handled = true;
                      return;
                   }
@@ -226,16 +228,16 @@ namespace Skewworks.Tinkr.Controls
          _touch = true;
       }
 
-      protected override void TouchGestureMessage(object sender, TouchType e, float force, ref bool handled)
+      protected override void TouchGestureMessage(object sender, TouchType type, float force, ref bool handled)
       {
          if (ActiveChild != null)
          {
             handled = true;
-            ActiveChild.SendTouchGesture(sender, e, force);
+            ActiveChild.SendTouchGesture(sender, type, force);
          }
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          if (_touch)
          {
@@ -247,7 +249,7 @@ namespace Skewworks.Tinkr.Controls
             // Scroll Y
             if (_maxY > Height)
             {
-               diffY = e.Y - LastTouch.Y;
+               diffY = point.Y - LastTouch.Y;
 
                if (diffY > 0 && _minY < Top)
                {
@@ -260,7 +262,9 @@ namespace Skewworks.Tinkr.Controls
                   bUpdated = true;
                }
                else
+               {
                   diffY = 0;
+               }
 
                _moving = true;
             }
@@ -268,7 +272,7 @@ namespace Skewworks.Tinkr.Controls
             // Scroll X
             if (_maxX > Width)
             {
-               diffX = e.X - LastTouch.X;
+               diffX = point.X - LastTouch.X;
 
                if (diffX > 0 && _minX < Left)
                {
@@ -281,13 +285,15 @@ namespace Skewworks.Tinkr.Controls
                   bUpdated = true;
                }
                else
+               {
                   diffX = 0;
+               }
 
                _moving = true;
                handled = true;
             }
 
-            LastTouch = e;
+            LastTouch = point;
             if (bUpdated)
             {
                var ptOff = new point(diffX, diffY);
@@ -299,29 +305,31 @@ namespace Skewworks.Tinkr.Controls
                handled = true;
             }
             else if (_moving)
+            {
                Render(true);
+            }
          }
          else
          {
             // Check Controls
             if (ActiveChild != null && ActiveChild.Touching)
             {
-               ActiveChild.SendTouchMove(this, e);
+               ActiveChild.SendTouchMove(this, point);
                handled = true;
-               return;
             }
-            if (Children != null)
+            else if (Children != null)
             {
                for (int i = Children.Length - 1; i >= 0; i--)
                {
-                  if (Children[i].Touching || Children[i].HitTest(e))
-                     Children[i].SendTouchMove(this, e);
+                  if (Children[i].Touching || Children[i].HitTest(point))
+                     Children[i].SendTouchMove(this, point);
                }
             }
          }
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          _touch = false;
 
@@ -329,30 +337,33 @@ namespace Skewworks.Tinkr.Controls
          {
             _moving = false;
             Render(true);
-            return;
          }
-         // Check Controls
-         if (Children != null)
+         else
          {
-            for (int i = Children.Length - 1; i >= 0; i--)
+            // Check Controls
+            if (Children != null)
             {
-               try
+               for (int i = Children.Length - 1; i >= 0; i--)
                {
-                  if (Children[i].HitTest(e) && !handled)
+                  try
                   {
-                     handled = true;
-                     Children[i].SendTouchUp(this, e);
+                     if (Children[i].HitTest(point) && !handled)
+                     {
+                        handled = true;
+                        Children[i].SendTouchUp(this, point);
+                     }
+                     else if (Children[i].Touching)
+                        Children[i].SendTouchUp(this, point);
                   }
-                  else if (Children[i].Touching)
-                     Children[i].SendTouchUp(this, e);
-               }
-               // ReSharper disable once EmptyGeneralCatchClause
-               catch
-               {
-                  // This can happen if the user clears the Form during a tap
+                     // ReSharper disable once EmptyGeneralCatchClause
+                  catch
+                  {
+                     // This can happen if the user clears the Form during a tap
+                  }
                }
             }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion

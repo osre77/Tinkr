@@ -300,10 +300,10 @@ namespace Skewworks.NETMF.Controls
          }
       }
 
-      public override bool HitTest(point e)
+      public override bool HitTest(point point)
       {
          // Check Main Bounds
-         if (ScreenBounds.Contains(e))
+         if (ScreenBounds.Contains(point))
             return true;
 
          // Check Expanded Menus
@@ -311,11 +311,11 @@ namespace Skewworks.NETMF.Controls
          {
             for (int i = 0; i < _items.Length; i++)
             {
-               if (_items[i].Expanded && _items[i].ExpandedBounds.Contains(e))
+               if (_items[i].Expanded && _items[i].ExpandedBounds.Contains(point))
                {
                   return true;
                }
-               if (_items[i].Expanded && _items.Length > 0 && HitTestSub(_items[i], e))
+               if (_items[i].Expanded && _items.Length > 0 && HitTestSub(_items[i], point))
                {
                   return true;
                }
@@ -346,7 +346,7 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          if (_items == null)
             return;
@@ -357,13 +357,13 @@ namespace Skewworks.NETMF.Controls
             if (_items[i].Expanded && _items.Length > 0)
             {
                // Check subnodes first
-               if (SendTouchDownSub(_items[i], e))
+               if (SendTouchDownSub(_items[i], point))
                   return;
             }
-            else if (_items[i].ScreenBounds.Contains(e))
+            else if (_items[i].ScreenBounds.Contains(point))
             {
                Parent.Suspended = true;
-               _items[i].SendTouchDown(this, e);
+               _items[i].SendTouchDown(this, point);
                CollapseOnLne(_items, i);
                Parent.Suspended = false;
                return;
@@ -396,52 +396,53 @@ namespace Skewworks.NETMF.Controls
          return false;
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
-         if (_items == null)
-            return;
-
-         for (int i = 0; i < _items.Length; i++)
+         if (_items != null)
          {
-            if (_items[i].Expanded && _items.Length > 0)
+            for (int i = 0; i < _items.Length; i++)
             {
-               if (SendTouchUpSub(_items[i], e))
+               if (_items[i].Expanded && _items.Length > 0)
                {
-                  Blur();
-                  _items[i].Expanded = false;
-                  return;
-               }
-
-               //_items[i].SetExpanded(false);
-            }
-            else if (_items[i].ScreenBounds.Contains(e))
-            {
-               if (_items[i].Touching)
-               {
-                  if (_items[i].Items != null)
-                  {
-                     _items[i].SetExpanded(!_items[i].Expanded);
-                     Parent.Invalidate();
-                  }
-                  else
+                  if (SendTouchUpSub(_items[i], point))
                   {
                      Blur();
-                     _items[i].SendTouchUp(this, e);
+                     _items[i].Expanded = false;
+                     break;
                   }
 
-                  return;
+                  //_items[i].SetExpanded(false);
                }
-               Invalidate(ScreenBounds);
+               else if (_items[i].ScreenBounds.Contains(point))
+               {
+                  if (_items[i].Touching)
+                  {
+                     if (_items[i].Items != null)
+                     {
+                        _items[i].SetExpanded(!_items[i].Expanded);
+                        Parent.Invalidate();
+                     }
+                     else
+                     {
+                        Blur();
+                        _items[i].SendTouchUp(this, point);
+                     }
 
-               _items[i].SendTouchUp(this, e);
-               return;
-            }
-            else if (_items[i].Touching)
-            {
-               _items[i].SendTouchUp(this, e);
-               Invalidate();
+                     break;
+                  }
+                  Invalidate(ScreenBounds);
+
+                  _items[i].SendTouchUp(this, point);
+                  break;
+               }
+               else if (_items[i].Touching)
+               {
+                  _items[i].SendTouchUp(this, point);
+                  Invalidate();
+               }
             }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       private bool SendTouchUpSub(MenuItem mnu, point e)
@@ -480,7 +481,7 @@ namespace Skewworks.NETMF.Controls
       #region GUI
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
          Core.Screen.SetClippingRectangle(0, 0, Core.ScreenWidth, Core.ScreenHeight);

@@ -240,20 +240,26 @@ namespace Skewworks.NETMF.Controls
       protected override void KeyboardAltKeyMessage(int key, bool pressed, ref bool handled)
       {
          if (ActiveChild != null)
+         {
             ActiveChild.SendKeyboardAltKeyEvent(key, pressed);
+         }
+         base.KeyboardAltKeyMessage(key, pressed, ref handled);
       }
 
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
       {
          if (ActiveChild != null)
+         {
             ActiveChild.SendKeyboardKeyEvent(key, pressed);
+         }
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch Methods
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          // Check Controls
          if (Children != null)
@@ -262,10 +268,10 @@ namespace Skewworks.NETMF.Controls
             {
                for (int i = Children.Length - 1; i >= 0; i--)
                {
-                  if (Children[i].Visible && Children[i].HitTest(e))
+                  if (Children[i].Visible && Children[i].HitTest(point))
                   {
                      ActiveChild = Children[i];
-                     Children[i].SendTouchDown(this, e);
+                     Children[i].SendTouchDown(this, point);
                      handled = true;
                      return;
                   }
@@ -281,16 +287,16 @@ namespace Skewworks.NETMF.Controls
          }
       }
 
-      protected override void TouchGestureMessage(object sender, TouchType e, float force, ref bool handled)
+      protected override void TouchGestureMessage(object sender, TouchType type, float force, ref bool handled)
       {
          if (ActiveChild != null)
          {
             handled = true;
-            ActiveChild.SendTouchGesture(sender, e, force);
+            ActiveChild.SendTouchGesture(sender, type, force);
          }
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          if (Touching)
          {
@@ -302,7 +308,7 @@ namespace Skewworks.NETMF.Controls
             // Scroll Y
             if (_maxY > _h)
             {
-               diffY = e.Y - LastTouch.Y;
+               diffY = point.Y - LastTouch.Y;
 
                if (diffY > 0 && _minY < Top)
                {
@@ -323,7 +329,7 @@ namespace Skewworks.NETMF.Controls
             // Scroll X
             if (_maxX > _w)
             {
-               diffX = e.X - LastTouch.X;
+               diffX = point.X - LastTouch.X;
 
                if (diffX > 0 && _minX < Left)
                {
@@ -342,7 +348,7 @@ namespace Skewworks.NETMF.Controls
                handled = true;
             }
 
-            LastTouch = e;
+            LastTouch = point;
             if (bUpdated)
             {
                var ptOff = new point(diffX, diffY);
@@ -359,7 +365,7 @@ namespace Skewworks.NETMF.Controls
             // Check Controls
             if (ActiveChild != null && ActiveChild.Touching)
             {
-               ActiveChild.SendTouchMove(this, e);
+               ActiveChild.SendTouchMove(this, point);
                handled = true;
                return;
             }
@@ -367,14 +373,14 @@ namespace Skewworks.NETMF.Controls
             {
                for (int i = Children.Length - 1; i >= 0; i--)
                {
-                  if (Children[i].Touching || Children[i].HitTest(e))
-                     Children[i].SendTouchMove(this, e);
+                  if (Children[i].Touching || Children[i].HitTest(point))
+                     Children[i].SendTouchMove(this, point);
                }
             }
          }
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (_moving)
          {
@@ -389,14 +395,14 @@ namespace Skewworks.NETMF.Controls
             {
                try
                {
-                  if (Children[i].HitTest(e) && !handled)
+                  if (Children[i].HitTest(point) && !handled)
                   {
                      handled = true;
-                     Children[i].SendTouchUp(this, e);
+                     Children[i].SendTouchUp(this, point);
                   }
                   else if (Children[i].Touching)
                   {
-                     Children[i].SendTouchUp(this, e);
+                     Children[i].SendTouchUp(this, point);
                   }
                }
                // ReSharper disable once EmptyGeneralCatchClause

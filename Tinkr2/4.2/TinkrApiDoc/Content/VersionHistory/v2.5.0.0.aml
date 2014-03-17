@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<topic id="80273748-d55b-4d55-81b0-0a1629d9ca95" revisionNumber="1">
+	<developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
+		<introduction>
+			<para>Version 2.5.0.0 was released on 2013/03/10.
+			</para>
+		</introduction>
+
+		<section>
+			<title>Changes in This Release</title>
+			<content>
+
+				<list class="bullet">
+					<listItem>
+						<para>This is the initial open source release and has no changes to the commercial version 2.5.0.0</para>
+					</listItem>
+
+				</list>
+
+			</content>
+		</section>
+
+		<relatedTopics>
+			<link xlink:href="433ff75c-7273-4c8c-90c4-e8000b44190e" />
+		</relatedTopics>
+
+	</developerConceptualDocument>
+</topic>

@@ -112,7 +112,7 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          if (Children == null)
             return;
@@ -120,10 +120,10 @@ namespace Skewworks.NETMF.Controls
          // Search for child
          for (int i = Children.Length - 1; i >= 0; i--)
          {
-            if (Children[i].Visible && Children[i].HitTest(e))
+            if (Children[i].Visible && Children[i].HitTest(point))
             {
-               Children[i].SendTouchDown(this, new point(e.X - Children[i].Left, e.Y - Children[i].Top));
-               _ptTapHold = e;
+               Children[i].SendTouchDown(this, new point(point.X - Children[i].Left, point.Y - Children[i].Top));
+               _ptTapHold = point;
                ActiveChild = Children[i];
                handled = true;
                return;
@@ -133,100 +133,122 @@ namespace Skewworks.NETMF.Controls
          // Deactivate Current Active
          ActiveChild = null;
 
-         base.TouchDownMessage(sender, e, ref handled);
+         base.TouchDownMessage(sender, point, ref handled);
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
-         if (ActiveChild == null)
+         try
          {
-            base.TouchUpMessage(sender, e, ref handled);
-            return;
-         }
-
-         if (!_bMove)
-         {
-            int diff = System.Math.Abs(e.X - _ptTapHold.X) + System.Math.Abs(e.Y - _ptTapHold.Y);
-
-            // Let's not just go moving if the users finger slides a bit
-            if (diff < 32)
+            if (ActiveChild == null)
+            {
+               base.TouchUpMessage(sender, point, ref handled);
                return;
-         }
-
-         if (_buffer == null)
-         {
-            _bMove = true;
-            _buffer = new Bitmap(_iW - 8, _iH - 8);
-            _buffer.DrawRectangle(0, 0, 0, 0, _iW - 8, _iH - 8, 0, 0, Colors.LightBlue, 0, 0, Colors.LightBlue, 0, 0, 256);
-            ((Shortcut)ActiveChild).RenderToBuffer(_buffer);
-            _mY = ActiveChild.Y;
-            _mX = ActiveChild.X;
-         }
-
-         // Invalidate last location, silently
-         lock (Core.Screen)
-         {
-            Core.Screen.SetClippingRectangle(_mX, _mY, _iW - 8, _iH - 8);
-            Core.Screen.DrawRectangle(0, 0, _mX, _mY, _iW - 8, _iH - 8, 0, 0, _bkgColor, 0, 0, _bkgColor, 0, 0, 256);
-            if (_bkg != null)
-            {
-               Core.Screen.DrawImage(0, 0, _bkg, 0, 0, _bkg.Width, _bkg.Height);
-            }
-            var r = new rect(_mX, _mY, _iW - 8, _iH - 8);
-            for (int i = 0; i < Children.Length; i++)
-            {
-               if (Children[i] != ActiveChild && Children[i].ScreenBounds.Intersects(r))
-                  Children[i].Render();
             }
 
-            // Update Location
-            int tmpX = _mX;
-            int tmpY = _mY;
+            if (!_bMove)
+            {
+               int diff = System.Math.Abs(point.X - _ptTapHold.X) + System.Math.Abs(point.Y - _ptTapHold.Y);
 
-            _mY += e.Y - _ptTapHold.Y;
-            _mX += e.X - _ptTapHold.X;
-            if (_mX < 0)
-               _mX = 0;
-            else if (_mX + _iW - 8 > Width)
-               _mX = Width - _iW - 8;
-            if (_mY < 0)
-               _mY = 0;
-            else if (_mY + _iH - 8 > Height)
-               _mY = Height - _iH - 8;
-            _ptTapHold = new point(_mX, _mY);
+               // Let's not just go moving if the users finger slides a bit
+               if (diff < 32)
+               {
+                  return;
+               }
+            }
 
-            // Draw NEW location
-            Core.Screen.SetClippingRectangle(Top, Left, Width, Height);
-            Core.Screen.DrawImage(_mX, _mY, _buffer, 0, 0, 100, 750);
+            if (_buffer == null)
+            {
+               _bMove = true;
+               _buffer = new Bitmap(_iW - 8, _iH - 8);
+               _buffer.DrawRectangle(0, 0, 0, 0, _iW - 8, _iH - 8, 0, 0, Colors.LightBlue, 0, 0, Colors.LightBlue, 0, 0,
+                  256);
+               ((Shortcut) ActiveChild).RenderToBuffer(_buffer);
+               _mY = ActiveChild.Y;
+               _mX = ActiveChild.X;
+            }
 
-            // Flush
-            int x = (tmpX < _mX) ? tmpX : _mX;
-            int y = (tmpY < _mY) ? tmpY : _mY;
+            // Invalidate last location, silently
+            lock (Core.Screen)
+            {
+               Core.Screen.SetClippingRectangle(_mX, _mY, _iW - 8, _iH - 8);
+               Core.Screen.DrawRectangle(0, 0, _mX, _mY, _iW - 8, _iH - 8, 0, 0, _bkgColor, 0, 0, _bkgColor, 0, 0, 256);
+               if (_bkg != null)
+               {
+                  Core.Screen.DrawImage(0, 0, _bkg, 0, 0, _bkg.Width, _bkg.Height);
+               }
+               var r = new rect(_mX, _mY, _iW - 8, _iH - 8);
+               for (int i = 0; i < Children.Length; i++)
+               {
+                  if (Children[i] != ActiveChild && Children[i].ScreenBounds.Intersects(r))
+                  {
+                     Children[i].Render();
+                  }
+               }
 
-            int w = System.Math.Abs(_mX - tmpX) + _iW - 8;
-            int h = System.Math.Abs(_mY - tmpY) + _iH - 8;
-            Core.Screen.Flush(x, y, w, h);
+               // Update Location
+               int tmpX = _mX;
+               int tmpY = _mY;
+
+               _mY += point.Y - _ptTapHold.Y;
+               _mX += point.X - _ptTapHold.X;
+               if (_mX < 0)
+               {
+                  _mX = 0;
+               }
+               else if (_mX + _iW - 8 > Width)
+               {
+                  _mX = Width - _iW - 8;
+               }
+               if (_mY < 0)
+               {
+                  _mY = 0;
+               }
+               else if (_mY + _iH - 8 > Height)
+               {
+                  _mY = Height - _iH - 8;
+               }
+               _ptTapHold = new point(_mX, _mY);
+
+               // Draw NEW location
+               Core.Screen.SetClippingRectangle(Top, Left, Width, Height);
+               Core.Screen.DrawImage(_mX, _mY, _buffer, 0, 0, 100, 750);
+
+               // Flush
+               int x = (tmpX < _mX) ? tmpX : _mX;
+               int y = (tmpY < _mY) ? tmpY : _mY;
+
+               int w = System.Math.Abs(_mX - tmpX) + _iW - 8;
+               int h = System.Math.Abs(_mY - tmpY) + _iH - 8;
+               Core.Screen.Flush(x, y, w, h);
+            }
+         }
+         finally
+         {
+            base.TouchMoveMessage(sender, point, ref handled);
          }
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (Children == null || ActiveChild == null)
          {
-            base.TouchUpMessage(sender, e, ref handled);
-            return;
+            base.TouchUpMessage(sender, point, ref handled);
          }
-
-         ActiveChild.SendTouchUp(this, e);
-         handled = true;
-
-         if (_bMove)
+         else
          {
-            _bMove = false;
-            _buffer = null;
-            ((Shortcut)ActiveChild).Location = new point(_mX, _mY);
-            ActiveChild = null;
+            ActiveChild.SendTouchUp(this, point);
+            handled = true;
+
+            if (_bMove)
+            {
+               _bMove = false;
+               _buffer = null;
+               ((Shortcut) ActiveChild).Location = new point(_mX, _mY);
+               ActiveChild = null;
+            }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -306,7 +328,7 @@ namespace Skewworks.NETMF.Controls
 
       #region GUI
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          Core.Screen.DrawRectangle(_bkgColor, 0, Left, Top, Width, Height, 0, 0, _bkgColor, 0, 0, _bkgColor, 0, 0, 256);
          if (_bkg != null)

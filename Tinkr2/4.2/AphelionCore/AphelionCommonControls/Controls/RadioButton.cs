@@ -129,10 +129,13 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
-         if (Touching && ScreenBounds.Contains(e))
+         if (Touching && ScreenBounds.Contains(point))
+         {
             SetThisChecked();
+         }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -148,7 +151,7 @@ namespace Skewworks.NETMF.Controls
       }
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
          x = Left;
@@ -204,7 +207,7 @@ namespace Skewworks.NETMF.Controls
          }
 
          // Draw Text
-         Core.Screen.DrawText(_text, _font, _fore, x + cSz + 6, y + (h / 2 - _font.Height / 2));
+         Core.Screen.DrawText(_text, _font, _fore, x + cSz + 6, y + (height / 2 - _font.Height / 2));
 
       }
 

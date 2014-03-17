@@ -4,9 +4,11 @@ using System.Collections;
 // ReSharper disable StringCompareToIsCultureSpecific
 namespace Skewworks.NETMF
 {
+   /// <summary>
+   /// Class for sorting strings
+   /// </summary>
    public class StringSorter
    {
-
       #region Variables
 
       private readonly ArrayList _values;
@@ -15,16 +17,26 @@ namespace Skewworks.NETMF
 
       #region Constructor
 
+      /// <summary>
+      /// Creates a new string sorter
+      /// </summary>
       public StringSorter()
       {
          _values = new ArrayList();
       }
 
+      /// <summary>
+      /// Creates a new string sorter
+      /// </summary>
+      /// <param name="values">Initial values for the sorter</param>
       public StringSorter(string[] values)
       {
          _values = new ArrayList();
+         _values.Capacity = values.Length;
          for (int i = 0; i < values.Length; i++)
+         {
             _values.Add(new SortableString(values[i]));
+         }
       }
 
       #endregion
@@ -32,16 +44,16 @@ namespace Skewworks.NETMF
       #region Public Methods
 
       /// <summary>
-      /// Adds a string to the list to be sorted
+      /// Adds a value to the list of values to be sorted
       /// </summary>
-      /// <param name="value"></param>
+      /// <param name="value">Value to be added</param>
       public void AddValue(string value)
       {
          _values.Add(new SortableString(value));
       }
 
       /// <summary>
-      /// Removes all values from list to be sorted
+      /// Removes all values from sort list
       /// </summary>
       public void ClearValues()
       {
@@ -51,7 +63,7 @@ namespace Skewworks.NETMF
       /// <summary>
       /// Sorts strings (case-insensitive, ascending)
       /// </summary>
-      /// <returns></returns>
+      /// <returns>Returns the sorted strings</returns>
       public string[] InsensitiveSort()
       {
          var str = new string[_values.Count];
@@ -59,12 +71,16 @@ namespace Skewworks.NETMF
 
          var strings = (SortableString[])_values.ToArray(typeof(SortableString));
          for (i = 0; i < strings.Length; i++)
+         {
             strings[i].Insensitive = true;
+         }
 
          strings = SortableString.Sort(strings);
 
          for (i = 0; i < str.Length; i++)
+         {
             str[i] = strings[i].Value;
+         }
 
          return str;
       }
@@ -72,7 +88,7 @@ namespace Skewworks.NETMF
       /// <summary>
       /// Sorts strings (case-insensitive, descending)
       /// </summary>
-      /// <returns></returns>
+      /// <returns>Returns the sorted strings</returns>
       public string[] InsensitiveSortDescending()
       {
          var str = new string[_values.Count];
@@ -80,12 +96,16 @@ namespace Skewworks.NETMF
 
          var strings = (SortableString[])_values.ToArray(typeof(SortableString));
          for (i = 0; i < strings.Length; i++)
+         {
             strings[i].Insensitive = true;
+         }
 
          strings = SortableString.Sort(strings);
 
          for (i = str.Length - 1; i > -1; i--)
+         {
             str[i] = strings[i].Value;
+         }
 
          return str;
       }
@@ -93,7 +113,7 @@ namespace Skewworks.NETMF
       /// <summary>
       /// Sorts strings (case-sensitive, ascending)
       /// </summary>
-      /// <returns></returns>
+      /// <returns>Returns the sorted strings</returns>
       public string[] Sort()
       {
          var str = new string[_values.Count];
@@ -101,7 +121,9 @@ namespace Skewworks.NETMF
          SortableString[] strings = SortableString.Sort((SortableString[])_values.ToArray(typeof(SortableString)));
 
          for (int i = 0; i < str.Length; i++)
+         {
             str[i] = strings[i].Value;
+         }
 
          return str;
       }
@@ -109,7 +131,7 @@ namespace Skewworks.NETMF
       /// <summary>
       /// Sorts strings (case-sensitive, descending)
       /// </summary>
-      /// <returns></returns>
+      /// <returns>Returns the sorted strings</returns>
       public string[] SortDescending()
       {
          var str = new string[_values.Count];
@@ -117,7 +139,9 @@ namespace Skewworks.NETMF
          SortableString[] strings = SortableString.Sort((SortableString[])_values.ToArray(typeof(SortableString)));
 
          for (int i = str.Length - 1; i > -1; i--)
+         {
             str[i] = strings[i].Value;
+         }
 
          return str;
       }
@@ -128,7 +152,6 @@ namespace Skewworks.NETMF
 
       private class SortableString : IComparable
       {
-
          #region Variables
 
          #endregion
@@ -188,13 +211,10 @@ namespace Skewworks.NETMF
 
             return list;
          }
-
          #endregion
-
       }
 
       #endregion
-
    }
 }
 // ReSharper restore StringCompareToIsCultureSpecific

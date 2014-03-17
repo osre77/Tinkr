@@ -17,12 +17,12 @@ using Skewworks.NETMF.Controls;
 namespace Skewworks.NETMF
 {
    /// <summary>
-   /// 
+   /// Default entry point to Skewworks Core.
    /// </summary>
+   /// <remarks>Singleton object, compatible with multiple AppDomain applications.</remarks>
    [Serializable]
    public class Core : MarshalByRefObject
    {
-
       #region Variables
 
       // Singleton
@@ -73,15 +73,12 @@ namespace Skewworks.NETMF
       // Clipboard
       private object _clipboard;
 
-      // Premimum Features
-      private bool _premium;
-
       // Applications
       private int _nextDomain;
       private IApplicationLauncher[] _appRefs;
-      /*
-            private AppDomain _target;
-      */
+      
+      //private AppDomain _target;
+      
       private IContainer _defaultReturn;
 
       #endregion
@@ -131,56 +128,95 @@ namespace Skewworks.NETMF
 
          // Messaging
          AddMessageClient(Mc);
-
-         // Premimum Features
-         Assembly[] asm = AppDomain.CurrentDomain.GetAssemblies();
-         for (int i = 0; i < asm.Length; i++)
-         {
-            AssemblyName asmn = asm[i].GetName();
-            if (asmn.Name == "Skewworks.Tinkr")
-            {
-               _premium = true;
-               return;
-            }
-         }
       }
 
       #endregion
 
       #region Events
 
+      /// <summary>
+      /// This event is raised when the application is closed.
+      /// </summary>
       public event OnApplicationClosed ApplicationClosed;
+
+      /// <summary>
+      /// Raises the ApplicationClosed event.
+      /// </summary>
+      /// <param name="sender">Sender object of the event.</param>
+      /// <param name="appDetails"><see cref="ApplicationDetails"/> of the application.</param>
       protected virtual void OnApplicationClosed(object sender, ApplicationDetails appDetails)
       {
          if (ApplicationClosed != null)
+         {
             ApplicationClosed(sender, appDetails);
-      }
-
-      public event OnApplicationLaunched ApplicationLaunched;
-      protected virtual void OnApplicationLaunched(object sender, Guid threadId)
-      {
-         if (ApplicationLaunched != null)
-            ApplicationLaunched(sender, threadId);
+         }
       }
 
       /// <summary>
-      /// Raised on all touch events and gestures
+      /// This event is raised when the application is launched.
       /// </summary>
-      public event OnTouchEvent TouchEvent;
-      protected virtual void OnTouchEvent(object sender, TouchType e, point pt)
+      public event OnApplicationLaunched ApplicationLaunched;
+
+      /// <summary>
+      /// Raises the ApplicationLaunched event.
+      /// </summary>
+      /// <param name="sender">Sender object of the event.</param>
+      /// <param name="threadId">Thread id of the application.</param>
+      protected virtual void OnApplicationLaunched(object sender, Guid threadId)
       {
-         if (TouchEvent != null)
-            TouchEvent(sender, e, pt);
+         if (ApplicationLaunched != null)
+         {
+            ApplicationLaunched(sender, threadId);
+         }
       }
 
+      /// <summary>
+      /// This event is raised whenever a touch event of any type occurs
+      /// </summary>
+      public event OnTouchEvent TouchEvent;
+
+      /// <summary>
+      /// Raises the TouchEvent
+      /// </summary>
+      /// <param name="sender">Sender object of the event</param>
+      /// <param name="touchType"><see cref="TouchType"/> of the event</param>
+      /// <param name="point">Point of the touch event</param>
+      protected virtual void OnTouchEvent(object sender, TouchType touchType, point point)
+      {
+         if (TouchEvent != null)
+         {
+            TouchEvent(sender, touchType, point);
+         }
+      }
+
+      /// <summary>
+      /// This event is raised whenever an alternate key is pressed on an attached keyboard.
+      /// </summary>
       public event OnKeyboardAltKeyEvent KeyboardAltKeyEvent;
+
+      /// <summary>
+      /// Raises the KeyboardAltKeyEvent.
+      /// </summary>
+      /// <param name="key">Key code</param>
+      /// <param name="pressed">true if pressed; false if released.</param>
       protected virtual void OnKeyboardAltKeyEvent(int key, bool pressed)
       {
          if (KeyboardAltKeyEvent != null)
+         {
             KeyboardAltKeyEvent(key, pressed);
+         }
       }
 
+      /// <summary>
+      /// This event is raised whenever an normal key is pressed on an attached keyboard.
+      /// </summary>
       public event OnKeyboardKeyEvent KeyboardKeyEvent;
+
+      /// <summary>
+      /// Raises the KeyboardKeyEvent event.
+      /// </summary>
+      /// <param name="key">Key code</param>
+      /// <param name="pressed">true if pressed; false if released.</param>
       protected virtual void OnKeyboardKeyEvent(char key, bool pressed)
       {
          if (KeyboardKeyEvent != null)
@@ -191,6 +227,9 @@ namespace Skewworks.NETMF
 
       #region Properties
 
+      /// <summary>
+      /// Gets the number of active applications.
+      /// </summary>
       public static int ActiveApplications
       {
          get
@@ -201,20 +240,32 @@ namespace Skewworks.NETMF
          }
       }
 
+      /// <summary>
+      /// Gets/Sets currently active container
+      /// </summary>
+      /// <remarks>
+      /// Only the active container will be rendered.
+      /// </remarks>
       public static IContainer ActiveContainer
       {
          get { return _instance._active; }
          set
          {
             if (_instance._active == value)
+            {
                return;
+            }
 
             if (_instance._monOv != null)
+            {
                _instance._monOv.Suspend();
+            }
 
             // Deactivate current value
             if (_instance._active != null)
+            {
                _instance._active.Blur();
+            }
 
             // Update value
             _instance._active = value;
@@ -227,28 +278,42 @@ namespace Skewworks.NETMF
             }
 
             if (_instance._monOv != null)
+            {
                _instance._monOv.Resume();
+            }
 
             if (AppDomain.CurrentDomain.FriendlyName == "default")
+            {
                _instance._defaultReturn = value;
+            }
          }
       }
 
+      /// <summary>
+      /// Gets a list of currently running Skewworks Application ids
+      /// </summary>
       public static Guid[] ApplicationThreadIds
       {
          get
          {
             if (_instance._appRefs == null)
+            {
                return null;
+            }
 
             var g = new Guid[_instance._appRefs.Length];
             for (int i = 0; i < g.Length; i++)
+            {
                g[i] = _instance._appRefs[i].ThreadId;
+            }
 
             return g;
          }
       }
 
+      /// <summary>
+      /// Gets/Sets clipboard value.
+      /// </summary>
       public static object Clipboard
       {
          get { return _instance._clipboard; }
@@ -266,6 +331,12 @@ namespace Skewworks.NETMF
          }
       }
 
+      /// <summary>
+      /// Gets/Sets flat check box state
+      /// </summary>
+      /// <remarks>
+      /// When true check boxes are rendered in flat mode.
+      /// </remarks>
       public static bool FlatCheckboxes
       {
          get { return _instance._flatChk; }
@@ -277,10 +348,18 @@ namespace Skewworks.NETMF
             _instance._flatChk = value;
 
             if (_instance._active != null)
+            {
                _instance._active.Invalidate();
+            }
          }
       }
 
+      /// <summary>
+      /// Gets/Sets flat radio button state
+      /// </summary>
+      /// <remarks>
+      /// When true radio buttons are rendered in flat mode.
+      /// </remarks>
       public static bool FlatRadios
       {
          get { return _instance._flatRdo; }
@@ -292,84 +371,154 @@ namespace Skewworks.NETMF
             _instance._flatRdo = value;
 
             if (_instance._active != null)
+            {
                _instance._active.Invalidate();
+            }
          }
       }
 
+      /// <summary>
+      /// Gets/Sets flat text box state
+      /// </summary>
+      /// <remarks>
+      /// When true text boxes are rendered in flat mode
+      /// </remarks>
       public static bool FlatTextboxes
       {
          get { return _instance._flatTxt; }
          set
          {
             if (_instance._flatTxt == value)
+            {
                return;
+            }
 
             _instance._flatTxt = value;
 
             if (_instance._active != null)
+            {
                _instance._active.Invalidate();
+            }
          }
       }
 
+      /// <summary>
+      /// Sets all Flat... properties to the same value.
+      /// </summary>
+      /// <param name="flat">true for flat rendering state</param>
+      /// <remarks>
+      /// Sets the <see cref="FlatCheckboxes"/>, <see cref="FlatRadios"/> and <see cref="FlatTextboxes"/> properties to the same value.
+      /// </remarks>
+      public void SetAllFlatStates(bool flat)
+      {
+         _instance._flatChk = flat;
+         _instance._flatRdo = flat;
+         _instance._flatTxt = flat;
+
+         if (_instance._active != null)
+         {
+            _instance._active.Invalidate();
+         }
+      }
+
+      /// <summary>
+      /// Gets if the Tinkr core is already initialized.
+      /// </summary>
       public bool Initialized
       {
          get { return _instance != null; }
       }
 
+      /// <summary>
+      /// Gets the singleton instance of the Tinkr core, or null if not initialized.
+      /// </summary>
       public static Core Instance
       {
          get { return _instance; }
       }
 
+      /// <summary>
+      /// Gets if the alt key on the keyboard is down.
+      /// </summary>
       public static bool KeyboardAltDown
       {
          get { return _instance._alt; }
       }
 
+      /// <summary>
+      /// Gets if the Ctrl key on the keyboard is down.
+      /// </summary>
       public static bool KeyboardCtrlDown
       {
          get { return _instance._ctrl; }
       }
 
+      /// <summary>
+      /// Gets if the shift key on the keyboard is down.
+      /// </summary>
       public static bool KeyboardShiftDown
       {
          get { return _instance._shift; }
       }
 
+      /// <summary>
+      /// Gets the <see cref="MessageClient"/> for current AppDomain.
+      /// </summary>
       public static MessageClient MessageClient
       {
          get { return Mc; }
       }
 
+      /// <summary>
+      /// Gets/Sets mouse availability.
+      /// </summary>
       public static bool MouseAvailable
       {
          get { return _instance._mouseAvail; }
          set
          {
             if (_instance._mouseAvail == value)
+            {
                return;
+            }
             _instance._mouseAvail = value;
             if (_instance._showMouse)
+            {
                SafeFlush();
+            }
          }
       }
 
+      /// <summary>
+      /// Gets/Sets current mouse position.
+      /// </summary>
       public static point MousePosition
       {
          get { return new point(_instance._mouseX, _instance._mouseY); }
          set
          {
             if (value.X < 0)
+            {
                value.X = 0;
+            }
             if (value.Y < 0)
+            {
                value.Y = 0;
+            }
             if (value.X > _instance._screen.Width)
+            {
                value.X = _instance._screen.Width;
+            }
             if (value.Y > _instance._screen.Height)
+            {
                value.Y = _instance._screen.Height;
+            }
 
-            if (!_instance._mouseAvail || !_instance._showMouse || (_instance._mouseX == value.X && _instance._mouseY == value.Y))
+            if (!_instance._mouseAvail || !_instance._showMouse ||
+                (_instance._mouseX == value.X && _instance._mouseY == value.Y))
+            {
                return;
+            }
 
             int rx = System.Math.Min(value.X, _instance._mouseX);
             int ry = System.Math.Min(value.Y, _instance._mouseY);
@@ -386,13 +535,21 @@ namespace Skewworks.NETMF
             if (_instance._showMouse)
             {
                if (rx < 0)
+               {
                   rx = 0;
+               }
                if (ry < 0)
+               {
                   ry = 0;
+               }
                if (rw > _instance._sW)
+               {
                   rw = _instance._sW;
+               }
                if (rh > _instance._sH)
+               {
                   rh = _instance._sH;
+               }
 
                _instance._screen.SetClippingRectangle(rx, ry, rw, rh);
 
@@ -406,47 +563,82 @@ namespace Skewworks.NETMF
          }
       }
 
+      /// <summary>
+      /// Gets if the premium features are available.
+      /// </summary>
+      /// <remarks>
+      /// Since Tinkr is open source now, this property has no use anymore and will be removed in a future version.
+      /// </remarks>
+      [Obsolete("Property will be removed in a future release")]
       public static bool PremimumFeaturesAvailable
       {
-         get { return _instance._premium; }
+         get { return true; }
       }
 
+      /// <summary>
+      /// Gets the screen buffer bitmap.
+      /// </summary>
       public static Bitmap Screen
       {
          get { return _instance._screen; }
       }
 
+      /// <summary>
+      /// Gets the BPP for the screen.
+      /// </summary>
       public static int ScreenBitsPerPixel
       {
          get { return _instance._sBpp; }
       }
 
+      /// <summary>
+      /// Gets the width of the screen.
+      /// </summary>
+      public static int ScreenWidth
+      {
+         get { return _instance._sW; }
+      }
+
+      /// <summary>
+      /// Gets the height of the screen.
+      /// </summary>
       public static int ScreenHeight
       {
          get { return _instance._sH; }
       }
 
+      /// <summary>
+      /// Gets/Sets current screen overlay.
+      /// </summary>
       public static Overlay ScreenOverlay
       {
          get { return _instance._overlay; }
          set
          {
             if (_instance._overlay == value)
+            {
                return;
+            }
 
             bool bWait = false;
             if (_instance._overlay != null)
             {
                bWait = true;
                while (_instance._overlay != null)
+               {
                   Thread.Sleep(100);
+               }
             }
 
             if (bWait)
+            {
                Thread.Sleep(1000);
+            }
 
             if (_instance._monOv != null)
+            {
                _instance._monOv.Abort();
+            }
 
             _instance._overlay = value;
 
@@ -455,28 +647,33 @@ namespace Skewworks.NETMF
          }
       }
 
+      /// <summary>
+      /// Gets screen rotation in degrees.
+      /// </summary>
       public static int ScreenRotation
       {
          get { return _instance._sRot; }
       }
 
-      public static int ScreenWidth
-      {
-         get { return _instance._sW; }
-      }
-
+      /// <summary>
+      /// Gets/Sets show mouse cursor visibility.
+      /// </summary>
       public static bool ShowMouseCursor
       {
          get { return _instance._showMouse; }
          set
          {
             if (_instance._showMouse == value)
+            {
                return;
+            }
 
             _instance._showMouse = value;
 
             if (!value)
+            {
                SafeFlush(_instance._mouseX, _instance._mouseY, 12, 19);
+            }
             else if (_instance._mouseAvail)
             {
                _instance._mouseBuffer.DrawImage(0, 0, _instance._screen, _instance._mouseX, _instance._mouseY, 12, 19);
@@ -486,11 +683,17 @@ namespace Skewworks.NETMF
          }
       }
 
+      /// <summary>
+      /// Gets the system wide colors.
+      /// </summary>
       public static SystemColors SystemColors
       {
          get { return _instance._colors; }
       }
 
+      /// <summary>
+      /// Gets/Sets if the virtual keyboard should be used.
+      /// </summary>
       public static bool UseVirtualKeyboard
       {
          get { return _instance._useVkb; }
@@ -502,15 +705,12 @@ namespace Skewworks.NETMF
       #region Public Methods
 
       /// <summary>
-      /// Returns focus to the application's last active container
+      /// Sets focus to an application, restoring its last active container
       /// </summary>
-      /// <param name="app">GUID of application to activate</param>
-      /// <returns>True if successful</returns>
+      /// <param name="app">Guid of application to activate</param>
+      /// <returns>True if successful; else false</returns>
       public static bool ActivateApplication(Guid app)
       {
-         if (!_instance._premium)
-            throw new Exception("This feature is only available in premium versions");
-
          for (int i = 0; i < _instance._appRefs.Length; i++)
          {
             if (_instance._appRefs[i].ThreadId.Equals(app))
@@ -523,6 +723,11 @@ namespace Skewworks.NETMF
          return false;
       }
 
+      /// <summary>
+      /// Returns information from a Skewworks Application.
+      /// </summary>
+      /// <param name="threadId">Guid of application to get information from</param>
+      /// <returns>Returns the <see cref="ApplicationDetails"/> of the application.</returns>
       public static ApplicationDetails GetApplicationDetails(Guid threadId)
       {
          if (_instance._appRefs != null)
@@ -537,6 +742,11 @@ namespace Skewworks.NETMF
          return new ApplicationDetails();
       }
 
+      /// <summary>
+      /// Returns the image of the application
+      /// </summary>
+      /// <param name="threadId">Guid of application to get image from</param>
+      /// <returns>Returns the image of the application</returns>
       public static ApplicationImage GetApplicationImage(Guid threadId)
       {
          if (_instance._appRefs != null)
@@ -544,32 +754,41 @@ namespace Skewworks.NETMF
             for (int i = 0; i < _instance._appRefs.Length; i++)
             {
                if (_instance._appRefs[i].ThreadId.Equals(threadId))
+               {
                   return _instance._appRefs[i].Image;
+               }
             }
          }
-
          return new ApplicationImage();
       }
 
+      /// <summary>
+      /// Broadcasts a message to all applications in all AppDomains.
+      /// </summary>
+      /// <param name="sender">Object sending the message.</param>
+      /// <param name="message">Message being sent.</param>
+      /// <param name="args">Array of arguments to send.</param>
       public static void BroadcastMessage(object sender, string message, object[] args)
       {
          _instance.BroadcastMessage(sender, message, args, Mc);
       }
 
       /// <summary>
-      /// Sets the clipping region to a control
+      /// Automatically sets clipping region for a control.
       /// </summary>
-      /// <param name="control">Control to clip to</param>
-      /// <param name="x">Control X</param>
-      /// <param name="y">Control Y</param>
-      /// <param name="width">Control Width</param>
-      /// <param name="height">Control Height</param>
+      /// <param name="control">Control to clip for</param>
+      /// <param name="x">X of control</param>
+      /// <param name="y">Y of control</param>
+      /// <param name="width">Width of control</param>
+      /// <param name="height">Height of control</param>
       public static void ClipForControl(IControl control, int x, int y, int width, int height)
       {
          var area = new rect(x, y, width, height);
          rect r;
          if (control.Parent == null)
+         {
             r = new rect(0, 0, _instance._sW, _instance._sH);
+         }
          else
          {
             IControl c = control.Parent;
@@ -581,19 +800,29 @@ namespace Skewworks.NETMF
          _instance._screen.SetClippingRectangle(r.X, r.Y, r.Width, r.Height);
       }
 
+      /// <summary>
+      /// Flushes all cached files of all volumes to the physical media.
+      /// </summary>
       public static void FlushFileSystem()
       {
          try
          {
             VolumeInfo[] vi = VolumeInfo.GetVolumes();
             for (int i = 0; i < vi.Length; i++)
+            {
                vi[i].FlushAll();
+            }
          }
          // ReSharper disable once EmptyGeneralCatchClause
          catch
          { }
       }
 
+      /// <summary>
+      /// Returns a Bitmap from raw file bytes.
+      /// </summary>
+      /// <param name="data">Bytes to convert into Bitmap.</param>
+      /// <returns>Returns the <see cref="Bitmap"/> created from data.</returns>
       public static Bitmap ImageFromBytes(byte[] data)
       {
          if (data[0] == 0xFF && data[1] == 0xD8)
@@ -619,8 +848,15 @@ namespace Skewworks.NETMF
       }
 
       /// <summary>
-      /// Initializes Skewworks NETMF Core
+      /// Initializes the core.
       /// </summary>
+      /// <param name="touchCollection">Touch collection mode to use.</param>
+      /// <param name="splash">Splash image to display until first container is activated.</param>
+      /// <param name="backColor">Background color to display until first container is activated.</param>
+      /// <remarks>
+      /// Initialize is the first call to Tinkr that has to be made. It needs to be called only once.
+      /// Additional calls will be ignored.
+      /// </remarks>
       public static void Initialize(TouchCollection touchCollection, Bitmap splash = null, Color backColor = 0)
       {
          if (_instance == null)
@@ -637,33 +873,35 @@ namespace Skewworks.NETMF
       }
 
       /// <summary>
-      /// Launches an application directly from bytes
+      /// Launches a Skewworks Application in a new AppDomain.
       /// </summary>
-      /// <param name="filename">Path to application's PE file</param>
-      /// <param name="args">Applcation arguments</param>
+      /// <param name="filename">Full path to the application's PE file.</param>
+      /// <param name="args">Arguments to pass to application</param>
+      /// <remarks>
+      /// This is a non-blocking method which allows you to have multiple applications running side-by-side.
+      /// To start an application blocking use <see cref="ShellNETMF(string, string)"/>
+      /// </remarks>
       public static bool LaunchApplication(string filename, string[] args = null)
       {
-         if (!_instance._premium)
-            throw new Exception("This feature is only available in premium versions");
-
          return _instance.LaunchApp(filename, args);
       }
 
       /// <summary>
-      /// Launches an application directly from bytes
+      /// Launches a Skewworks Application in a new AppDomain.
       /// </summary>
-      /// <param name="appData">Application's PE file</param>
-      /// <param name="args">Applcation arguments</param>
+      /// <param name="appData">Raw bytes of application's PE file</param>
+      /// <param name="args">Arguments to pass to application</param>
+      /// <remarks>
+      /// This is a non-blocking method which allows you to have multiple applications running side-by-side.
+      /// To start an application blocking use <see cref="ShellNETMF(byte[], string)"/>
+      /// </remarks>
       public static bool LaunchApplication(byte[] appData, string[] args = null)
       {
-         if (!_instance._premium)
-            throw new Exception("This feature is only available in premium versions");
-
          return _instance.LaunchApp(appData, args);
       }
 
       // ReSharper disable once UnusedParameter.Local
-      //TODO: check why arps is not used
+      //TODO: check why args is not used
       private bool LaunchApp(string filename, string[] args = null)
       {
          int id = _nextDomain++;
@@ -753,16 +991,21 @@ namespace Skewworks.NETMF
       }
 
       /// <summary>
-      /// Manually retrieve a touch point
+      /// Manually grab a touch from native touch controller.
       /// </summary>
-      /// <param name="lTimeout">Tick count to stop waiting</param>
-      /// <returns></returns>
-      public static TouchEventArgs ManualTouchPoint(long lTimeout)
+      /// <param name="endTicks">Time in ticks when waiting for the event should be terminated (e.g. DateTime.Now.Ticks + l100Ms).</param>
+      /// <returns>
+      /// Returns the <see cref="TouchEventArgs"/> retrieved from the touchscreen.
+      /// If a timeout occurs the position of the return value is -1, -1.
+      /// </returns>
+      public static TouchEventArgs ManualTouchPoint(long endTicks)
       {
          while (true)
          {
-            if (DateTime.Now.Ticks > lTimeout)
+            if (DateTime.Now.Ticks > endTicks)
+            {
                return new TouchEventArgs(new point(-1, -1), 0);
+            }
 
             // Check the Pen
             int x = 0;
@@ -798,12 +1041,30 @@ namespace Skewworks.NETMF
          }
       }
 
+      /// <summary>
+      /// Manually inform core of a button event.
+      /// </summary>
+      /// <param name="buttonId">Id of button affected</param>
+      /// <param name="pressed">true if the button is pressed; false if released.</param>
+      /// <remarks>
+      /// Use RaiseButtonEvent to inject a button event into the system.
+      /// </remarks>
       public static void RaiseButtonEvent(int buttonId, bool pressed)
       {
          if (_instance._active != null)
+         {
             _instance._active.SendButtonEvent(buttonId, pressed);
+         }
       }
 
+      /// <summary>
+      /// Manually inform core of a keyboard alt key event.
+      /// </summary>
+      /// <param name="key">Id of alt key affected</param>
+      /// <param name="pressed">true if the key is pressed; false if released.</param>
+      /// <remarks>
+      /// Use RaiseKeyboardAltKeyEvent to inject a alt key event into the system.
+      /// </remarks>
       public static void RaiseKeyboardAltKeyEvent(int key, bool pressed)
       {
          switch (key)
@@ -823,30 +1084,45 @@ namespace Skewworks.NETMF
          }
 
          if (_instance._active != null)
+         {
             _instance._active.SendKeyboardAltKeyEvent(key, pressed);
+         }
          _instance.OnKeyboardAltKeyEvent(key, pressed);
       }
 
+      /// <summary>
+      /// Manually inform core of a keyboard key event.
+      /// </summary>
+      /// <param name="key">Character of key affected.</param>
+      /// <param name="pressed">true if the key is pressed; false if released.</param>
+      /// <remarks>
+      /// Use RaiseKeyboardKeyEvent to inject a key event into the system.
+      /// </remarks>
       public static void RaiseKeyboardKeyEvent(char key, bool pressed)
       {
          if (_instance._active != null)
+         {
             _instance._active.SendKeyboardKeyEvent(key, pressed);
+         }
          _instance.OnKeyboardKeyEvent(key, pressed);
       }
 
       /// <summary>
-      /// Manual send a touch event
+      /// Manually inform core of a touch event
       /// </summary>
-      /// <param name="touchType">Type of touch event</param>
-      /// <param name="pt">Location of touch event</param>
-      /// <param name="force">Force of touch event (gesture only)</param>
-      public static void RaiseTouchEvent(TouchType touchType, point pt, float force = 1f)
+      /// <param name="touchType"><see cref="TouchType"/> of touch event.</param>
+      /// <param name="pt">Location of touch event.</param>
+      /// <param name="force">Force of touch event (gesture only).</param>
+      /// <remarks>
+      /// Use RaiseTouchEvent to inject a touch event into the system.
+      /// </remarks>
+      public static void RaiseTouchEvent(TouchType touchType, point pt, float force = 1.0f)
       {
          _instance.RaiseTouch(touchType, pt, force);
       }
 
       /// <summary>
-      /// Safely flush the screen (accounts for mouse cursor)
+      /// Safely flushes the screen accounting for overlays and mouse cursor.
       /// </summary>
       public static void SafeFlush()
       {
@@ -862,10 +1138,13 @@ namespace Skewworks.NETMF
          if (_instance._overlay != null)
          {
             if (_instance._overlayBuffer == null)
+            {
                _instance._overlayBuffer = new Bitmap(_instance._overlay.Size.Width, _instance._overlay.Size.Height);
+            }
 
-            _instance._overlayBuffer.DrawImage(0, 0, _instance._screen, _instance._overlay.Position.X, _instance._overlay.Position.Y,
-                _instance._overlayBuffer.Width, _instance._overlayBuffer.Height);
+            _instance._overlayBuffer.DrawImage(0, 0, 
+               _instance._screen, _instance._overlay.Position.X, _instance._overlay.Position.Y,
+               _instance._overlayBuffer.Width, _instance._overlayBuffer.Height);
 
             _instance._screen.DrawRectangle(_instance._overlay.BorderColor, 1, _instance._overlay.Position.X, _instance._overlay.Position.Y,
                 _instance._overlay.Size.Width, _instance._overlay.Size.Height, 0, 0, _instance._overlay.BackColor, 0, 0,
@@ -890,30 +1169,40 @@ namespace Skewworks.NETMF
          }
 
          if (drawMouse)
+         {
             _instance._screen.DrawImage(_instance._mouseX, _instance._mouseY, _instance._mouse, 0, 0, 12, 19);
+         }
 
          _instance._screen.Flush();
       }
 
       /// <summary>
-      /// Safely flush the screen (accounts for mouse cursor)
+      /// Safely flushes the screen accounting for overlays and mouse cursor.
       /// </summary>
-      /// <param name="x"></param>
-      /// <param name="y"></param>
-      /// <param name="width"></param>
-      /// <param name="height"></param>
+      /// <param name="x">X location of screen to flush.</param>
+      /// <param name="y">Y location of screen to flush.</param>
+      /// <param name="width">Width of the screen area to flush.</param>
+      /// <param name="height">Height of the screen area to flush.</param>
       public static void SafeFlush(int x, int y, int width, int height)
       {
          _instance._screen.SetClippingRectangle(0, 0, _instance._screen.Width, _instance._screen.Height);
 
          if (x < 0)
+         {
             x = 0;
+         }
          if (y < 0)
+         {
             y = 0;
+         }
          if (width > _instance._sW)
+         {
             width = _instance._sW;
+         }
          if (height > _instance._sH)
+         {
             height = _instance._sH;
+         }
 
          bool drawMouse = false;
          var r = new rect(x, y, width, height);
@@ -928,7 +1217,9 @@ namespace Skewworks.NETMF
          if (_instance._overlay != null)
          {
             if (_instance._overlayBuffer == null)
+            {
                _instance._overlayBuffer = new Bitmap(_instance._overlay.Size.Width, _instance._overlay.Size.Height);
+            }
 
             _instance._overlayBuffer.DrawImage(0, 0, _instance._screen, _instance._overlay.Position.X, _instance._overlay.Position.Y,
                 _instance._overlayBuffer.Width, _instance._overlayBuffer.Height);
@@ -956,31 +1247,47 @@ namespace Skewworks.NETMF
          }
 
          if (drawMouse)
+         {
             _instance._screen.DrawImage(_instance._mouseX, _instance._mouseY, _instance._mouse, 0, 0, 12, 19);
+         }
 
          _instance._screen.Flush(x, y, width, height);
       }
 
       /// <summary>
-      /// Shell a full NETMF application
+      /// Shells a full NETMF application in a new AppDomain.
       /// </summary>
-      /// <param name="peFilename">Target PE file</param>
-      /// <param name="domain"></param>
-      /// <returns>true if completed successfully</returns>
-      public static bool ShellNETMF(string peFilename, string domain)
+      /// <param name="filename">Full path to the file PE to be shelled.</param>
+      /// <param name="domain">Name to give the new AppDomain.</param>
+      /// <returns>true if completed successfully; else false</returns>
+      /// <remarks>
+      /// This is a blocking method, the primary application will not respond until the shelled application terminates.
+      /// To start an application non blocking use <see cref="LaunchApplication(string, string[])"/>
+      /// </remarks>
+      public static bool ShellNETMF(string filename, string domain)
       {
          AppDomain ad = AppDomain.CreateDomain(domain);
          var launcher = (IApplicationLauncher)ad.CreateInstanceAndUnwrap(typeof(IApplicationLauncher).Assembly.FullName, typeof(ApplicationLauncher).FullName);
-         bool bOk = launcher.ShellApp(_instance, peFilename, GetDependencies(peFilename));
+         bool bOk = launcher.ShellApp(_instance, filename, GetDependencies(filename));
          AppDomain.Unload(ad);
          return bOk;
       }
 
-      public static bool ShellNETMF(byte[] peData, string domain)
+      /// <summary>
+      /// Shells a full NETMF application in a new AppDomain.
+      /// </summary>
+      /// <param name="appData">Raw bytes of application PE file to be shelled.</param>
+      /// <param name="domain">Name to give the new AppDomain.</param>
+      /// <returns>true if completed successfully; else false</returns>
+      /// <remarks>
+      /// This is a blocking method, the primary application will not respond until the shelled application terminates.
+      /// To start an application non blocking use <see cref="LaunchApplication(byte[], string[])"/>
+      /// </remarks>
+      public static bool ShellNETMF(byte[] appData, string domain)
       {
          AppDomain ad = AppDomain.CreateDomain(domain);
          var launcher = (IApplicationLauncher)ad.CreateInstanceAndUnwrap(typeof(IApplicationLauncher).Assembly.FullName, typeof(ApplicationLauncher).FullName);
-         bool bOk = launcher.ShellApp(_instance, peData);
+         bool bOk = launcher.ShellApp(_instance, appData);
          AppDomain.Unload(ad);
          return bOk;
       }
@@ -997,12 +1304,12 @@ namespace Skewworks.NETMF
       }
 
       /// <summary>
-      /// Draw 2 pixel think shadow around outside of region
+      /// Draws a 2 pixel wide alpha blended shadow around the supplied area.
       /// </summary>
-      /// <param name="x">X location</param>
-      /// <param name="y">Y location</param>
-      /// <param name="width">Width</param>
-      /// <param name="height">Height</param>
+      /// <param name="x">X  location of the region to be shadowed.</param>
+      /// <param name="y">Y  location of the region to be shadowed.</param>
+      /// <param name="width">Width of the region to be shadowed.</param>
+      /// <param name="height">Height of the region to be shadowed.</param>
       public static void ShadowRegion(int x, int y, int width, int height)
       {
          // Inner Line
@@ -1023,7 +1330,7 @@ namespace Skewworks.NETMF
          _instance._screen.DrawRectangle(0, 0, x - 1, y + height, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51);
          _instance._screen.DrawRectangle(0, 0, x + width, y + height, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51);
 
-         // Outter Line
+         // Outer Line
          _instance._screen.DrawRectangle(0, 0, x + 3, y - 2, width - 6, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51);
          _instance._screen.DrawRectangle(0, 0, x + 3, y + height + 1, width - 6, 1, 0, 0, 0, 0, 0, 0, 0, 0, 51);
          _instance._screen.DrawRectangle(0, 0, x - 2, y + 3, 1, height - 6, 0, 0, 0, 0, 0, 0, 0, 0, 51);
@@ -1038,6 +1345,14 @@ namespace Skewworks.NETMF
          _instance._screen.DrawRectangle(0, 0, x + width + 1, y + height - 3, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 26);
       }
 
+      /// <summary>
+      /// Draws a 4 pixel wide alpha blended shadow inside the supplied area.
+      /// </summary>
+      /// <param name="x">X location of the region to be shadowed.</param>
+      /// <param name="y">Y location of the region to be shadowed.</param>
+      /// <param name="width">Width of the region to be shadowed.</param>
+      /// <param name="height">Height of the region to be shadowed.</param>
+      /// <param name="color">Color to use when rendering shadow.</param>
       public static void ShadowRegionInset(int x, int y, int width, int height, Color color = Colors.Black)
       {
          ushort[] alpha = { 76, 51, 26, 13 };
@@ -1059,14 +1374,15 @@ namespace Skewworks.NETMF
       }
 
       /// <summary>
-      /// Terminates a registered running application
+      /// Terminates a running application.
       /// </summary>
-      /// <param name="threadId">Id of registered application to terminate</param>
+      /// <param name="threadId">Guid of application to terminate.</param>
+      /// <remarks>
+      /// Use TerminateApplication to terminate an application that was launched by 
+      /// <see cref="LaunchApplication(string, string[])"/> or <see cref="LaunchApplication(byte[], string[])"/>
+      /// </remarks>
       public static bool TerminateApplication(Guid threadId)
       {
-         if (!_instance._premium)
-            throw new Exception("This feature is only available in premium versions");
-
          return _instance.TermApp(threadId);
       }
 
@@ -1089,7 +1405,9 @@ namespace Skewworks.NETMF
                      AppDomain.Unload(ad);
 
                      if (_appRefs.Length == 1)
+                     {
                         _appRefs = null;
+                     }
                      else
                      {
                         var tmp = new IApplicationLauncher[_appRefs.Length - 1];
@@ -1118,11 +1436,16 @@ namespace Skewworks.NETMF
          return false;
       }
 
+      /// <summary>
+      /// Unlocks premium level core features.
+      /// </summary>
+      /// <param name="key">License key to unlock features.</param>
+      /// <remarks>
+      /// Since Tinkr is open source now, this method has no use anymore and will be removed in a future version.
+      /// </remarks>
+      [Obsolete("Method will be removed in a future release")]
       public static void UnlockPremiumFeatures(string key)
-      {
-         if (key == "72da39f9-d056-2689-4c70-32637cc7aa53")
-            _instance._premium = true;
-      }
+      { }
 
       #endregion
 
@@ -1203,14 +1526,20 @@ namespace Skewworks.NETMF
 
          SafeFlush(x, y, w, h);
          while (DateTime.Now.Ticks < _overlay.FadeAt)
+         {
             Thread.Sleep(50);
+         }
 
          while (_overlay.Opacity > 0)
          {
             if (_overlay.Opacity > 21)
+            {
                _overlay.Opacity -= 20;
+            }
             else
+            {
                _overlay.Opacity = 0;
+            }
 
             lock (_screen)
             {
@@ -1236,7 +1565,9 @@ namespace Skewworks.NETMF
             SafeFlush(x, y, w, h);
          }
          else
+         {
             _active.Render(true);
+         }
       }
 
       private void RaiseTouch(TouchType touchType, point pt)
@@ -1260,7 +1591,9 @@ namespace Skewworks.NETMF
             string[] sFiles = new string(Encoding.UTF8.GetChars(File.ReadAllBytes(sDir + "app.config"))).Split(',');
             dep = new string[sFiles.Length];
             for (int f = 0; f < sFiles.Length; f++)
+            {
                dep[f] = sDir + sFiles[f].Trim();
+            }
          }
          else
          {
@@ -1273,7 +1606,9 @@ namespace Skewworks.NETMF
                   if (Path.GetExtension(s[d]).ToLower() == ".pe" && s[d].ToLower() != filename.ToLower())
                   {
                      if (dep == null)
+                     {
                         dep = new[] { s[d] };
+                     }
                      else
                      {
                         var tmp = new string[dep.Length + 1];
@@ -1292,7 +1627,6 @@ namespace Skewworks.NETMF
 
       private interface IApplicationLauncher
       {
-
          #region Properties
 
          AppDomain Domain { get; }
@@ -1699,7 +2033,7 @@ namespace Skewworks.NETMF
 
       private void CalcForce(point e)
       {
-         // Calc by time alone
+         // Calculate by time alone
          float dDiff = DateTime.Now.Ticks - _lgDownAt;
 
          if (dDiff > TimeSpan.TicksPerSecond * .75)
@@ -1718,18 +2052,15 @@ namespace Skewworks.NETMF
 
       internal class SafeTouchConnection : IEventListener
       {
-
          public void InitializeForEventSource() { }
 
          public bool OnEvent(BaseEvent baseEvent)
          {
             return true;
          }
-
       }
 
       #endregion
-
    }
 }
 // ReSharper restore StringLastIndexOfIsCultureSpecific.1

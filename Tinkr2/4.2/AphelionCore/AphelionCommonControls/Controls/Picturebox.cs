@@ -327,7 +327,7 @@ namespace Skewworks.NETMF.Controls
 
       #region GUI
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          // Get Border offset
          int bOffset = 0;
@@ -336,6 +336,7 @@ namespace Skewworks.NETMF.Controls
             case BorderStyle.Border3D:
                bOffset = 2;
                break;
+
             case BorderStyle.BorderFlat:
                bOffset = 1;
                break;
@@ -351,7 +352,9 @@ namespace Skewworks.NETMF.Controls
          // Render border & background
          ushort fillVal = 256;
          if (_transBkg)
+         {
             fillVal = 0;
+         }
 
          switch (_border)
          {
@@ -359,9 +362,11 @@ namespace Skewworks.NETMF.Controls
                Core.Screen.DrawRectangle(Colors.White, 1, Left, Top, _w, _h, 0, 0, _bkg, 0, 0, _bkg, 0, 0, fillVal);
                Core.Screen.DrawRectangle(Colors.Gray, 0, Left + 1, Top + 1, _w - 2, _h - 2, 0, 0, _bkg, 0, 0, _bkg, 0, 0, fillVal);
                break;
+
             case BorderStyle.BorderFlat:
                Core.Screen.DrawRectangle(Colors.Black, 1, Left, Top, _w, _h, 0, 0, _bkg, 0, 0, _bkg, 0, 0, fillVal);
                break;
+
             case BorderStyle.BorderNone:
                Core.Screen.DrawRectangle(_bkg, 0, Left, Top, _w, _h, 0, 0, _bkg, 0, 0, _bkg, 0, 0, fillVal);
                break;
@@ -394,17 +399,25 @@ namespace Skewworks.NETMF.Controls
                   {
                      // Portrait
                      if (dH > dW)
-                        multiplier = dW / (float)_bmp.Width;
+                     {
+                        multiplier = dW/(float) _bmp.Width;
+                     }
                      else
+                     {
                         multiplier = dH / (float)_bmp.Height;
+                     }
                   }
                   else
                   {
                      // Landscape
                      if (dH > dW)
-                        multiplier = dW / (float)_bmp.Width;
+                     {
+                        multiplier = dW/(float) _bmp.Width;
+                     }
                      else
+                     {
                         multiplier = dH / (float)_bmp.Height;
+                     }
                   }
 
                   int dsW = (int)(_bmp.Width * multiplier);
@@ -432,7 +445,7 @@ namespace Skewworks.NETMF.Controls
                   break;
             }
          }
-
+         base.OnRender(x, y, width, height);
       }
 
       private void DefaultColors()

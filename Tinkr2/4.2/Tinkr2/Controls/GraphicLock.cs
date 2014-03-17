@@ -273,11 +273,11 @@ namespace Skewworks.Tinkr.Controls
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          for (int i = 0; i < 16; i++)
          {
-            if (_rects[i].Contains(e))
+            if (_rects[i].Contains(point))
             {
                _pips[i] = 1;
                _curPip = i;
@@ -293,17 +293,21 @@ namespace Skewworks.Tinkr.Controls
          }
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          for (int i = 0; i < 16; i++)
          {
-            if (_rects[i].Contains(e))
+            if (_rects[i].Contains(point))
             {
                if (_curPip == i)
-                  return;
+               {
+                  break;
+               }
 
                if (_curPip == -1)
+               {
                   _pips[i] = 1;
+               }
                else
                {
                   if (_pips[i] < 3)
@@ -315,31 +319,34 @@ namespace Skewworks.Tinkr.Controls
                }
                _curPip = i;
                Invalidate();
-               return;
+               break;
             }
          }
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          // save _combo because its cleared in Reset() (Thanks to han-swurst for finding and providing a solution for this)
          var combo = _combo;
          Reset();
          Invalidate();
          OnCombinationEntered(this, combo);
+
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
 
       #region GUI
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          int i;
          int xx;
          int yy = y + 9;
 
-         Core.Screen.DrawRectangle(0, 0, x, y, w, h, 0, 0, Color.White, 0, 0, Color.White, 0, 0, 256);
+         Core.Screen.DrawRectangle(0, 0, x, y, width, height, 0, 0, Color.White, 0, 0, Color.White, 0, 0, 256);
 
          // Left/Right Up/Down
          for (i = 0; i < 32; i += 10)

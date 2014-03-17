@@ -4,40 +4,81 @@ namespace Skewworks.NETMF
 {
 
    /// <summary>
-   /// point coordinates
+   /// Integer point coordinates
    /// </summary>
    [Serializable]
    // ReSharper disable once InconsistentNaming
    public struct point
    {
+      /// <summary>
+      /// X coordinate
+      /// </summary>
       public int X;
+
+      /// <summary>
+      /// Y coordinate
+      /// </summary>
       public int Y;
 
+      /// <summary>
+      /// Create a new point
+      /// </summary>
+      /// <param name="x">X coordinate</param>
+      /// <param name="y">Y coordinate</param>
       public point(int x, int y)
       {
          X = x;
          Y = y;
       }
 
+      /// <summary>
+      /// Returns a string that represents the current object.
+      /// </summary>
+      /// <returns>
+      /// A string that represents the current object.
+      /// </returns>
+      /// <filterpriority>2</filterpriority>
       public override string ToString()
       {
          return X + ", " + Y;
       }
    }
 
+   /// <summary>
+   /// Floating-point point coordinates
+   /// </summary>
    [Serializable]
    // ReSharper disable once InconsistentNaming
    public struct precisionpoint
    {
+      /// <summary>
+      /// X coordinate
+      /// </summary>
       public float X;
+
+      /// <summary>
+      /// Y coordinate
+      /// </summary>
       public float Y;
 
+      /// <summary>
+      /// Create a new precision point
+      /// </summary>
+      /// <param name="x">X coordinate</param>
+      /// <param name="y">Y coordinate</param>
       public precisionpoint(float x, float y)
       {
          X = x;
          Y = y;
       }
 
+      /// <summary>
+      /// Returns a string that represents the current object.
+      /// </summary>
+      /// <returns>
+      /// A string that represents the current object.
+      /// </returns>
+      /// <filterpriority>2</filterpriority>
       public override string ToString()
       {
          return X + ", " + Y;
@@ -51,7 +92,6 @@ namespace Skewworks.NETMF
    // ReSharper disable once InconsistentNaming
    public struct rect
    {
-
       #region Variables
 
       private int _x;
@@ -109,7 +149,9 @@ namespace Skewworks.NETMF
          set
          {
             if (value < 0)
+            {
                throw new IndexOutOfRangeException("width cannot be less than 0");
+            }
             _w = value;
          }
       }
@@ -123,7 +165,9 @@ namespace Skewworks.NETMF
          set
          {
             if (value < 0)
+            {
                throw new IndexOutOfRangeException("height cannot be less than 0");
+            }
             _h = value;
          }
       }
@@ -135,22 +179,22 @@ namespace Skewworks.NETMF
       /// <summary>
       /// Adds the area of a second rect to current rect
       /// </summary>
-      /// <param name="newrect">rect to add</param>
-      public void Combine(rect newrect)
+      /// <param name="newRect">rect to add</param>
+      public void Combine(rect newRect)
       {
          if (_w == 0)
          {
-            _x = newrect.X;
-            _y = newrect.Y;
-            _w = newrect.Width;
-            _h = newrect.Height;
+            _x = newRect.X;
+            _y = newRect.Y;
+            _w = newRect.Width;
+            _h = newRect.Height;
             return;
          }
 
-         int x1 = (_x < newrect.X) ? _x : newrect.X;
-         int y1 = (_y < newrect.Y) ? _y : newrect.Y;
-         int x2 = (_x + Width > newrect.X + newrect.Width) ? _x + _w : newrect.X + newrect.Width;
-         int y2 = (_y + Height > newrect.Y + newrect.Height) ? _y + _h : newrect.Y + newrect.Height;
+         int x1 = (_x < newRect.X) ? _x : newRect.X;
+         int y1 = (_y < newRect.Y) ? _y : newRect.Y;
+         int x2 = (_x + Width > newRect.X + newRect.Width) ? _x + _w : newRect.X + newRect.Width;
+         int y2 = (_y + Height > newRect.Y + newRect.Height) ? _y + _h : newRect.Y + newRect.Height;
          _x = x1;
          _y = y1;
          _w = x2 - x1;
@@ -166,14 +210,19 @@ namespace Skewworks.NETMF
       public rect Combine(rect region1, rect region2)
       {
          if (region1.Width == 0)
+         {
             return region2;
+         }
          if (region2.Width == 0)
+         {
             return region1;
+         }
 
          int x1 = (region1.X < region2.X) ? region1.X : region2.X;
          int y1 = (region1.Y < region2.Y) ? region1.Y : region2.Y;
          int x2 = (region1.X + region1.Width > region2.X + region2.Width) ? region1.X + region1.Width : region2.X + region2.Width;
          int y2 = (region1.Y + region1.Height > region2.Y + region2.Height) ? region1.Y + region1.Height : region2.Y + region2.Height;
+
          return new rect(x1, y1, x2 - x1, y2 - y1);
       }
 
@@ -182,31 +231,27 @@ namespace Skewworks.NETMF
       /// </summary>
       /// <param name="x">x location</param>
       /// <param name="y">y location</param>
-      /// <returns>True if point is inside rect</returns>
+      /// <returns>true if point is inside rect; else false</returns>
       public bool Contains(int x, int y)
       {
-         if (x >= _x && x <= _x + _w && y >= _y && y <= _y + _h)
-            return true;
-         return false;
+         return (x >= _x && x <= _x + _w && y >= _y && y <= _y + _h);
       }
 
       /// <summary>
       /// Checks if a point is inside the rect
       /// </summary>
-      /// <param name="e">point to check</param>
-      /// <returns>True if point is inside rect</returns>
-      public bool Contains(point e)
+      /// <param name="pointe">point to check</param>
+      /// <returns>true if point is inside rect; else false</returns>
+      public bool Contains(point pointe)
       {
-         if (e.X >= _x && e.X <= _x + _w && e.Y >= _y && e.Y <= _y + _h)
-            return true;
-         return false;
+         return (pointe.X >= _x && pointe.X <= _x + _w && pointe.Y >= _y && pointe.Y <= _y + _h);
       }
 
       /// <summary>
       /// Checks to see if two rects interset
       /// </summary>
       /// <param name="area">rect to check</param>
-      /// <returns>True if rects intersect</returns>
+      /// <returns>true if rects intersect; else false</returns>
       public bool Intersects(rect area)
       {
          return !(area.X >= (_x + _w)
@@ -225,7 +270,9 @@ namespace Skewworks.NETMF
       public static rect Intersect(rect region1, rect region2)
       {
          if (!region1.Intersects(region2))
+         {
             return new rect(0, 0, 0, 0);
+         }
 
          var rct = new rect
          {
@@ -247,27 +294,28 @@ namespace Skewworks.NETMF
       }
 
       /// <summary>
-      /// Returns a string representation of the rect
+      /// Returns a string that represents the current object.
       /// </summary>
-      /// <returns>{x, y, width, height}</returns>
+      /// <returns>
+      /// A string that represents the current object.
+      /// </returns>
+      /// <filterpriority>2</filterpriority>
       public override string ToString()
       {
          return "{" + X + ", " + Y + ", " + Width + ", " + Height + "}";
       }
 
       #endregion
-
    }
 
 
    /// <summary>
-   /// Structure containing object height & width
+   /// Structure containing object height &amp; width
    /// </summary>
    [Serializable]
-// ReSharper disable once InconsistentNaming
+   // ReSharper disable once InconsistentNaming
    public struct size
    {
-
       #region Variables
 
       /// <summary>
@@ -287,14 +335,18 @@ namespace Skewworks.NETMF
       /// <summary>
       /// Creates a new Size
       /// </summary>
-      /// <param name="width"></param>
-      /// <param name="height"></param>
+      /// <param name="width">Width</param>
+      /// <param name="height">Height</param>
       public size(int width, int height)
       {
          if (width < 0)
+         {
             throw new ArgumentOutOfRangeException("width", @"Must be > 0");
+         }
          if (height < 0)
+         {
             throw new ArgumentOutOfRangeException("height", @"Must be > 0");
+         }
          Width = width;
          Height = height;
       }
@@ -304,10 +356,10 @@ namespace Skewworks.NETMF
       #region Public Methods
 
       /// <summary>
-      /// Adds height & width to existing size
+      /// Adds height &amp; width to existing size
       /// </summary>
-      /// <param name="addWidth"></param>
-      /// <param name="addHeight"></param>
+      /// <param name="addWidth">Additional width</param>
+      /// <param name="addHeight">Additional height</param>
       public void Grow(int addWidth, int addHeight)
       {
          Width += addWidth;
@@ -315,159 +367,79 @@ namespace Skewworks.NETMF
       }
 
       /// <summary>
-      /// Subtracts height & width from existing size
+      /// Subtracts height &amp; width from existing size
       /// </summary>
-      /// <param name="subtractWidth"></param>
-      /// <param name="subtractHeight"></param>
+      /// <param name="subtractWidth">Width to reduce</param>
+      /// <param name="subtractHeight">Height to reduce</param>
       public void Shrink(int subtractWidth, int subtractHeight)
       {
          Width += subtractWidth;
          if (Width < 0)
+         {
             Width = 0;
+         }
          Height += subtractHeight;
          if (Height < 0)
+         {
             Height = 0;
+         }
       }
 
       /// <summary>
-      /// Returns a string representation of the Size
+      /// Returns a string that represents the current object.
       /// </summary>
-      /// <returns>{width, height}</returns>
+      /// <returns>
+      /// A string that represents the current object.
+      /// </returns>
+      /// <filterpriority>2</filterpriority>
       public override string ToString()
       {
          return "{" + Width + ", " + Height + "}";
       }
 
       #endregion
-
    }
 
+
+   /// <summary>
+   /// Event argument for touch events
+   /// </summary>
    [Serializable]
    public struct TouchEventArgs
    {
-// ReSharper disable once InconsistentNaming
+      // ReSharper disable once InconsistentNaming
+      /// <summary>
+      /// Location (point) of the touch event
+      /// </summary>
       public point location;
-// ReSharper disable once InconsistentNaming
+
+      // ReSharper disable once InconsistentNaming
+      /// <summary>
+      /// Type of the touch event.
+      /// </summary>
       public int type;
-      public TouchEventArgs(point e, int type)
+
+      /// <summary>
+      /// Create new touch event arguments
+      /// </summary>
+      /// <param name="point">Point of the touch event</param>
+      /// <param name="type">Type of the touch event</param>
+      public TouchEventArgs(point point, int type)
       {
-         location = e;
+         location = point;
          this.type = type;
       }
+
+      /// <summary>
+      /// Returns a string that represents the current object.
+      /// </summary>
+      /// <returns>
+      /// A string that represents the current object.
+      /// </returns>
+      /// <filterpriority>2</filterpriority>
       public override string ToString()
       {
          return location + "; " + type;
       }
-   }
-
-
-}
-
-namespace Skewworks.NETMF.Applications
-{
-   /// <summary>
-   /// Application Details
-   /// (Skewworks NETMF Application Standard v2.0)
-   /// </summary>
-   [Serializable]
-   public struct ApplicationDetails
-   {
-
-      #region Variables
-
-      /// <summary>
-      /// Owning Company
-      /// </summary>
-      public string Company;
-
-      /// <summary>
-      /// Application Copyright
-      /// </summary>
-      public string Copyright;
-
-      /// <summary>
-      /// Application Title
-      /// </summary>
-      public string Title;
-
-      /// <summary>
-      /// Application Description
-      /// </summary>
-      public string Description;
-
-      /// <summary>
-      /// Application Version
-      /// </summary>
-      public string Version;
-
-      #endregion
-
-      #region Constructor
-
-      /// <summary>
-      /// Application Details
-      /// (Skewworks NETMF Application Standard v2.0)
-      /// </summary>
-      /// <param name="title">Application Title</param>
-      /// <param name="description">Application Description</param>
-      /// <param name="company">Owning Company</param>
-      /// <param name="copyright">Application Copyright</param>
-      /// <param name="version">Application Version</param>
-      public ApplicationDetails(string title, string description, string company, string copyright, string version)
-      {
-         Company = company;
-         Copyright = copyright;
-         Title = title;
-         Description = description;
-         Version = version;
-      }
-
-      #endregion
-
-      #region Public Methods
-
-      /// <summary>
-      /// String representation of the object
-      /// </summary>
-      /// <returns>Title (v Version)</returns>
-      public override string ToString()
-      {
-         return Title + " (v " + Version + ")";
-      }
-
-      #endregion
-
-   }
-
-   [Serializable]
-   public struct ApplicationImage
-   {
-
-      #region Variables
-
-      /// <summary>
-      /// Raw Image Data
-      /// </summary>
-      public byte[] ImageData;
-
-      /// <summary>
-      /// Size of image
-      /// </summary>
-      public size ImageSize;
-
-      /// <summary>
-      /// Image Type
-      /// </summary>
-      public ImageType ImageType;
-
-      #endregion
-
-      public ApplicationImage(byte[] data, size size, ImageType type)
-      {
-         ImageData = data;
-         ImageSize = size;
-         ImageType = type;
-      }
-
    }
 }

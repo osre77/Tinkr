@@ -221,17 +221,23 @@ namespace Skewworks.NETMF.Controls
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
       {
          if (key == 10)
+         {
             Value = !_checked;
+         }
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (Touching)
+         {
             Value = !_checked;
+         }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -248,7 +254,7 @@ namespace Skewworks.NETMF.Controls
          _markUn = Colors.DarkGray;
       }
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          int cY = Top + (Height / 2 - _chkH / 2);
 
@@ -300,7 +306,7 @@ namespace Skewworks.NETMF.Controls
          Core.Screen.DrawTextInRect("a", Left + cX, cY, _chkFnt.CharWidth('a'), _chkFnt.Height, Bitmap.DT_AlignmentCenter, (_checked) ? _mark : _markUn, _chkFnt);
 
          // Draw Text
-         Core.Screen.DrawText(_text, _font, _fore, Left + _chkH + 6, Top + (h / 2 - _font.Height / 2));
+         Core.Screen.DrawText(_text, _font, _fore, Left + _chkH + 6, Top + (height / 2 - _font.Height / 2));
       }
 
       private void GetChkFont(int baseH)

@@ -122,7 +122,7 @@ namespace Skewworks.NETMF.Controls
 
       #region GUI
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          for (int i = 0; i < _parts.Count; i++)
          {

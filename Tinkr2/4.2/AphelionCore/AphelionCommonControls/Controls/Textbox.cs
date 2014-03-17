@@ -251,7 +251,7 @@ namespace Skewworks.NETMF.Controls
 
       #region GUI
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          if (Core.FlatTextboxes)
          {
@@ -317,61 +317,66 @@ namespace Skewworks.NETMF.Controls
 
       protected override void KeyboardAltKeyMessage(int key, bool pressed, ref bool handled)
       {
-         if (!pressed)
-            return;
-
-         switch (key)
+         if (pressed)
          {
-            case 80:        // Left
-               CurrentCharacter -= 1;
-               break;
-            case 79:        // Right
-               CurrentCharacter += 1;
-               break;
-            case 76:
-               if (_readOnly)
-                  return;
-               Delete();
-               Invalidate();
-               break;
+            switch (key)
+            {
+               case 80:        // Left
+                  CurrentCharacter -= 1;
+                  break;
+               case 79:        // Right
+                  CurrentCharacter += 1;
+                  break;
+               case 76:
+                  if (_readOnly)
+                     return;
+                  Delete();
+                  Invalidate();
+                  break;
+            }
          }
+         base.KeyboardAltKeyMessage(key, pressed, ref handled);
       }
 
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
       {
-         if (!pressed || _readOnly)
-            return;
-
-         if (key >= 32 && key <= 190)
+         if (pressed && !_readOnly)
          {
-            handled = true;
-            InsertStrChr(new string(new[] { key }));
-            Invalidate();
+            if (key >= 32 && key <= 190)
+            {
+               handled = true;
+               InsertStrChr(new string(new[] { key }));
+               Invalidate();
+            }
+            else if (key == 8)
+            {
+               handled = true;
+               Backspace();
+               Invalidate();
+            }
          }
-         else if (key == 8)
-         {
-            handled = true;
-            Backspace();
-            Invalidate();
-         }
-
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          _moved = true;
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (Core.UseVirtualKeyboard && Touching && !_moved && !_readOnly)
+         {
             new Thread(ShowEditor).Start();
+         }
 
          _moved = false;
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       private void ShowEditor()

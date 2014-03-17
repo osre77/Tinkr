@@ -260,17 +260,17 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
-         if (e.X > Width - 31)
+         if (point.X > Width - 31)
             _expand = true;
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (_items != null)
          {
-            if (e.X > Width - 31 && _expand)
+            if (point.X > Width - 31 && _expand)
             {
                int iMin = (_items.Length > 5) ? _lineHeight * 5 : _lineHeight * _items.Length;
                int h = Parent.Height - Y - Height;
@@ -299,6 +299,8 @@ namespace Skewworks.NETMF.Controls
          }
 
          _expand = false;
+
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -412,7 +414,7 @@ namespace Skewworks.NETMF.Controls
       #region GUI
 
 // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
 // ReSharper restore RedundantAssignment
       {
          //x = Left;

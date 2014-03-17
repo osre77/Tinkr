@@ -297,7 +297,7 @@ namespace Skewworks.NETMF.Controls
          _color = Core.SystemColors.FontColor;
       }
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          uint align;
 

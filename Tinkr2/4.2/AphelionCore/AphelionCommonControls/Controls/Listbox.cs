@@ -448,30 +448,36 @@ namespace Skewworks.NETMF.Controls
          new Thread(AnimateScroll).Start();
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
-         if (_items == null)
-            return;
-
-         e.Y -= Top;
-
-         // Find Selected Index
-         int y = e.Y + ScrollY;
-         int idx = y / _lineHeight;
-
-         if (idx > _items.Length - 1)
-            idx = -1;
-
-         if (_newSel == idx && _selIndex != idx)
+         if (_items != null)
          {
-            _selIndex = idx;
-            OnSelectedIndexChanged(this, _selIndex);
+            point.Y -= Top;
+
+            // Find Selected Index
+            int y = point.Y + ScrollY;
+            int idx = y/_lineHeight;
+
+            if (idx > _items.Length - 1)
+            {
+               idx = -1;
+            }
+
+            if (_newSel == idx && _selIndex != idx)
+            {
+               _selIndex = idx;
+               OnSelectedIndexChanged(this, _selIndex);
+            }
+
+            if (_showCheckboxes && _items[_selIndex].AllowCheckbox &&
+                _items[_selIndex].CheckboxBounds.Contains(new point(point.X, point.Y)))
+            {
+               _items[_selIndex].Checked = !_items[_selIndex].Checked;
+            }
+
+            Invalidate();
          }
-
-         if (_showCheckboxes && _items[_selIndex].AllowCheckbox && _items[_selIndex].CheckboxBounds.Contains(new point(e.X, e.Y)))
-            _items[_selIndex].Checked = !_items[_selIndex].Checked;
-
-         Invalidate();
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -645,109 +651,125 @@ namespace Skewworks.NETMF.Controls
       }
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
-         x = Left;
+         //x is Left anyway
+         //x = Left;
 
          //int rndY = ScrollY;
-         int chkX = x + w;
+         int chkX = x + width;
 
          // Draw Border & Background
-         Core.Screen.DrawRectangle(Core.SystemColors.BorderColor, 1, x, y, w, h, 0, 0, _bkg, 0, 0, _bkg, 0, 0, 256);
+         Core.Screen.DrawRectangle(Core.SystemColors.BorderColor, 1, x, y, width, height, 0, 0, _bkg, 0, 0, _bkg, 0, 0, 256);
 
          // Check for null items
          if (_items == null || _items.Length == 0)
+         {
             return;
+         }
 
          if (_recalc)
+         {
             GetLineHeight();
+         }
 
          chkX -= _chkH + 4;
 
          Color c = _bkg;
 
-         y = Top - ScrollY;
+         int yy = Top - ScrollY;
 
          // Render
          Core.Screen.SetClippingRectangle(Left + 1, Top + 1, Width - 2, Height - 2);
          for (int i = 0; i < _items.Length; i++)
          {
-            if (y + _lineHeight > Top)
+            if (yy + _lineHeight > Top)
             {
                // Item background
                if (_items[i].AlternateFont != null)
-                  Core.Screen.DrawRectangle(0, 0, x + 1, y, Width - 2, _lineHeight, 0, 0, _items[i].AlternateBackColor, 0, 0, _items[i].AlternateBackColor, 0, 0, 256);
-               else
                {
-                  if (i == _selIndex)
-                     Core.Screen.DrawRectangle(0, 0, x + 1, y, Width - 2, _lineHeight, 0, 0, _sel, 0, 0, _sel, 0, 0, 256);
-                  else
-                     Core.Screen.DrawRectangle(0, 0, x + 1, y, Width - 2, _lineHeight, 0, 0, c, 0, 0, c, 0, 0, 256);
+                  Core.Screen.DrawRectangle(0, 0, x + 1, yy, Width - 2, _lineHeight, 0, 0, _items[i].AlternateBackColor, 0, 0, _items[i].AlternateBackColor, 0, 0, 256);
                }
-
-               _items[i].Bounds = new rect(x + 1, y, Width - 2, _lineHeight);
-
-               // Item Image
-               if (_showImages && _items[i].Image != null)
-                  Core.Screen.DrawImage(x + 4, y + (_lineHeight / 2 - _imgSize.Height / 2), _items[i].Image, 0, 0, _imgSize.Width, _imgSize.Height);
-
-               // Draw Text
-               if (_items[i].AlternateFont != null)
-                  Core.Screen.DrawTextInRect(_items[i].Text, _txtX, y + (_lineHeight / 2 - _items[i].AlternateFont.Height / 2), _txtW, _items[i].AlternateFont.Height,
-                      Bitmap.DT_None, _fore, _items[i].AlternateFont);
                else
                {
                   if (i == _selIndex)
                   {
-                     Core.Screen.DrawTextInRect(_items[i].Text, _txtX, y + (_lineHeight/2 - _font.Height/2), _txtW,
+                     Core.Screen.DrawRectangle(0, 0, x + 1, yy, Width - 2, _lineHeight, 0, 0, _sel, 0, 0, _sel, 0, 0,256);
+                  }
+                  else
+                  {
+                     Core.Screen.DrawRectangle(0, 0, x + 1, yy, Width - 2, _lineHeight, 0, 0, c, 0, 0, c, 0, 0, 256);
+                  }
+               }
+
+               _items[i].Bounds = new rect(x + 1, yy, Width - 2, _lineHeight);
+
+               // Item Image
+               if (_showImages && _items[i].Image != null)
+               {
+                  Core.Screen.DrawImage(x + 4, yy + (_lineHeight / 2 - _imgSize.Height / 2), _items[i].Image, 0, 0, _imgSize.Width, _imgSize.Height);
+               }
+
+               // Draw Text
+               if (_items[i].AlternateFont != null)
+               {
+                  Core.Screen.DrawTextInRect(_items[i].Text, _txtX, yy + (_lineHeight / 2 - _items[i].AlternateFont.Height / 2), _txtW, _items[i].AlternateFont.Height,
+                      Bitmap.DT_None, _fore, _items[i].AlternateFont);
+               }
+               else
+               {
+                  if (i == _selIndex)
+                  {
+                     Core.Screen.DrawTextInRect(_items[i].Text, _txtX, yy + (_lineHeight/2 - _font.Height/2), _txtW,
                         _font.Height, Bitmap.DT_None, _selFore, _font);
                   }
                   else
                   {
-                     Core.Screen.DrawTextInRect(_items[i].Text, _txtX, y + (_lineHeight / 2 - _font.Height / 2), _txtW, _font.Height, Bitmap.DT_None, _fore, _font);
+                     Core.Screen.DrawTextInRect(_items[i].Text, _txtX, yy + (_lineHeight / 2 - _font.Height / 2), _txtW, _font.Height, Bitmap.DT_None, _fore, _font);
                   }
                }
 
-               // Draw Checkbox
+               // Draw Check box
                if (_showCheckboxes && _items[i].AllowCheckbox)
                {
                   if (Core.FlatCheckboxes)
                   {
                      if (Enabled)
                      {
-                        Core.Screen.DrawRectangle(0, 0, chkX, y + 4, _chkH, _chkH, 0, 0, Core.SystemColors.ControlBottom,
-                           Left, y + 4, Core.SystemColors.ControlBottom, Left, y + 4 + (_chkH/2), 256);}
+                        Core.Screen.DrawRectangle(0, 0, chkX, yy + 4, _chkH, _chkH, 0, 0, Core.SystemColors.ControlBottom,
+                           Left, yy + 4, Core.SystemColors.ControlBottom, Left, yy + 4 + (_chkH/2), 256);}
                      else
                      {
-                        Core.Screen.DrawRectangle(0, 0, chkX, y + 4, _chkH, _chkH, 0, 0, Core.SystemColors.ControlTop, Left, y + 4, Core.SystemColors.ControlTop, Left, y + 4 + (_chkH / 2), 256);
+                        Core.Screen.DrawRectangle(0, 0, chkX, yy + 4, _chkH, _chkH, 0, 0, Core.SystemColors.ControlTop, Left, yy + 4, Core.SystemColors.ControlTop, Left, yy + 4 + (_chkH / 2), 256);
                      }
                   }
                   else
                   {
-                     Core.Screen.DrawRectangle(Core.SystemColors.BorderColor, 1, chkX, y + 4, _chkH, _chkH, 1, 1, 0, 0, 0, 0, 0, 0, 256);
+                     Core.Screen.DrawRectangle(Core.SystemColors.BorderColor, 1, chkX, yy + 4, _chkH, _chkH, 1, 1, 0, 0, 0, 0, 0, 0, 256);
 
                      if (Enabled)
                      {
-                        Core.Screen.DrawRectangle(0, 0, chkX + 1, y + 5, _chkH - 2, _chkH - 2, 0, 0,
-                           Core.SystemColors.ControlTop, Left, y + 4, Core.SystemColors.ControlBottom, Left,
-                           y + 4 + (_chkH/2), 256);
+                        Core.Screen.DrawRectangle(0, 0, chkX + 1, yy + 5, _chkH - 2, _chkH - 2, 0, 0,
+                           Core.SystemColors.ControlTop, Left, yy + 4, Core.SystemColors.ControlBottom, Left,
+                           yy + 4 + (_chkH/2), 256);
                      }
                      else
                      {
-                        Core.Screen.DrawRectangle(0, 0, chkX + 1, y + 5, _chkH - 2, _chkH - 2, 0, 0, Core.SystemColors.ControlTop, Left, y + 4, Core.SystemColors.ControlTop, Left, y + 4 + (_chkH / 2), 256);
+                        Core.Screen.DrawRectangle(0, 0, chkX + 1, yy + 5, _chkH - 2, _chkH - 2, 0, 0, Core.SystemColors.ControlTop, Left, yy + 4, Core.SystemColors.ControlTop, Left, yy + 4 + (_chkH / 2), 256);
                      }
                   }
 
-                  _items[i].CheckboxBounds = new rect(chkX, y + 4, _chkH, _chkH);
-                  Core.Screen.DrawTextInRect("a", Left + chkX - _chkX, y + 4 - _chkY, _chkFnt.CharWidth('a'), _chkFnt.Height, Bitmap.DT_AlignmentCenter, (_items[i].Checked) ? Core.SystemColors.SelectionColor : Colors.DarkGray, _chkFnt);
+                  _items[i].CheckboxBounds = new rect(chkX, yy + 4, _chkH, _chkH);
+                  Core.Screen.DrawTextInRect("a", Left + chkX - _chkX, yy + 4 - _chkY, _chkFnt.CharWidth('a'), _chkFnt.Height, Bitmap.DT_AlignmentCenter, (_items[i].Checked) ? Core.SystemColors.SelectionColor : Colors.DarkGray, _chkFnt);
                }
-
             }
 
-            y += _lineHeight;
-            if (y >= Top + Height)
+            yy += _lineHeight;
+            if (yy >= Top + Height)
+            {
                break;
+            }
 
             // Zebra stripe flipping
             if (_bZebra)
@@ -767,6 +789,7 @@ namespace Skewworks.NETMF.Controls
          {
             Core.ShadowRegionInset(Left, Top, Width, Height, Core.SystemColors.SelectionColor);
          }
+         base.OnRender(x, y, width, height);
       }
 
       #endregion

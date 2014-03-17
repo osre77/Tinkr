@@ -293,6 +293,7 @@ namespace Skewworks.Tinkr.Controls
             handled = true;
             ActiveChild.SendKeyboardAltKeyEvent(key, pressed);
          }
+         base.KeyboardAltKeyMessage(key, pressed, ref handled);
       }
 
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
@@ -302,132 +303,144 @@ namespace Skewworks.Tinkr.Controls
             handled = true;
             ActiveChild.SendKeyboardKeyEvent(key, pressed);
          }
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
-         if (_titlebar.Contains(e))
+         if (_titlebar.Contains(point))
          {
-            if (_rClose.Contains(e))
+            if (_rClose.Contains(point))
             {
                _bClose = true;
                return;
             }
 
-            if (_rMin.Contains(e))
+            if (_rMin.Contains(point))
             {
                _bMin = true;
                return;
             }
 
-            if (_rMax.Contains(e))
+            if (_rMax.Contains(point))
             {
                _bMax = true;
                return;
             }
 
-            _ptDown = e;
+            _ptDown = point;
             _drag = true;
             return;
          }
 
-         _pnl.SendTouchDown(this, e);
+         _pnl.SendTouchDown(this, point);
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          if (_drag)
          {
-            int cX = _x + (e.X - _ptDown.X);
-            int cY = _y + (e.Y - _ptDown.Y);
+            int cX = _x + (point.X - _ptDown.X);
+            int cY = _y + (point.Y - _ptDown.Y);
 
             // Create update region
-            var r = new rect(System.Math.Min(_x, cX), System.Math.Min(_y, cY), System.Math.Abs(_x + cX) + Width, System.Math.Abs(_y + cY) + Height);
+            var r = new rect(System.Math.Min(_x, cX), System.Math.Min(_y, cY), System.Math.Abs(_x + cX) + Width,
+               System.Math.Abs(_y + cY) + Height);
 
             _x = cX;
             _y = cY;
             //_titlebar = new rect(cX + 4, cY + 4, Width - 8, _font.Height + 8);
-            _ptDown = e;
+            _ptDown = point;
 
             Parent.Render(r, true);
-            return;
          }
-         _pnl.SendTouchMove(sender, e);
+         else
+         {
+            _pnl.SendTouchMove(sender, point);
+         }
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
-         if (_drag)
+         try
          {
-            _drag = false;
-            Invalidate();
-            return;
-         }
-
-         if (_bClose)
-         {
-            OnWindowClosed(this);
-            Parent.RemoveChild(this);
-            Dispose();
-            _bClose = false;
-            return;
-         }
-
-         if (_bMax)
-         {
-            if (_rMax.Contains(e))
+            if (_drag)
             {
-               if (_maxed)
-               {
-                  Parent.Suspended = true;
-
-                  X = _dX;
-                  Y = _dY;
-                  Width = _dW;
-                  Height = _dH;
-                  _maxed = false;
-
-                  OnResized(this, new rect(X, Y, Width, Height));
-                  Parent.Suspended = false;
-               }
-               else
-               {
-                  _dW = Width;
-                  _dH = Height;
-                  _dX = X;
-                  _dY = Y;
-
-                  Parent.Suspended = true;
-
-                  X = 0;
-                  Y = 0;
-                  Width = Core.ScreenWidth;
-                  Height = Core.ScreenHeight;
-                  _maxed = true;
-
-                  OnResized(this, new rect(X, Y, Width, Height));
-                  Parent.Suspended = false;
-               }
-
+               _drag = false;
+               Invalidate();
+               return;
             }
 
-            _bMax = false;
-            return;
-         }
+            if (_bClose)
+            {
+               OnWindowClosed(this);
+               Parent.RemoveChild(this);
+               Dispose();
+               _bClose = false;
+               return;
+            }
 
-         if (_bMin)
+            if (_bMax)
+            {
+               if (_rMax.Contains(point))
+               {
+                  if (_maxed)
+                  {
+                     Parent.Suspended = true;
+
+                     X = _dX;
+                     Y = _dY;
+                     Width = _dW;
+                     Height = _dH;
+                     _maxed = false;
+
+                     OnResized(this, new rect(X, Y, Width, Height));
+                     Parent.Suspended = false;
+                  }
+                  else
+                  {
+                     _dW = Width;
+                     _dH = Height;
+                     _dX = X;
+                     _dY = Y;
+
+                     Parent.Suspended = true;
+
+                     X = 0;
+                     Y = 0;
+                     Width = Core.ScreenWidth;
+                     Height = Core.ScreenHeight;
+                     _maxed = true;
+
+                     OnResized(this, new rect(X, Y, Width, Height));
+                     Parent.Suspended = false;
+                  }
+
+               }
+
+               _bMax = false;
+               return;
+            }
+
+            if (_bMin)
+            {
+               Visible = false;
+               OnWindowMinimized(this);
+               _bMin = false;
+               return;
+            }
+
+            _pnl.SendTouchUp(sender, point);
+         }
+         finally
          {
-            Visible = false;
-            OnWindowMinimized(this);
-            _bMin = false;
-            return;
+            base.TouchUpMessage(sender, point, ref handled);
          }
-
-         _pnl.SendTouchUp(sender, e);
       }
 
       #endregion

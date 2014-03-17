@@ -176,96 +176,103 @@ namespace Skewworks.Tinkr.Controls
 
       protected override void KeyboardAltKeyMessage(int key, bool pressed, ref bool handled)
       {
-         if (!pressed)
-            return;
-
-         switch (key)
+         if (pressed)
          {
-            case 74:        // Home
-               Column = 0;
-               break;
-            case 76:        // Delete
-               Delete();
-               if (Parent != null)
-                  Parent.Render(new rect(Left, Top + (_curLine * _font.Height), Width, _font.Height));
-               break;
-            case 77:        // End
-               Column = _lines[_curLine].Length;
-               break;
-            case 79:        // Right
-               Column += 1;
-               break;
-            case 80:        // Left
-               Column -= 1;
-               break;
-            case 81:        // Down
-               if (_curLine == _lines.Length - 1)
-                  return;
-
-               _curLine += 1;
-               Invalidate();
-               break;
-            case 82:        // Up
-               if (_curLine == 0)
-                  return;
-
-               _curLine -= 1;
-               Invalidate();
-               break;
+            switch (key)
+            {
+               case 74: // Home
+                  Column = 0;
+                  break;
+               case 76: // Delete
+                  Delete();
+                  if (Parent != null)
+                  {
+                     Parent.Render(new rect(Left, Top + (_curLine*_font.Height), Width, _font.Height));
+                  }
+                  break;
+               case 77: // End
+                  Column = _lines[_curLine].Length;
+                  break;
+               case 79: // Right
+                  Column += 1;
+                  break;
+               case 80: // Left
+                  Column -= 1;
+                  break;
+               case 81: // Down
+                  if (_curLine != _lines.Length - 1)
+                  {
+                     _curLine += 1;
+                     Invalidate();
+                  }
+                  break;
+               case 82: // Up
+                  if (_curLine != 0)
+                  {
+                     _curLine -= 1;
+                     Invalidate();
+                  }
+                  break;
+            }
          }
+         base.KeyboardAltKeyMessage(key, pressed, ref handled);
       }
 
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
       {
-         if (!pressed)
-            return;
-
-         if (key >= 32 && key <= 190)
+         if (pressed)
          {
-            InsertStrChr(new string(new[] { key }));
+            if (key >= 32 && key <= 190)
+            {
+               InsertStrChr(new string(new[] {key}));
+            }
+            else if (key == 8)
+            {
+               Backspace();
+               Invalidate();
+            }
+            else if (key == 9)
+            {
+               InsertStrChr("\t");
+               Invalidate();
+            }
+            else if (key == 10)
+            {
+               InsertStrChr("\n");
+               Invalidate();
+            }
          }
-         else if (key == 8)
-         {
-            Backspace();
-            Invalidate();
-         }
-         else if (key == 9)
-         {
-            InsertStrChr("\t");
-            Invalidate();
-         }
-         else if (key == 10)
-         {
-            InsertStrChr("\n");
-            Invalidate();
-         }
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
 
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          _moved = true;
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (!_moved)
          {
-            int x = e.X - Left - 3;
-            int y = e.Y - Top - 3;
+            int x = point.X - Left - 3;
+            int y = point.Y - Top - 3;
             int icl = _curLine;
 
             _curLine = y / _font.Height;
             if (_curLine >= _lines.Length - 1)
+            {
                _curLine = _lines.Length - 1;
+            }
 
             _curColumn = 0;
             while (x > 0 && _curColumn < _lines[_curLine].Length)
@@ -277,13 +284,16 @@ namespace Skewworks.Tinkr.Controls
             UpdateCaret();
 
             if (_curLine != icl)
+            {
                Invalidate();
+            }
             else
             {
                _bQuick = true;
                Invalidate(new rect(Left + 3, Top + 3 + (_curLine * _font.Height), Width - 6, _font.Height));
             }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -291,7 +301,7 @@ namespace Skewworks.Tinkr.Controls
       #region GUI
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
          if (_bQuick)

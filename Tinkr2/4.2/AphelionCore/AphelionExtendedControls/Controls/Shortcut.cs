@@ -163,7 +163,7 @@ namespace Skewworks.NETMF.Controls
       #region GUI
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
          int tH = FontManager.ComputeExtentEx(_font, _title).Height;

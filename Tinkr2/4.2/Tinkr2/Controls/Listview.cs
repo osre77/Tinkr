@@ -222,18 +222,18 @@ namespace Skewworks.Tinkr.Controls
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
-         e.X -= Left;
-         e.Y -= Top;
+         point.X -= Left;
+         point.Y -= Top;
 
-         if (_cols != null && e.Y < _header.Height + 9)
+         if (_cols != null && point.Y < _header.Height + 9)
          {
-            e.X--;
+            point.X--;
             for (int i = 0; i < _cols.Length; i++)
             {
                var bounds = new rect(_cols[i].X, 1, _cols[i].W, _header.Height + 8);
-               if (bounds.Contains(e))
+               if (bounds.Contains(point))
                {
                   //_colDown = i;
                   return;
@@ -244,40 +244,55 @@ namespace Skewworks.Tinkr.Controls
             return;
          }
 
-         _rowDown = (e.Y - 9 - _header.Height + _scrollY) / (_item.Height + 8);
+         _rowDown = (point.Y - 9 - _header.Height + _scrollY) / (_item.Height + 8);
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
-         if (_items == null)
-            return;
-
-         int diff = e.Y - LastTouch.Y;
-         if (diff == 0 || !Touching || (diff < 10 && diff > -10))
-            return;
-         int max = _items.Length * (_item.Height + 8) - (Height - 3 - (_header.Height + 9));
-         if (max <= 0)
-            return;
-         int ns = _scrollY - diff;
-         if (ns < 0)
-            ns = 0;
-         else if (ns > max)
-            ns = max;
-         if (_scrollY != ns)
+         try
          {
-            _scrollY = ns;
-            Invalidate();
+            if (_items != null)
+            {
+               int diff = point.Y - LastTouch.Y;
+               if (diff == 0 || !Touching || (diff < 10 && diff > -10))
+               {
+                  return;
+               }
+               int max = _items.Length*(_item.Height + 8) - (Height - 3 - (_header.Height + 9));
+               if (max <= 0)
+               {
+                  return;
+               }
+               int ns = _scrollY - diff;
+               if (ns < 0)
+               {
+                  ns = 0;
+               }
+               else if (ns > max)
+               {
+                  ns = max;
+               }
+               if (_scrollY != ns)
+               {
+                  _scrollY = ns;
+                  Invalidate();
+               }
+               LastTouch = point;
+               _bMoved = true;
+            }
          }
-         LastTouch = e;
-         _bMoved = true;
+         finally
+         {
+            base.TouchMoveMessage(sender, point, ref handled);
+         }
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          //_colDown = -1;
 
-         e.X -= Left;
-         e.Y -= Top;
+         point.X -= Left;
+         point.Y -= Top;
 
          if (_items == null || _bMoved)
          {
@@ -287,19 +302,22 @@ namespace Skewworks.Tinkr.Controls
                Invalidate();
             }
             _rowDown = -1;
-            return;
          }
-
-         if (_rowDown != -1 && _iSel != _rowDown && (e.Y - 9 - _header.Height + _scrollY) / (_item.Height + 8) == _rowDown)
+         else if (_rowDown != -1 && _iSel != _rowDown && (point.Y - 9 - _header.Height + _scrollY) / (_item.Height + 8) == _rowDown)
          {
             if (_rowDown < _items.Length)
+            {
                _iSel = _rowDown;
+            }
             else
+            {
                _iSel = -1;
+            }
 
             OnSelectedIndexChanged(this, _iSel);
             Invalidate();
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -458,7 +476,7 @@ namespace Skewworks.Tinkr.Controls
       #region GUI
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
          x = Left;
@@ -473,31 +491,31 @@ namespace Skewworks.Tinkr.Controls
          Core.Screen.DrawLine(Colors.White, 1, x, y + Height - 1, x + Width - 1, y + Height - 1);
 
          // Draw Data
-         h = _header.Height + 9;
+         height = _header.Height + 9;
          bool bOn = true;
          x++;
          y++;
-         Core.Screen.DrawRectangle(0, 0, x, y, Width - 3, h, 0, 0, Core.SystemColors.ControlTop, x, y, Core.SystemColors.ControlBottom, x, y + 4, 256);
-         Core.Screen.DrawLine(Core.SystemColors.BorderColor, 1, x, y + h, x + Width - 3, y + h);
+         Core.Screen.DrawRectangle(0, 0, x, y, Width - 3, height, 0, 0, Core.SystemColors.ControlTop, x, y, Core.SystemColors.ControlBottom, x, y + 4, 256);
+         Core.Screen.DrawLine(Core.SystemColors.BorderColor, 1, x, y + height, x + Width - 3, y + height);
          if (_cols != null)
          {
             // Columns
             for (int i = 0; i < _cols.Length; i++)
             {
-               w = _cols[i].W;
-               if (w == -1)
-                  w = _autoW;
+               width = _cols[i].W;
+               if (width == -1)
+                  width = _autoW;
                _cols[i].X = x;
-               Core.Screen.DrawTextInRect(_cols[i].Text, x + 4, y + 4, w - 8, _header.Height, Bitmap.DT_TrimmingCharacterEllipsis, _headerC, _header);
-               x += w;
-               Core.Screen.DrawLine(Core.SystemColors.BorderColor, 1, x - 1, y + 1, x - 1, y + h - 2);
+               Core.Screen.DrawTextInRect(_cols[i].Text, x + 4, y + 4, width - 8, _header.Height, Bitmap.DT_TrimmingCharacterEllipsis, _headerC, _header);
+               x += width;
+               Core.Screen.DrawLine(Core.SystemColors.BorderColor, 1, x - 1, y + 1, x - 1, y + height - 2);
             }
-            y += h + 1;
+            y += height + 1;
 
             // Items
-            Core.ClipForControl(this, Left + 1, y, Width - 3, Height - h - 4);
+            Core.ClipForControl(this, Left + 1, y, Width - 3, Height - height - 4);
             y -= _scrollY;
-            h = _item.Height + 8;
+            height = _item.Height + 8;
             if (_items != null)
             {
                for (int i = 0; i < _items.Length; i++)
@@ -505,28 +523,28 @@ namespace Skewworks.Tinkr.Controls
                   bOn = !bOn;
                   x = Left + 1;
 
-                  if (y + h > 0)
+                  if (y + height > 0)
                   {
 
                      if (_iSel == i)
-                        Core.Screen.DrawRectangle(0, 0, Left + 1, y, Width - 3, h, 0, 0, _selC, 0, 0, _selC, 0, 0, 256);
+                        Core.Screen.DrawRectangle(0, 0, Left + 1, y, Width - 3, height, 0, 0, _selC, 0, 0, _selC, 0, 0, 256);
                      else if (bOn)
-                        Core.Screen.DrawRectangle(0, 0, Left + 1, y, Width - 3, h, 0, 0, Colors.Ghost, 0, 0, Colors.Ghost, 0, 0, 256);
+                        Core.Screen.DrawRectangle(0, 0, Left + 1, y, Width - 3, height, 0, 0, Colors.Ghost, 0, 0, Colors.Ghost, 0, 0, 256);
 
                      if (_items[i].Values != null)
                      {
                         int c = (_items[i].Values.Length < _cols.Length) ? _items[i].Values.Length : _cols.Length;
                         for (int j = 0; j < c; j++)
                         {
-                           w = _cols[j].Width;
-                           if (w == -1)
-                              w = _autoW;
-                           Core.Screen.DrawTextInRect(_items[i].Values[j], x + 4, y + 4, w - 8, _item.Height, Bitmap.DT_TrimmingCharacterEllipsis, (i == _iSel) ? _selTextC : _itemC, _item);
-                           x += w;
+                           width = _cols[j].Width;
+                           if (width == -1)
+                              width = _autoW;
+                           Core.Screen.DrawTextInRect(_items[i].Values[j], x + 4, y + 4, width - 8, _item.Height, Bitmap.DT_TrimmingCharacterEllipsis, (i == _iSel) ? _selTextC : _itemC, _item);
+                           x += width;
                         }
                      }
                   }
-                  y += h;
+                  y += height;
                   if (y >= Top + Height - 2)
                      break;
                }

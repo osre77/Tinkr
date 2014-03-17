@@ -668,8 +668,8 @@ namespace Skewworks.NETMF.Controls
       /// Called when a touch down occurs and the control is active
       /// </summary>
       /// <param name="sender">Sending object</param>
-      /// <param name="e">Location of touch</param>
-      public void SendTouchDown(object sender, point e)
+      /// <param name="point">Location of touch</param>
+      public void SendTouchDown(object sender, point point)
       {
          // Exit if needed
          if (!_enabled || !_visible || _suspended)
@@ -677,15 +677,15 @@ namespace Skewworks.NETMF.Controls
 
          // Allow Override
 
-         if (e.Y >= _vkY)
+         if (point.Y >= _vkY)
          {
-            e.X -= _vkX;
-            e.Y -= _vkY;
+            point.X -= _vkX;
+            point.Y -= _vkY;
 
             // Check buttons
             for (int i = 0; i < _btns.Length; i++)
             {
-               if (_btns[i].Rect.Contains(e))
+               if (_btns[i].Rect.Contains(point))
                {
                   _iSel = i;
                   _iRender = i;
@@ -697,7 +697,7 @@ namespace Skewworks.NETMF.Controls
             }
          }
 
-         if (_rTxt.Contains(e))
+         if (_rTxt.Contains(point))
             _txtDown = true;
 
          _iSel = -1;
@@ -707,15 +707,15 @@ namespace Skewworks.NETMF.Controls
          _mDown = true;
 
          // Raise Event
-         OnTouchDown(sender, e);
+         OnTouchDown(sender, point);
       }
 
       /// <summary>
       /// Called when a touch up occurs and the control is active
       /// </summary>
       /// <param name="sender">Sending object</param>
-      /// <param name="e">Location of touch</param>
-      public void SendTouchUp(object sender, point e)
+      /// <param name="point">Location of touch</param>
+      public void SendTouchUp(object sender, point point)
       {
          if (!_enabled || !_visible || _suspended)
          {
@@ -724,31 +724,31 @@ namespace Skewworks.NETMF.Controls
          }
 
          // Allow Override
-         if (_txtDown || _rTxt.Contains(e))
-            TextUp(e);
+         if (_txtDown || _rTxt.Contains(point))
+            TextUp(point);
 
          if (_iSel != -1)
-            ButtonsUp(e);
+            ButtonsUp(point);
 
 
          // Perform normal tap
          if (_mDown)
          {
-            if (new rect(Left, Top, Width, Height).Contains(e))
+            if (new rect(Left, Top, Width, Height).Contains(point))
             {
                if (DateTime.Now.Ticks - _lastTap < (TimeSpan.TicksPerMillisecond * 500))
                {
-                  OnDoubleTap(this, new point(e.X - Left, e.Y - Top));
+                  OnDoubleTap(this, new point(point.X - Left, point.Y - Top));
                   _lastTap = 0;
                }
                else
                {
-                  OnTap(this, new point(e.X - Left, e.Y - Top));
+                  OnTap(this, new point(point.X - Left, point.Y - Top));
                   _lastTap = DateTime.Now.Ticks;
                }
             }
             _mDown = false;
-            OnTouchUp(this, e);
+            OnTouchUp(this, point);
          }
       }
 
@@ -756,8 +756,8 @@ namespace Skewworks.NETMF.Controls
       /// Called when a touch move occurs and the control is active
       /// </summary>
       /// <param name="sender">Sending object</param>
-      /// <param name="e">Location of touch</param>
-      public void SendTouchMove(object sender, point e)
+      /// <param name="point">Location of touch</param>
+      public void SendTouchMove(object sender, point point)
       {
          if (!_enabled || !_visible || _suspended)
             return;
@@ -765,16 +765,16 @@ namespace Skewworks.NETMF.Controls
          // Allow Override
 
 
-         OnTouchMove(this, e);
+         OnTouchMove(this, point);
       }
 
       /// <summary>
       /// Called when a gesture occurs and the control is active
       /// </summary>
       /// <param name="sender">Sending object</param>
-      /// <param name="e">Type of touch gesture</param>
+      /// <param name="type">Type of touch gesture</param>
       /// <param name="force"></param>
-      public void SendTouchGesture(object sender, TouchType e, float force)
+      public void SendTouchGesture(object sender, TouchType type, float force)
       {
          if (!_enabled || !_visible || _suspended)
             return;
@@ -782,7 +782,7 @@ namespace Skewworks.NETMF.Controls
          // Allow Override
 
 
-         OnTouchGesture(this, e, force);
+         OnTouchGesture(this, type, force);
       }
 
       private void ButtonsUp(point e)
@@ -931,9 +931,9 @@ namespace Skewworks.NETMF.Controls
          Invalidate();
       }
 
-      public virtual bool HitTest(point e)
+      public virtual bool HitTest(point point)
       {
-         return ScreenBounds.Contains(e);
+         return ScreenBounds.Contains(point);
       }
 
       #endregion

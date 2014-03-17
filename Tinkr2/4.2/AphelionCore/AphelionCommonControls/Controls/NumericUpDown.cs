@@ -376,16 +376,17 @@ namespace Skewworks.NETMF.Controls
                   break;
             }
          }
+         base.KeyboardAltKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch Methods
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
-         e.X -= Left;
-         if (e.X < _btnW)
+         point.X -= Left;
+         if (point.X < _btnW)
          {
             // Dec
             Value = _val - 1;
@@ -398,7 +399,7 @@ namespace Skewworks.NETMF.Controls
             };
             _changer.Start();
          }
-         else if (e.X >= Width - _btnW - 1)
+         else if (point.X >= Width - _btnW - 1)
          {
             // Inc
             Value = _val + 1;
@@ -413,21 +414,21 @@ namespace Skewworks.NETMF.Controls
          }
       }
 
-      protected override void TouchGestureMessage(object sender, TouchType e, float force, ref bool handled)
+      protected override void TouchGestureMessage(object sender, TouchType type, float force, ref bool handled)
       {
 
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          if (Touching)
          {
             if (!_moved)
             {
-               int diff = System.Math.Abs(LastTouch.X - e.X);
+               int diff = System.Math.Abs(LastTouch.X - point.X);
                if (diff > 20)
                {
-                  if (e.X > LastTouch.X)
+                  if (point.X > LastTouch.X)
                   {
                      Value = _val + 1;
                      _chgVal = 1;
@@ -448,29 +449,35 @@ namespace Skewworks.NETMF.Controls
             }
             else
             {
-               int diff = System.Math.Abs(LastTouch.X - e.X);
+               int diff = System.Math.Abs(LastTouch.X - point.X);
                if (diff > 20)
                {
-                  if (e.X > LastTouch.X)
+                  if (point.X > LastTouch.X)
+                  {
                      _chgVal = 1;
+                  }
                   else
+                  {
                      _chgVal = -1;
+                  }
                }
             }
          }
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          _moved = false;
          _rep = false;
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
 
       #region GUI
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          _btnW = System.Math.Max(_font.CharWidth('-'), _font.CharWidth('+')) + 8;
          int txtY = _h / 2 - _font.Height / 2;
@@ -509,14 +516,14 @@ namespace Skewworks.NETMF.Controls
 
          if (Focused)
          {
-            Core.Screen.DrawRectangle(0, 0, x + 1, y + 1, w - 3, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
-            Core.Screen.DrawRectangle(0, 0, x + 1, y + h - 3, w - 3, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
-            Core.Screen.DrawRectangle(0, 0, x + 1, y + 2, 1, h - 5, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
-            Core.Screen.DrawRectangle(0, 0, x + w - 3, y + 2, 1, h - 5, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
-            Core.Screen.DrawRectangle(0, 0, x + 2, y + 2, w - 5, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
-            Core.Screen.DrawRectangle(0, 0, x + 2, y + h - 4, w - 5, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
-            Core.Screen.DrawRectangle(0, 0, x + 2, y + 4, 1, h - 7, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
-            Core.Screen.DrawRectangle(0, 0, x + w - 4, y + 3, 1, h - 7, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
+            Core.Screen.DrawRectangle(0, 0, x + 1, y + 1, width - 3, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
+            Core.Screen.DrawRectangle(0, 0, x + 1, y + height - 3, width - 3, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
+            Core.Screen.DrawRectangle(0, 0, x + 1, y + 2, 1, height - 5, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
+            Core.Screen.DrawRectangle(0, 0, x + width - 3, y + 2, 1, height - 5, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
+            Core.Screen.DrawRectangle(0, 0, x + 2, y + 2, width - 5, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
+            Core.Screen.DrawRectangle(0, 0, x + 2, y + height - 4, width - 5, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
+            Core.Screen.DrawRectangle(0, 0, x + 2, y + 4, 1, height - 7, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
+            Core.Screen.DrawRectangle(0, 0, x + width - 4, y + 3, 1, height - 7, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
          }
       }
 

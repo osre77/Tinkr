@@ -221,17 +221,17 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch Invokes
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          int i;
 
-         e.X += Left;
-         e.Y += Top;
+         point.X += Left;
+         point.Y += Top;
 
          // Check buttons
          for (i = 0; i < _btns.Length; i++)
          {
-            if (_btns[i].Rect.Contains(e))
+            if (_btns[i].Rect.Contains(point))
             {
                _iSel = i;
                _btns[i].Down = true;
@@ -248,10 +248,10 @@ namespace Skewworks.NETMF.Controls
          _iSel = -1;
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
-         e.X += Left;
-         e.Y += Top;
+         point.X += Left;
+         point.Y += Top;
 
          if (_iSel == -1)
             return;
@@ -265,7 +265,7 @@ namespace Skewworks.NETMF.Controls
          }
 
          // Check buttons
-         if (_btns[_iSel].Rect.Contains(e) && _btns[_iSel].Enabled)
+         if (_btns[_iSel].Rect.Contains(point) && _btns[_iSel].Enabled)
          {
             switch (_btns[_iSel].Type)
             {
@@ -368,6 +368,7 @@ namespace Skewworks.NETMF.Controls
                   return;
             }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -664,7 +665,7 @@ namespace Skewworks.NETMF.Controls
 
       #region GUI
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          if (_bQuick)
             RenderSingleButton();

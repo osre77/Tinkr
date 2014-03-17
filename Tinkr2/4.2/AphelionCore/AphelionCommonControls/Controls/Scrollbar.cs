@@ -99,27 +99,36 @@ namespace Skewworks.NETMF.Controls
       {
          if (_orientation == Orientation.Horizontal)
          {
-            if (key == 80)          // Left
+            if (key == 80) // Left
+            {
                Value -= 1;
-            else if (key == 79)     // Right
+            }
+            else if (key == 79) // Right
+            {
                Value += 1;
+            }
          }
          else
          {
-            if (key == 82)          // Up
+            if (key == 82) // Up
+            {
                Value -= 1;
-            else if (key == 81)     // Down
+            }
+            else if (key == 81) // Down
+            {
                Value += 1;
+            }
          }
+         base.KeyboardKeyMessage(key, pressed, ref handled);
       }
 
       #endregion
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
-         if (_decRect.Contains(e))
+         if (_decRect.Contains(point))
          {
             Value = _val - _sml;
             _chgVal = -_sml;
@@ -134,7 +143,7 @@ namespace Skewworks.NETMF.Controls
             return;
          }
 
-         if (_incRect.Contains(e))
+         if (_incRect.Contains(point))
          {
             Value = _val + _sml;
             _chgVal = _sml;
@@ -149,37 +158,50 @@ namespace Skewworks.NETMF.Controls
             return;
          }
 
-         if (_grpRect.Contains(e))
+         if (_grpRect.Contains(point))
          {
-            _mX = e.X;
-            _mY = e.Y;
+            _mX = point.X;
+            _mY = point.Y;
             _gDown = true;
             return;
          }
 
          if (_orientation == Orientation.Horizontal)
-            Value = _val + ((e.X < _grpRect.X) ? -_lrg : _lrg);
+            Value = _val + ((point.X < _grpRect.X) ? -_lrg : _lrg);
          else
-            Value = _val + ((e.Y < _grpRect.Y) ? -_lrg : _lrg);
+            Value = _val + ((point.Y < _grpRect.Y) ? -_lrg : _lrg);
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
-         if (!_gDown)
-            return;
+         if (_gDown)
+         {
 
-         if (_orientation == Orientation.Horizontal)
-            Value = (int)((_max - _min) * (((_grpRect.X + (e.X - _mX)) - Left - 16) / (float)(Width - 32 - _grpRect.Width))) + _min;
-         else
-            Value = (int)((_max - _min) * (((_grpRect.Y + (e.Y - _mY)) - Top - 16) / (float)(Height - 32 - _grpRect.Height))) + _min;
+            if (_orientation == Orientation.Horizontal)
+            {
+               Value =
+                  (int)
+                     ((_max - _min)*(((_grpRect.X + (point.X - _mX)) - Left - 16)/(float) (Width - 32 - _grpRect.Width))) +
+                  _min;
+            }
+            else
+            {
+               Value =
+                  (int)
+                     ((_max - _min)*
+                      (((_grpRect.Y + (point.Y - _mY)) - Top - 16)/(float) (Height - 32 - _grpRect.Height))) + _min;
+            }
 
-         _mX = e.X;
-         _mY = e.Y;
+            _mX = point.X;
+            _mY = point.Y;
+         }
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          _gDown = false;
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -320,7 +342,7 @@ namespace Skewworks.NETMF.Controls
       #region GUI
 
 // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
 // ReSharper restore RedundantAssignment
       {
          int iGripSize, iOffset;

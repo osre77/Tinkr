@@ -3,20 +3,26 @@ using System.Threading;
 
 namespace Skewworks.NETMF.Controls
 {
+   /// <summary>
+   /// Base class for creating controls with automatic scrolling
+   /// </summary>
    [Serializable]
-   public class ScrollableControl : MarshalByRefObject, IControl
+   public class ScrollableControl : Control //MarshalByRefObject, IControl
    {
-
       #region Variables
 
+/*
       // Name & Tag
       private string _name;
       private object _tag;
 
       // Size & Location
-      private int _x, _y;
-      private int _offsetX, _offsetY;
-      private int _w, _h;
+      private int _x;
+      private int _y;
+      private int _offsetX;
+      private int _offsetY;
+      private int _w;
+      private int _h;
 
       // Owner
       private IContainer _parent;
@@ -32,14 +38,12 @@ namespace Skewworks.NETMF.Controls
       private Thread _thHold;         // Tap & Hold thread
       private long _lStop;            // Stop waiting for hold after this tick
       private TapState _eTapHold;     // Current tap state
-      private long _lastTap;          // Tick count of last time occurrance
+      private long _lastTap;          // Tick count of last time occurrence
 
       // Dispose
       private bool _disposing;
-
+*/
       // Scrolling
-      private int _rqWidth;
-      private int _rqHeight;
       private int _scrX, _scrY;
       private bool _needsX, _needsY;
       private int _sqW, _sqH;
@@ -51,7 +55,7 @@ namespace Skewworks.NETMF.Controls
 
       #endregion
 
-      #region Events
+      /*#region Events
 
       public event OnButtonPressed ButtonPressed;
       protected virtual void OnButtonPressed(object sender, int buttonId)
@@ -165,11 +169,11 @@ namespace Skewworks.NETMF.Controls
             TouchUp(sender, e);
       }
 
-      #endregion
+      #endregion*/
 
       #region Properties
 
-      public virtual bool CanFocus
+      /*public virtual bool CanFocus
       {
          get { return true; }
       }
@@ -227,19 +231,19 @@ namespace Skewworks.NETMF.Controls
       public int Left
       {
          get { return X + _offsetX; }
-      }
+      }*/
 
-      public int MaxScrollX
-      {
-         get { return _rqWidth; }
-      }
+      /// <summary>
+      /// Gets/Sets maximum X scroll value
+      /// </summary>
+      public int MaxScrollX { get; private set; }
 
-      public int MaxScrollY
-      {
-         get { return _rqHeight; }
-      }
+      /// <summary>
+      /// Gets/Sets maximum Y scroll value
+      /// </summary>
+      public int MaxScrollY { get; private set; }
 
-      public string Name
+      /*public string Name
       {
          get { return _name; }
          protected set { _name = value; }
@@ -259,79 +263,116 @@ namespace Skewworks.NETMF.Controls
             _parent = value;
             UpdateOffsets();
          }
-      }
+      }*/
 
+      /// <summary>
+      /// Gets/Sets the maximum required height
+      /// </summary>
+      /// <remarks>
+      /// RequiredHeight is identical with <see cref="MaxScrollY"/>
+      /// </remarks>
       protected int RequiredHeight
       {
-         get { return _rqHeight; }
+         get { return MaxScrollY; }
          set
          {
-            if (_rqHeight == value)
+            if (MaxScrollY == value)
+            {
                return;
-            _rqHeight = value;
+            }
+            MaxScrollY = value;
             UpdateNeeds();
          }
       }
 
+      /// <summary>
+      /// Gets/Sets the maximum required width
+      /// </summary>
+      /// <remarks>
+      /// RequiredWidth is identical with <see cref="MaxScrollX"/>
+      /// </remarks>
       protected int RequiredWidth
       {
-         get { return _rqWidth; }
+         get { return MaxScrollX; }
          set
          {
-            if (_rqWidth == value)
+            if (MaxScrollX == value)
+            {
                return;
-            _rqWidth = value;
+            }
+            MaxScrollX = value;
             UpdateNeeds();
          }
       }
 
-      public rect ScreenBounds
+      /*public rect ScreenBounds
       {
          get { return new rect(Left, Top, Width, Height); }
-      }
+      }*/
 
+      /// <summary>
+      /// Gets current scroll state
+      /// </summary>
       public bool Scrolling
       {
          get { return _bMoving; }
       }
 
+      /// <summary>
+      /// Gets/Sets current X scroll value
+      /// </summary>
       public virtual int ScrollX
       {
          get { return _scrX; }
          set
          {
             if (value < 0)
+            {
                value = 0;
+            }
             else if (value > _sqW)
+            {
                value = _sqW;
+            }
 
             if (!_needsX || _scrX == value)
+            {
                return;
+            }
 
             _scrX = value;
             Invalidate();
          }
       }
 
+      /// <summary>
+      /// Gets/Sets current Y scroll value
+      /// </summary>
       public virtual int ScrollY
       {
          get { return _scrY; }
          set
          {
             if (value < 0)
+            {
                value = 0;
+            }
             else if (value > _sqH)
+            {
                value = _sqH;
+            }
 
             if (!_needsY || _scrY == value)
+            {
                return;
+            }
 
             _scrY = value;
             Invalidate();
          }
       }
 
-      public virtual bool Suspended
+      /*public virtual bool Suspended
       {
          get { return _suspended; }
          set
@@ -422,11 +463,11 @@ namespace Skewworks.NETMF.Controls
             if (_parent != null)
                _parent.Render(r, true);
          }
-      }
+      }*/
 
       #endregion
 
-      #region Buttons
+      /*#region Buttons
 
       protected virtual void ButtonPressedMessage(int buttonId, ref bool handled) { }
 
@@ -457,9 +498,9 @@ namespace Skewworks.NETMF.Controls
          }
       }
 
-      #endregion
+      #endregion*/
 
-      #region Keyboard
+      /*#region Keyboard
 
       protected virtual void KeyboardAltKeyMessage(int key, bool pressed, ref bool handled) { }
 
@@ -481,9 +522,9 @@ namespace Skewworks.NETMF.Controls
             OnKeyboardKey(this, key, pressed);
       }
 
-      #endregion
+      #endregion*/
 
-      #region Touch
+      /*#region Touch
 
       protected virtual void TouchDownMessage(object sender, point e, ref bool handled)
       {
@@ -505,8 +546,8 @@ namespace Skewworks.NETMF.Controls
       /// Called when a touch down occurs and the control is active
       /// </summary>
       /// <param name="sender">Sending object</param>
-      /// <param name="e">Location of touch</param>
-      public void SendTouchDown(object sender, point e)
+      /// <param name="point">Location of touch</param>
+      public void SendTouchDown(object sender, point point)
       {
          // Exit if needed
          if (!_enabled || !_visible || _suspended)
@@ -515,7 +556,7 @@ namespace Skewworks.NETMF.Controls
          bool bHandled = false;
 
          // Allow Override
-         TouchDownMessage(sender, e, ref bHandled);
+         TouchDownMessage(sender, point, ref bHandled);
 
          // Exit if handled
          if (bHandled)
@@ -525,7 +566,7 @@ namespace Skewworks.NETMF.Controls
          _mDown = true;
 
          // Begin Tap/Hold
-         _ptTapHold = e;
+         _ptTapHold = point;
          _eTapHold = TapState.TapHoldWaiting;
          _lStop = DateTime.Now.Ticks + (500 * TimeSpan.TicksPerMillisecond);
          if (_thHold == null || !_thHold.IsAlive)
@@ -535,15 +576,39 @@ namespace Skewworks.NETMF.Controls
          }
 
          // Raise Event
-         OnTouchDown(sender, e);
+         OnTouchDown(sender, point);
+      }
+      */
+
+      /// <summary>
+      /// Override this message to handle touch events internally.
+      /// </summary>
+      /// <param name="sender">Object sending the event</param>
+      /// <param name="point">Point on screen touch event is occurring</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Override cleans up moving state.
+      /// </remarks>
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
+      {
+         // Handle Moving
+         if (_bMoving)
+         {
+            _bMoving = false;
+            _showScroll = false;
+            _cancelHide = true;
+            Invalidate();
+         }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
+      /*
       /// <summary>
       /// Called when a touch up occurs and the control is active
       /// </summary>
       /// <param name="sender">Sending object</param>
-      /// <param name="e">Location of touch</param>
-      public void SendTouchUp(object sender, point e)
+      /// <param name="point">Location of touch</param>
+      public void SendTouchUp(object sender, point point)
       {
          if (!_enabled || !_visible || _suspended)
          {
@@ -565,7 +630,7 @@ namespace Skewworks.NETMF.Controls
             Invalidate();
          }
          else
-            TouchUpMessage(sender, e, ref bHandled);    // Allow Override
+            TouchUpMessage(sender, point, ref bHandled);    // Allow Override
 
          // Exit if handled
          if (bHandled)
@@ -574,30 +639,87 @@ namespace Skewworks.NETMF.Controls
          // Perform normal tap
          if (_mDown)
          {
-            if (new rect(Left, Top, Width, Height).Contains(e))
+            if (new rect(Left, Top, Width, Height).Contains(point))
             {
                if (DateTime.Now.Ticks - _lastTap < (TimeSpan.TicksPerMillisecond * 500))
                {
-                  OnDoubleTap(this, new point(e.X - Left, e.Y - Top));
+                  OnDoubleTap(this, new point(point.X - Left, point.Y - Top));
                   _lastTap = 0;
                }
                else
                {
-                  OnTap(this, new point(e.X - Left, e.Y - Top));
+                  OnTap(this, new point(point.X - Left, point.Y - Top));
                   _lastTap = DateTime.Now.Ticks;
                }
             }
             _mDown = false;
-            OnTouchUp(this, e);
+            OnTouchUp(this, point);
          }
       }
+      */
 
+      /// <summary>
+      /// Override this message to handle touch events internally.
+      /// </summary>
+      /// <param name="sender">Object sending the event</param>
+      /// <param name="point">Point on screen touch event is occurring</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
+      {
+         // Handle Scrolling
+         if (_needsX || _needsY)
+         {
+            bool doInvalidate = false;
+            _bMoving = true;
+            _cancelHide = true;
+            _showScroll = true;
+
+            int dest = _scrY - (point.Y - LastTouch.Y);
+            if (dest < 0)
+            {
+               dest = 0;
+            }
+            else if (dest > MaxScrollY - Height)
+            {
+               dest = MaxScrollY - Height;
+            }
+            if (_scrY != dest && dest > 0)
+            {
+               _scrY = dest;
+               doInvalidate = true;
+            }
+
+            dest = _scrX - (point.X - LastTouch.X);
+            if (dest < 0)
+            {
+               dest = 0;
+            }
+            else if (dest > MaxScrollX - Width)
+            {
+               dest = MaxScrollX - Width;
+            }
+            if (_scrX != dest && dest > 0)
+            {
+               _scrX = dest;
+               doInvalidate = true;
+            }
+
+            LastTouch = point;
+            if (doInvalidate)
+            {
+               UpdateValues();
+            }
+         }
+         base.TouchMoveMessage(sender, point, ref handled);
+      }
+
+      /*
       /// <summary>
       /// Called when a touch move occurs and the control is active
       /// </summary>
       /// <param name="sender">Sending object</param>
-      /// <param name="e">Location of touch</param>
-      public void SendTouchMove(object sender, point e)
+      /// <param name="point">Location of touch</param>
+      public void SendTouchMove(object sender, point point)
       {
          if (!_enabled || !_visible || _suspended)
             return;
@@ -612,7 +734,7 @@ namespace Skewworks.NETMF.Controls
             _cancelHide = true;
             _showScroll = true;
 
-            int dest = _scrY - (e.Y - _ptTapHold.Y);
+            int dest = _scrY - (point.Y - _ptTapHold.Y);
             if (dest < 0)
                dest = 0;
             else if (dest > _rqHeight - Height)
@@ -623,7 +745,7 @@ namespace Skewworks.NETMF.Controls
                doInvalidate = true;
             }
 
-            dest = _scrX - (e.X - LastTouch.X);
+            dest = _scrX - (point.X - LastTouch.X);
             if (dest < 0)
                dest = 0;
             else if (dest > _rqWidth - Width)
@@ -634,29 +756,29 @@ namespace Skewworks.NETMF.Controls
                doInvalidate = true;
             }
 
-            _ptTapHold = e;
+            _ptTapHold = point;
             if (doInvalidate)
                UpdateValues();
          }
 
          // Allow Override
-         TouchMoveMessage(sender, e, ref bHandled);
+         TouchMoveMessage(sender, point, ref bHandled);
 
          // Exit if handled
          if (bHandled)
             return;
 
          _eTapHold = TapState.Normal;
-         OnTouchMove(this, e);
+         OnTouchMove(this, point);
       }
 
       /// <summary>
       /// Called when a gesture occurs and the control is active
       /// </summary>
       /// <param name="sender">Sending object</param>
-      /// <param name="e">Type of touch gesture</param>
+      /// <param name="type">Type of touch gesture</param>
       /// <param name="force"></param>
-      public void SendTouchGesture(object sender, TouchType e, float force)
+      public void SendTouchGesture(object sender, TouchType type, float force)
       {
          if (!_enabled || !_visible || _suspended)
             return;
@@ -664,13 +786,13 @@ namespace Skewworks.NETMF.Controls
          bool bHandled = false;
 
          // Allow Override
-         TouchGestureMessage(sender, e, force, ref bHandled);
+         TouchGestureMessage(sender, type, force, ref bHandled);
 
          // Exit if handled
          if (bHandled)
             return;
 
-         OnTouchGesture(this, e, force);
+         OnTouchGesture(this, type, force);
       }
 
       /// <summary>
@@ -693,9 +815,9 @@ namespace Skewworks.NETMF.Controls
          OnTapHold(this, _ptTapHold);
       }
 
-      #endregion
+      #endregion*/
 
-      #region Disposing
+      /*#region Disposing
 
       public void Dispose()
       {
@@ -714,9 +836,9 @@ namespace Skewworks.NETMF.Controls
          TouchUp = null;
       }
 
-      #endregion
+      #endregion*/
 
-      #region Focus
+      /*#region Focus
 
       public virtual void Activate()
       {
@@ -728,14 +850,14 @@ namespace Skewworks.NETMF.Controls
          Invalidate();
       }
 
-      public virtual bool HitTest(point e)
+      public virtual bool HitTest(point point)
       {
-         return ScreenBounds.Contains(e);
+         return ScreenBounds.Contains(point);
       }
 
-      #endregion
+      #endregion*/
 
-      #region GUI
+      /* #region GUI
 
       public void Invalidate()
       {
@@ -762,7 +884,29 @@ namespace Skewworks.NETMF.Controls
          else
             _parent.TopLevelContainer.Render(area, true);
       }
+      */
 
+      /// <summary>
+      /// Renders the control contents
+      /// </summary>
+      /// <param name="x">X position in screen coordinates</param>
+      /// <param name="y">Y position in screen coordinates</param>
+      /// <param name="width">Width in pixel</param>
+      /// <param name="height">Height in pixel</param>
+      /// <remarks>
+      /// Override this method to render the contents of the control
+      /// </remarks>
+      protected override void OnRender(int x, int y, int width, int height)
+      {
+         // Render scrollbar(s)
+         if (_showScroll)
+         {
+            RenderScrollbar();
+         }
+         base.OnRender(x, y, width, height);
+      }
+
+      /*
       public void Render(bool flush = false)
       {
          // Check if we actually need to render
@@ -827,7 +971,7 @@ namespace Skewworks.NETMF.Controls
          _offsetY = pt.Y;
       }
 
-      #endregion
+      #endregion*/
 
       #region Scrollbar Methods
 
@@ -835,29 +979,38 @@ namespace Skewworks.NETMF.Controls
       {
          Thread.Sleep(1000);
          if (_cancelHide || !_showScroll)
+         {
             return;
+         }
          _showScroll = false;
          Invalidate();
       }
 
       private void RenderScrollbar()
       {
-
          if (_needsX)
          {
             int y = Top + Height - 4;
-            Core.Screen.DrawRectangle(0, 0, Left, y, _horzW, 4, 0, 0, Core.SystemColors.ScrollbarBackground, 0, 0, Core.SystemColors.ScrollbarBackground, 0, 0, 128);
-            Core.Screen.DrawRectangle(0, 0, Left + _horzX, y, _horzSize, 4, 0, 0, Core.SystemColors.ScrollbarGrip, 0, 0, Core.SystemColors.ScrollbarGrip, 0, 0, 128);
+            Core.Screen.DrawRectangle(0, 0, Left, y, _horzW, 4, 0, 0, Core.SystemColors.ScrollbarBackground, 0, 0,
+               Core.SystemColors.ScrollbarBackground, 0, 0, 128);
+            Core.Screen.DrawRectangle(0, 0, Left + _horzX, y, _horzSize, 4, 0, 0, Core.SystemColors.ScrollbarGrip, 0, 0,
+               Core.SystemColors.ScrollbarGrip, 0, 0, 128);
          }
 
          if (_needsY)
          {
             int x = Left + Width - 4;
-            Core.Screen.DrawRectangle(0, 0, x, Top, 4, _vertH, 0, 0, Core.SystemColors.ScrollbarBackground, 0, 0, Core.SystemColors.ScrollbarBackground, 0, 0, 128);
-            Core.Screen.DrawRectangle(0, 0, x, Top + _vertY, 4, _vertSize, 0, 0, Core.SystemColors.ScrollbarGrip, 0, 0, Core.SystemColors.ScrollbarGrip, 0, 0, 128);
+            Core.Screen.DrawRectangle(0, 0, x, Top, 4, _vertH, 0, 0, Core.SystemColors.ScrollbarBackground, 0, 0,
+               Core.SystemColors.ScrollbarBackground, 0, 0, 128);
+            Core.Screen.DrawRectangle(0, 0, x, Top + _vertY, 4, _vertSize, 0, 0, Core.SystemColors.ScrollbarGrip, 0, 0,
+               Core.SystemColors.ScrollbarGrip, 0, 0, 128);
          }
       }
 
+      /// <summary>
+      /// Updates the visibility state of the scrollbars
+      /// </summary>
+      /// <param name="invalidate">true if control should be invalidated; false if not</param>
       protected void UpdateScrollbar(bool invalidate = true)
       {
          UpdateNeeds(invalidate);
@@ -868,10 +1021,14 @@ namespace Skewworks.NETMF.Controls
          bool nX = false;
          bool nY = false;
 
-         if (_rqWidth > Width)
+         if (MaxScrollX > Width)
+         {
             nX = true;
-         if (_rqHeight > Height)
+         }
+         if (MaxScrollY > Height)
+         {
             nY = true;
+         }
 
          if (nX || nY)
          {
@@ -879,15 +1036,14 @@ namespace Skewworks.NETMF.Controls
             //_scrY = 0;
             _needsX = nX;
             _needsY = nY;
-            _sqW = _rqWidth - Width;
-            _sqH = _rqHeight - Height;
+            _sqW = MaxScrollX - Width;
+            _sqH = MaxScrollY - Height;
             _showScroll = true;
             UpdateValues(invalidate);
 
             _cancelHide = false;
             new Thread(AutoHideScrollbar).Start();
          }
-
       }
 
       private void UpdateValues(bool invalidate = true)
@@ -904,26 +1060,31 @@ namespace Skewworks.NETMF.Controls
          if (_needsX)
          {
             _horzW = w;
-            _horzSize = _horzW - (_sqW / 4);
+            _horzSize = _horzW - (_sqW/4);
             if (_horzSize < 8)
+            {
                _horzSize = 8;
-            _horzX = (int)((_horzW - _horzSize) * (_scrX / (float)_sqW));
+            }
+            _horzX = (int) ((_horzW - _horzSize)*(_scrX/(float) _sqW));
          }
 
          if (_needsY)
          {
             _vertH = h;
-            _vertSize = _vertH - (_sqH / 4);
+            _vertSize = _vertH - (_sqH/4);
             if (_vertSize < 8)
+            {
                _vertSize = 8;
-            _vertY = (int)((_vertH - _vertSize) * (_scrY / (float)_sqH));
+            }
+            _vertY = (int) ((_vertH - _vertSize)*(_scrY/(float) _sqH));
          }
 
          if (invalidate)
+         {
             Invalidate();
+         }
       }
 
       #endregion
-
    }
 }

@@ -369,9 +369,9 @@ namespace Skewworks.Tinkr.Controls
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
-         if (_elliRect.Contains(e))
+         if (_elliRect.Contains(point))
          {
             //_eDown = true;
             //handled = true;
@@ -384,9 +384,9 @@ namespace Skewworks.Tinkr.Controls
          {
             for (i = 0; i < _icons.Length; i++)
             {
-               if (_icons[i].HitTest(e))
+               if (_icons[i].HitTest(point))
                {
-                  _icons[i].SendTouchDown(this, e);
+                  _icons[i].SendTouchDown(this, point);
                   //handled = true;
                   return;
                }
@@ -395,16 +395,16 @@ namespace Skewworks.Tinkr.Controls
 
          if (_expanded)
          {
-            if (!_scrollArea.Contains(e))
+            if (!_scrollArea.Contains(point))
                return;
 
             _sDown = true;
 
             for (i = 0; i < _menus.Length; i++)
             {
-               if (_menus[i].HitTest(e))
+               if (_menus[i].HitTest(point))
                {
-                  _menus[i].SendTouchDown(this, e);
+                  _menus[i].SendTouchDown(this, point);
                   //handled = true;
                   Invalidate();
                   return;
@@ -413,96 +413,106 @@ namespace Skewworks.Tinkr.Controls
          }
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
-         if (!_sDown)
-            return;
-
-         if (!_moved && (e.Y - LastTouch.Y) < 12)
-            return;
-
-         _moved = true;
-
-         int dest = _scrollValue - (e.Y - LastTouch.Y);
-         if (dest < 0)
-            dest = 0;
-         else if (dest > _requiredDisplaySize - _scrollArea.Height)
-            dest = _requiredDisplaySize - _scrollArea.Height;
-         if (_scrollValue != dest && dest > 0)
+         if (_sDown && (_moved || (point.Y - LastTouch.Y) >= 12))
          {
-            _scrollValue = dest;
-            Invalidate();
+            _moved = true;
+
+            int dest = _scrollValue - (point.Y - LastTouch.Y);
+            if (dest < 0)
+            {
+               dest = 0;
+            }
+            else if (dest > _requiredDisplaySize - _scrollArea.Height)
+            {
+               dest = _requiredDisplaySize - _scrollArea.Height;
+            }
+            if (_scrollValue != dest && dest > 0)
+            {
+               _scrollValue = dest;
+               Invalidate();
+            }
+
+            LastTouch = point;
          }
-
-
-         LastTouch = e;
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
-         _sDown = false;
-
-         //if (_moved)
-         //    return;
-
-         if (_elliRect.Contains(e))
+         try
          {
-            ShowHideDock();
-            handled = true;
-            return;
-         }
+            _sDown = false;
 
-         int i;
+            //if (_moved)
+            //    return;
 
-         if (_icons != null)
-         {
-            for (i = 0; i < _icons.Length; i++)
+            if (_elliRect.Contains(point))
             {
-               if (_icons[i].Touching || _icons[i].HitTest(e))
-               {
-                  handled = true;
-                  _icons[i].SendTouchUp(this, e);
-               }
+               ShowHideDock();
+               handled = true;
+               return;
             }
 
-            if (handled)
-               return;
-         }
+            int i;
 
-         if (_expanded)
-         {
-            for (i = 0; i < _menus.Length; i++)
+            if (_icons != null)
             {
-               if (_menus[i].Touching)
+               for (i = 0; i < _icons.Length; i++)
                {
-                  handled = true;
-                  if (!_moved)
+                  if (_icons[i].Touching || _icons[i].HitTest(point))
                   {
-                     if (_menus[i].HitTest(e))
-                        ShowHideDock();
-                     _menus[i].SendTouchUp(this, e);
+                     handled = true;
+                     _icons[i].SendTouchUp(this, point);
                   }
-                  else
-                  {
-                     _menus[i].SendTouchUp(this, new point(_menus[i].ScreenBounds.X - 10, 0));
-                     Invalidate();
-                  }
+               }
+
+               if (handled)
+               {
                   return;
                }
-               if (_menus[i].HitTest(e))
+            }
+
+            if (_expanded)
+            {
+               for (i = 0; i < _menus.Length; i++)
                {
-                  // ReSharper disable once RedundantAssignment ??
-                  handled = true;
-                  if (_moved)
+                  if (_menus[i].Touching)
                   {
-                     _menus[i].SendTouchUp(this, new point(_menus[i].ScreenBounds.X - 10, 0));
+                     handled = true;
+                     if (!_moved)
+                     {
+                        if (_menus[i].HitTest(point))
+                           ShowHideDock();
+                        _menus[i].SendTouchUp(this, point);
+                     }
+                     else
+                     {
+                        _menus[i].SendTouchUp(this, new point(_menus[i].ScreenBounds.X - 10, 0));
+                        Invalidate();
+                     }
+                     return;
                   }
-                  else
+                  if (_menus[i].HitTest(point))
                   {
-                     _menus[i].SendTouchUp(this, e);
+                     // ReSharper disable once RedundantAssignment ??
+                     handled = true;
+                     if (_moved)
+                     {
+                        _menus[i].SendTouchUp(this, new point(_menus[i].ScreenBounds.X - 10, 0));
+                     }
+                     else
+                     {
+                        _menus[i].SendTouchUp(this, point);
+                     }
                   }
                }
             }
+         }
+         finally
+         {
+            base.TouchUpMessage(sender, point, ref handled);
          }
       }
 
@@ -684,7 +694,7 @@ namespace Skewworks.Tinkr.Controls
 
       #region GUI
 
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       {
          Core.Screen.DrawRectangle(0, 0, Left, Top, Width, Height, 0, 0, _bkg, 0, 0, _bkg, 0, 0, 256);
 

@@ -10,9 +10,11 @@ using Skewworks.NETMF.Controls;
 // ReSharper disable StringIndexOfIsCultureSpecific.1
 namespace Skewworks.NETMF
 {
+   /// <summary>
+   /// Class for managing all EWR settings
+   /// </summary>
    public class SettingsManager
    {
-
       #region Variables
 
       private static ManualResetEvent _activeBlock;            // Used to display Modal Forms
@@ -23,7 +25,7 @@ namespace Skewworks.NETMF
       #region Properties
 
       /// <summary>
-      /// Returns current LCD settings
+      /// Gets the current LCD settings
       /// </summary>
       public static LCDSettings LCD
       {
@@ -43,8 +45,12 @@ namespace Skewworks.NETMF
       #region Public Methods
 
       /// <summary>
-      /// Calibrates touch input for LCDs (blocking)
+      /// Starts the touch calibration
       /// </summary>
+      /// <param name="cc">Configuration to use when calibrating the screen</param>
+      /// <remarks>
+      /// This will show the touch calibration window.
+      /// </remarks>
       public static void CalibrateTouch(CalibrationConfiguration cc)
       {
          IContainer prv = Core.ActiveContainer;
@@ -66,31 +72,72 @@ namespace Skewworks.NETMF
 
       #region LCD Settings
 
-      private class LcdEwr { }
+      // dummy type to identify the EWR
+      private class LcdEwr 
+      { }
+
       private static ExtendedWeakReference _lcdEwrSettings;
       private static LCDSettings _lcd;
 
+      /// <summary>
+      /// LCD settings for the touch screen
+      /// </summary>
       [Serializable]
       public class LCDSettings
       {
-         public LCDSettings(ScreenCalibration iCalibrate, int iCalibrationpoints, short[] icalibrationSx, short[] icalibrationSy, short[] icalibrationCx, short[] icalibrationCy)
+         /// <summary>
+         /// Creates new LCD settings
+         /// </summary>
+         /// <param name="calibrate">Calibration mode</param>
+         /// <param name="calibrationPoints">Number of points used for calibration</param>
+         /// <param name="calibrationSx">SX values of calibration</param>
+         /// <param name="calibrationSy">SY values of calibration</param>
+         /// <param name="calibrationCx">CX values of calibration</param>
+         /// <param name="calibrationCy">CY values of calibration</param>
+         public LCDSettings(ScreenCalibration calibrate, int calibrationPoints, short[] calibrationSx, short[] calibrationSy, short[] calibrationCx, short[] calibrationCy)
          {
-            calibrateLCD = iCalibrate;
-            calibrationpoints = iCalibrationpoints;
-            calibrationSX = icalibrationSx;
-            calibrationSY = icalibrationSy;
-            calibrationCX = icalibrationCx;
-            calibrationCY = icalibrationCy;
+            calibrateLCD = calibrate;
+            calibrationpoints = calibrationPoints;
+            calibrationSX = calibrationSx;
+            calibrationSY = calibrationSy;
+            calibrationCX = calibrationCx;
+            calibrationCY = calibrationCy;
          }
 
-         // Fields must be serializable.
          // ReSharper disable InconsistentNaming
+
+         // Fields must be realizable.
+
+         /// <summary>
+         /// Calibration mode
+         /// </summary>
          public ScreenCalibration calibrateLCD;
+
+         /// <summary>
+         /// Number of points used for calibration
+         /// </summary>
          public int calibrationpoints;
+
+         /// <summary>
+         /// SX values of calibration
+         /// </summary>
          public short[] calibrationSX;
+
+         /// <summary>
+         /// SY values of calibration
+         /// </summary>
          public short[] calibrationSY;
+
+         /// <summary>
+         /// CX values of calibration
+         /// </summary>
          public short[] calibrationCX;
+
+         /// <summary>
+         /// CY values of calibration
+         /// </summary>
          public short[] calibrationCY;
+
          // ReSharper restore InconsistentNaming
       }
 
@@ -114,11 +161,11 @@ namespace Skewworks.NETMF
       /// <summary>
       /// Restores touch calibration from supplied points
       /// </summary>
-      /// <param name="points"></param>
-      /// <param name="sx"></param>
-      /// <param name="sy"></param>
-      /// <param name="cx"></param>
-      /// <param name="cy"></param>
+      /// <param name="points">Number of points used for calibration</param>
+      /// <param name="sx">SX values of calibration</param>
+      /// <param name="sy">SY values of calibration</param>
+      /// <param name="cx">CX values of calibration</param>
+      /// <param name="cy">CY values of calibration</param>
       public static void RestoreLCDCalibration(int points, short[] sx, short[] sy, short[] cx, short[] cy)
       {
          // Set calibration
@@ -128,25 +175,27 @@ namespace Skewworks.NETMF
       /// <summary>
       /// Save touch calibration to EWR
       /// </summary>
-      /// <param name="iCalibrationpoints"></param>
-      /// <param name="icalibrationSx"></param>
-      /// <param name="icalibrationSy"></param>
-      /// <param name="icalibrationCx"></param>
-      /// <param name="icalibrationCy"></param>
-      /// <returns></returns>
-      public static bool SaveLCDCalibration(int iCalibrationpoints, short[] icalibrationSx, short[] icalibrationSy, short[] icalibrationCx, short[] icalibrationCy)
+      /// <param name="calibrationPoints">Number of points used for calibration</param>
+      /// <param name="calibrationSx">SX values of calibration</param>
+      /// <param name="calibrationSy">SY values of calibration</param>
+      /// <param name="calibrationCx">CX values of calibration</param>
+      /// <param name="calibrationCy">CY values of calibration</param>
+      /// <returns>Returns true if the calibration was successfully saved.</returns>
+      public static bool SaveLCDCalibration(int calibrationPoints, short[] calibrationSx, short[] calibrationSy, short[] calibrationCx, short[] calibrationCy)
       {
          // Save calibration
          if (_lcd == null)
-            _lcd = new LCDSettings(ScreenCalibration.Restore, iCalibrationpoints, icalibrationSx, icalibrationSy, icalibrationCx, icalibrationCy);
+         {
+            _lcd = new LCDSettings(ScreenCalibration.Restore, calibrationPoints, calibrationSx, calibrationSy, calibrationCx, calibrationCy);
+         }
          else
          {
             _lcd.calibrateLCD = ScreenCalibration.Restore;
-            _lcd.calibrationpoints = iCalibrationpoints;
-            _lcd.calibrationSX = icalibrationSx;
-            _lcd.calibrationSY = icalibrationSy;
-            _lcd.calibrationCX = icalibrationCx;
-            _lcd.calibrationCY = icalibrationCy;
+            _lcd.calibrationpoints = calibrationPoints;
+            _lcd.calibrationSX = calibrationSx;
+            _lcd.calibrationSY = calibrationSy;
+            _lcd.calibrationCX = calibrationCx;
+            _lcd.calibrationCY = calibrationCy;
          }
 
          _lcdEwrSettings.Target = _lcd;
@@ -156,11 +205,10 @@ namespace Skewworks.NETMF
 
       #endregion
 
-      #region Cailbration Control
+      #region Calibration Control
 
       private sealed class CalibrationWindow : Container
       {
-
          #region Variables
 
          readonly point[] _calpoints;
@@ -231,44 +279,51 @@ namespace Skewworks.NETMF
          #region Touch Overrides
 
          // ReSharper disable once RedundantAssignment
-         //TODO: handeled should be changed to out if future version
-         protected override void TouchUpMessage(object sender, point e, ref bool handled)
+         protected override void TouchUpMessage(object sender, point point, ref bool handled)
          {
             handled = true;
-
-            if (_step1)
+            try
             {
-               _step1 = false;
-               Render(true);
-               return;
-            }
-
-            if (Done)
-               return;
-
-            ++_currentCalpoint;
-            _cx[_currentCalpoint - 1] = (short)e.X;
-            _cy[_currentCalpoint - 1] = (short)e.Y;
-
-            if (_currentCalpoint == _calpoints.Length)
-            {
-               Touch.ActiveTouchPanel.SetCalibration(_calpoints.Length, _sx, _sy, _cx, _cy);
-
-               if (ConfirmCalibration())
+               if (_step1)
                {
-                  // The last point has been reached , so set the 
-                  // calibration.
-                  Touch.ActiveTouchPanel.SetCalibration(_calpoints.Length, _sx, _sy, _cx, _cy);
-                  SaveLCDCalibration(_calpoints.Length, _sx, _sy, _cx, _cy);
-                  Done = true;
-                  _activeBlock.Set();
+                  _step1 = false;
+                  Render(true);
                   return;
                }
-               Touch.ActiveTouchPanel.StartCalibration();
-               _currentCalpoint = 0;
-            }
 
-            Render(true);
+               if (Done)
+               {
+                  return;
+               }
+
+               ++_currentCalpoint;
+               _cx[_currentCalpoint - 1] = (short) point.X;
+               _cy[_currentCalpoint - 1] = (short) point.Y;
+
+               if (_currentCalpoint == _calpoints.Length)
+               {
+                  Touch.ActiveTouchPanel.SetCalibration(_calpoints.Length, _sx, _sy, _cx, _cy);
+
+                  if (ConfirmCalibration())
+                  {
+                     // The last point has been reached , so set the 
+                     // calibration.
+                     Touch.ActiveTouchPanel.SetCalibration(_calpoints.Length, _sx, _sy, _cx, _cy);
+                     SaveLCDCalibration(_calpoints.Length, _sx, _sy, _cx, _cy);
+                     Done = true;
+                     _activeBlock.Set();
+                     return;
+                  }
+                  Touch.ActiveTouchPanel.StartCalibration();
+                  _currentCalpoint = 0;
+               }
+
+               Render(true);
+            }
+            finally
+            {
+               base.TouchUpMessage(sender, point, ref handled);
+            }
          }
 
          #endregion
@@ -311,7 +366,7 @@ namespace Skewworks.NETMF
                   Core.Screen.SetClippingRectangle(0, 0, Core.Screen.Width, Core.Screen.Height);
                   Core.Screen.DrawRectangle(0, 0, 0, 0, Width, Height, 0, 0, _cc.BackgroundGradientTop, 0, 0, _cc.BackgroundGradientBottom, 0, Height, 256);
 
-                  // Draw Checkboxes
+                  // Draw Check boxes
                   DrawCheckbox(rects[0].X, rects[0].Y, false);
                   DrawCheckbox(rects[1].X, rects[1].Y, false);
                   DrawCheckbox(rects[2].X, rects[2].Y, false);
@@ -351,9 +406,13 @@ namespace Skewworks.NETMF
                DrawCheckbox(rects[2].X, rects[2].Y, bChecked[2]);
 
                if (confRight == string.Empty)
+               {
                   s = confLeft;
+               }
                else
+               {
                   s = confLeft + System.Math.Round(remain) + confRight;
+               }
                Core.Screen.DrawTextInRect(s, 0, y + 21, Core.Screen.Width, _cc.Font.Height * 2, Bitmap.DT_AlignmentCenter, _cc.ForeColor, _cc.Font);
                Core.Screen.Flush();
 
@@ -362,7 +421,6 @@ namespace Skewworks.NETMF
                   Thread.Sleep(100);
                   return true;
                }
-
             }
          }
 
@@ -373,8 +431,9 @@ namespace Skewworks.NETMF
             Core.Screen.DrawLine(Colors.Wheat, 1, x + _cc.ConfirmationBoxSize, y, x + _cc.ConfirmationBoxSize, y + _cc.ConfirmationBoxSize);
 
             if (Checked)
+            {
                Core.Screen.DrawRectangle(ColorUtility.ColorFromRGB(73, 187, 0), 1, x + 4, y + 4, _cc.ConfirmationBoxSize - 8, _cc.ConfirmationBoxSize - 8, 0, 0, ColorUtility.ColorFromRGB(160, 243, 0), x, y, ColorUtility.ColorFromRGB(73, 187, 0), x, y + _cc.ConfirmationBoxSize, 256);
-
+            }
          }
 
          #endregion
@@ -398,36 +457,49 @@ namespace Skewworks.NETMF
                Core.Screen.DrawTextInRect(_cc.CalibrationText, 0, Height - _cc.Font.Height - 8, Width, _cc.Font.Height, Bitmap.DT_AlignmentCenter, _cc.ForeColor, _cc.Font);
             }
          }
-
          #endregion
-
       }
-
       #endregion
-
    }
 
    #region Calibration Configuration
 
+   /// <summary>
+   /// Configuration to be used for calibration
+   /// </summary>
+   /// <remarks>
+   /// The calibration configuration allows to customize the appearance of the calibration window.
+   /// </remarks>
    public class CalibrationConfiguration
    {
-
       #region Constants
 
-// ReSharper disable InconsistentNaming
+      // ReSharper disable InconsistentNaming
+
+      /// <summary>
+      /// Default text for initial calibration text
+      /// </summary>
       public const string INIT_CALI_TEXT = "Tap to Begin Calibration";
-      public const string CNFG_CALI_TEXT = "Tap Crosshairs to Calibrate";
+
+      /// <summary>
+      /// Default text for calibration instruction
+      /// </summary>
+      public const string CNFG_CALI_TEXT = "Tap cross hairs to Calibrate";
+
+      /// <summary>
+      /// Default text for calibration verification
+      /// </summary>
       public const string CONF_CALI_TEXT = "Tap all 3 boxes to confirm calibration.\nRestarting Calibration in [SECONDS] seconds";
+
       // ReSharper restore InconsistentNaming
-
-      #endregion
-
-      #region Variables
 
       #endregion
 
       #region Constructor
 
+      /// <summary>
+      /// Creates a new calibration configuration
+      /// </summary>
       public CalibrationConfiguration()
       {
          BackgroundGradientTop = Colors.White;
@@ -447,32 +519,63 @@ namespace Skewworks.NETMF
 
       #region Properties
 
+      /// <summary>
+      /// Gets/Sets the bottom gradient color of the background
+      /// </summary>
       public Color BackgroundGradientBottom { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the top gradient color of the background
+      /// </summary>
       public Color BackgroundGradientTop { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the calibration instruction text
+      /// </summary>
       public string CalibrationText { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the confirmation box size
+      /// </summary>
       public int ConfirmationBoxSize { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the confirmation box spacing
+      /// </summary>
       public int ConfirmationBoxSpacing { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the confirmation text
+      /// </summary>
       public string ConfirmationText { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the confirmation timeout in seconds.
+      /// </summary>
       public int ConfirmationTimeout { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the color of the cross hairs
+      /// </summary>
       public Color CrossHairColor { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the font to be used to render the text
+      /// </summary>
       public Font Font { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the color to render the text
+      /// </summary>
       public Color ForeColor { get; set; }
 
+      /// <summary>
+      /// Gets/Sets the initial text
+      /// </summary>
       public string InitialText { get; set; }
 
       #endregion
-
    }
-
    #endregion
-
-}// ReSharper restore StringIndexOfIsCultureSpecific.1
+}
+// ReSharper restore StringIndexOfIsCultureSpecific.1

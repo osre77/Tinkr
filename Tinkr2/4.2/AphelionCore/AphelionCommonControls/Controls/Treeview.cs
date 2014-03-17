@@ -258,24 +258,26 @@ namespace Skewworks.NETMF.Controls
          }
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (_nodes != null)
          {
             // Get Selected Node
-            TreeviewNode node = NodeFromPoint(e);
+            TreeviewNode node = NodeFromPoint(point);
             int icoSize = _font.Height;
             if (node != null)
             {
                var ecRect = new rect(node.Bounds.X, node.Bounds.Y, icoSize, icoSize);
-               if (ecRect.Contains(e) && node.PenDown)
+               if (ecRect.Contains(point) && node.PenDown)
                {
                   /*node.Expanded = !node._expanded;
                   if (!node._expanded)
                      ResetChildrenBounds(node);*/
                   node.Expanded = !node.Expanded;
                   if (!node.Expanded)
+                  {
                      ResetChildrenBounds(node);
+                  }
 
                   Invalidate();
                }
@@ -285,12 +287,14 @@ namespace Skewworks.NETMF.Controls
                   if (!node.Selected && node.PenDown)
                   {
                      for (int i = 0; i < _nodes.Length; i++)
+                     {
                         ResetNodesState(_nodes[i]);
+                     }
                      node.Selected = true;
                      _selNode = node;
                      Invalidate();
                   }
-                  OnNodeTap(node, e);
+                  OnNodeTap(node, point);
                }
             }
 
@@ -300,6 +304,7 @@ namespace Skewworks.NETMF.Controls
                SetChildrenPen(_nodes[i]);
             }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
@@ -312,12 +317,11 @@ namespace Skewworks.NETMF.Controls
          _selColor = Core.SystemColors.SelectionColor;
       }
 
-      // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
-      // ReSharper restore RedundantAssignment
+      protected override void OnRender(int x, int y, int width, int height)
       {
-         x = Left;
-         y = Top;
+         //x and y are Left and Top anyway
+         //x = Left;
+         //y = Top;
          int maxX = Width - 3;
          int icoSize = _font.Height + 8;
 
@@ -333,50 +337,56 @@ namespace Skewworks.NETMF.Controls
                Core.SystemColors.WindowColor, 0, 0, Core.SystemColors.WindowColor, 0, 0, 256);
          }
 
+         int yy = y - ScrollY;
+         int xx = x - ScrollX;
 
          // Draw Nodes
          if (_nodes != null)
          {
             Core.Screen.SetClippingRectangle(Left + 1, Top + 1, Width - 2, Height - 2);
-            y -= ScrollY;
-            x -= ScrollX;
             for (int i = 0; i < _nodes.Length; i++)
             {
                int tW;
                int tH;
                _font.ComputeExtent(_nodes[i].Text, out tW, out tH);
-               _nodes[i].Bounds = new rect(x, y, Width + (x - Left), _font.Height + 8);
-               if (maxX < tW + icoSize + 12 + x)
-                  maxX = tW + icoSize + 12 + x;
+               _nodes[i].Bounds = new rect(xx, yy, Width + (xx - Left), _font.Height + 8);
+               if (maxX < tW + icoSize + 12 + xx)
+               {
+                  maxX = tW + icoSize + 12 + xx;
+               }
 
-               if (y + _font.Height + 4 > 0 && y < Top + Height)
+               if (yy + _font.Height + 4 > 0 && yy < Top + Height)
                {
                   // Draw Icon if node has children
                   if (_nodes[i].Length > 0)
                   {
-                     Core.Screen.DrawRectangle(Colors.DarkGray, 1, x + 2, y + 2, icoSize - 4, icoSize - 4, 0, 0, Colors.Ghost, x + 2, y + 2, Colors.LightGray, x + 2, y + 6, 256);
-                     Core.Screen.DrawTextInRect((_nodes[i].Expanded) ? "-" : "+", x + 2, y + 4, icoSize - 4, _font.Height, Bitmap.DT_AlignmentCenter, Colors.Charcoal, _font);
+                     Core.Screen.DrawRectangle(Colors.DarkGray, 1, xx + 2, yy + 2, icoSize - 4, icoSize - 4, 0, 0, Colors.Ghost, xx + 2, yy + 2, Colors.LightGray, xx + 2, yy + 6, 256);
+                     Core.Screen.DrawTextInRect((_nodes[i].Expanded) ? "-" : "+", xx + 2, yy + 4, icoSize - 4, _font.Height, Bitmap.DT_AlignmentCenter, Colors.Charcoal, _font);
                   }
 
                   // Draw Node Text
-                  Core.Screen.DrawTextInRect(_nodes[i].Text, x + icoSize + 4, y + 4, tW, _font.Height, Bitmap.DT_TrimmingCharacterEllipsis,
+                  Core.Screen.DrawTextInRect(_nodes[i].Text, xx + icoSize + 4, yy + 4, tW, _font.Height, Bitmap.DT_TrimmingCharacterEllipsis,
                       (_nodes[i].Selected) ? _selColor : _color, _font);
                }
 
-               y += icoSize + 4;
+               yy += icoSize + 4;
 
                if (_nodes[i].Expanded)
                {
-                  point e = RenderSubNodes(_nodes[i], x + icoSize, y, icoSize);
-                  y = e.Y;
+                  point e = RenderSubNodes(_nodes[i], xx + icoSize, yy, icoSize);
+                  yy = e.Y;
                   if (e.X > maxX)
+                  {
                      maxX = e.X;
+                  }
                }
             }
          }
 
-         RequiredHeight = ScrollY + y;
+         RequiredHeight = ScrollY + yy;
          RequiredWidth = ScrollX + maxX;
+
+         base.OnRender(x, y, width, height);
       }
 
       private point RenderSubNodes(TreeviewNode node, int x, int y, int icoSize)

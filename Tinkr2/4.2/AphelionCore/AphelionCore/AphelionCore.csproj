@@ -28,29 +28,33 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Skewworks.NETMF.Core.XML</DocumentationFile>
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
     <Compile Include="Controls\Container.cs" />
     <Compile Include="Controls\Control.cs" />
+    <Compile Include="Applications\ApplicationDetails.cs" />
+    <Compile Include="Applications\ApplicationImage.cs" />
     <Compile Include="Core\Core.cs" />
     <Compile Include="Core\Enumerations.cs" />
     <Compile Include="Core\EventDelegates.cs" />
     <Compile Include="Core\MessageClient.cs" />
     <Compile Include="Core\TypeDef.cs" />
     <Compile Include="Helpers\Colors.cs" />
-    <Compile Include="Helpers\Fonts.cs" />
+    <Compile Include="Helpers\FontManager.cs" />
     <Compile Include="Helpers\SettingsManager.cs" />
     <Compile Include="Helpers\Strings.cs" />
     <Compile Include="Helpers\StringSorter.cs" />
     <Compile Include="Helpers\SystemColors.cs" />
-    <Compile Include="Helpers\XMLEx.cs" />
+    <Compile Include="Helpers\XMLNodeEx.cs" />
     <Compile Include="Graphics\Image32.cs" />
     <Compile Include="Graphics\TypeDef.cs" />
     <Compile Include="Controls\IContainer.cs" />
     <Compile Include="Controls\IControl.cs" />
     <Compile Include="Helpers\Overlay.cs" />
     <Compile Include="Applications\NETMFApplication.cs" />
+    <Compile Include="Helpers\XMLReaderEX.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controls\ScrollableControl.cs" />
     <Compile Include="Resources.Designer.cs">

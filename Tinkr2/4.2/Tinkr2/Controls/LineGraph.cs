@@ -232,7 +232,7 @@ namespace Skewworks.Tinkr.Controls
       #region GUI
 
       // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
+      protected override void OnRender(int x, int y, int width, int height)
       // ReSharper restore RedundantAssignment
       {
          // Calculate Value Width
@@ -240,26 +240,26 @@ namespace Skewworks.Tinkr.Controls
          int vWy = System.Math.Max(FontManager.ComputeExtentEx(_font, _minY.ToString()).Width, FontManager.ComputeExtentEx(_font, _maxY.ToString()).Width);
 
          // Calculat Space
-         w = Width - vWy - 10;
-         h = Height - _font.Height - 10;
+         width = Width - vWy - 10;
+         height = Height - _font.Height - 10;
          x = Left + vWy + 11;
          y = Top;
 
          // Draw Base
-         Core.Screen.DrawLine(0, 1, Left + vWy + 10, Top, Left + vWy + 10, Top + h);
-         Core.Screen.DrawLine(0, 1, Left + vWy + 10, Top + h, Left + w + vWy + 10, Top + h);
+         Core.Screen.DrawLine(0, 1, Left + vWy + 10, Top, Left + vWy + 10, Top + height);
+         Core.Screen.DrawLine(0, 1, Left + vWy + 10, Top + height, Left + width + vWy + 10, Top + height);
 
          // Draw Y Range
          Core.Screen.DrawText(_maxY.ToString(), _font, 0, Left, Top);
-         Core.Screen.DrawText(_minY.ToString(), _font, 0, Left, Top + h - _font.Height);
+         Core.Screen.DrawText(_minY.ToString(), _font, 0, Left, Top + height - _font.Height);
 
          // Draw X Range
-         Core.Screen.DrawText(_minX.ToString(), _font, 0, Left + vWy + 10, Top + h + 10);
-         Core.Screen.DrawText(_maxX.ToString(), _font, 0, Left + Width - FontManager.ComputeExtentEx(_font, _maxX.ToString()).Width, Top + h + 10);
+         Core.Screen.DrawText(_minX.ToString(), _font, 0, Left + vWy + 10, Top + height + 10);
+         Core.Screen.DrawText(_maxX.ToString(), _font, 0, Left + Width - FontManager.ComputeExtentEx(_font, _maxX.ToString()).Width, Top + height + 10);
 
          // Draw Graph
-         Core.Screen.SetClippingRectangle(x, y, w, h);
-         Core.Screen.DrawRectangle(0, 0, x, y, w, h, 0, 0, Colors.White, 0, 0, Colors.White, 0, 0, 256);
+         Core.Screen.SetClippingRectangle(x, y, width, height);
+         Core.Screen.DrawRectangle(0, 0, x, y, width, height, 0, 0, Colors.White, 0, 0, Colors.White, 0, 0, 256);
 
          float xR = _maxX - _minX;
          float yR = _maxY - _minY;
@@ -273,8 +273,8 @@ namespace Skewworks.Tinkr.Controls
                {
                   for (int j = 0; j < _lines[i].Points.Length; j++)
                   {
-                     int xx = (int)(x + ((_lines[i].Points[j].X - _minX) / xR) * w);
-                     int yy = (int)((y + h) - (((_lines[i].Points[j].Y - _minY) / yR) * h));
+                     int xx = (int)(x + ((_lines[i].Points[j].X - _minX) / xR) * width);
+                     int yy = (int)((y + height) - (((_lines[i].Points[j].Y - _minY) / yR) * height));
                      if (j > 0)
                         Core.Screen.DrawLine(_lines[i].Color, _thickness, lastP.X, lastP.Y, xx, yy);
                      lastP = new point(xx, yy);

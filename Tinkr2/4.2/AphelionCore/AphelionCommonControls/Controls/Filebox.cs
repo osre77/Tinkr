@@ -218,53 +218,61 @@ namespace Skewworks.NETMF.Controls
          _rowDown = (e.Y - 9 - _font.Height + _scrollY) / (_font.Height + 8);
       }
 
-      protected override void TouchMoveMessage(object sender, point e, ref bool handled)
+      protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          if (_colDown != -1 && _colDown < _cols.Length)
          {
-            _cols[_colDown].Width += e.X - LastTouch.X;
-            LastTouch = e;
+            _cols[_colDown].Width += point.X - LastTouch.X;
+            LastTouch = point;
             Invalidate();
          }
+         base.TouchMoveMessage(sender, point, ref handled);
       }
 
-      protected override void TouchUpMessage(object sender, point e, ref bool handled)
+      protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
-         if (!Touching || _items == null)
-            return;
-
-         e.X -= Left - ScrollX;
-         e.Y -= Top - ScrollY;
-
-         if (_rowDown != -1 && _iSel != _rowDown && (e.Y - 9 - _font.Height + _scrollY) / (_font.Height + 8) == _rowDown)
+         if (Touching && _items != null)
          {
-            if (_rowDown < _items.Length)
-               _iSel = _rowDown;
-            else
-               _iSel = -1;
+            point.X -= Left - ScrollX;
+            point.Y -= Top - ScrollY;
 
-            if (_autoNav && _iSel > -1 && _items[_iSel].Type == FileType.Folder)
-               FilePath = _items[_iSel].FullPath;
-            else
+            if (_rowDown != -1 && _iSel != _rowDown &&
+                (point.Y - 9 - _font.Height + _scrollY)/(_font.Height + 8) == _rowDown)
             {
-               OnSelectedIndexChanged(this, _iSel);
-               Invalidate();
+               if (_rowDown < _items.Length)
+               {
+                  _iSel = _rowDown;
+               }
+               else
+               {
+                  _iSel = -1;
+               }
+
+               if (_autoNav && _iSel > -1 && _items[_iSel].Type == FileType.Folder)
+               {
+                  FilePath = _items[_iSel].FullPath;
+               }
+               else
+               {
+                  OnSelectedIndexChanged(this, _iSel);
+                  Invalidate();
+               }
             }
          }
+         base.TouchUpMessage(sender, point, ref handled);
       }
 
       #endregion
 
       #region GUI
 
-      // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int w, int h)
-      // ReSharper restore RedundantAssignment
+      protected override void OnRender(int x, int y, int width, int height)
       {
          int i;
 
-         x = Left;
-         y = Top;
+         //x and y are Left and Top anyway
+         //x = Left;
+         //y = Top;
 
          if (Focused)
          {
@@ -279,7 +287,7 @@ namespace Skewworks.NETMF.Controls
          // Draw Columns
          x += 1;
          y += 1;
-         h = _font.Height + 9;
+         int h = _font.Height + 9;
          Core.Screen.DrawRectangle(0, 0, x, y, Width - 2, h, 0, 0, Core.SystemColors.ControlTop, x, y, Core.SystemColors.ControlBottom, x, y + h - 1, 256);
          Core.Screen.DrawLine(Core.SystemColors.BorderColor, 1, x, y + h, x + Width - 2, y + h);
          for (i = 0; i < _cols.Length; i++)
@@ -304,18 +312,18 @@ namespace Skewworks.NETMF.Controls
 
                   if (_items[i].Type == FileType.File)
                   {
-                     w = _file.Width + 8;
-                     Core.Screen.DrawImage(_cols[0].X + 4, y + (h / 2 - _file.Height / 2), _file, 0, 0, w, _file.Height);
+                     width = _file.Width + 8;
+                     Core.Screen.DrawImage(_cols[0].X + 4, y + (h / 2 - _file.Height / 2), _file, 0, 0, width, _file.Height);
                   }
                   else
                   {
-                     w = _folder.Width + 8;
-                     Core.Screen.DrawImage(_cols[0].X + 4, y + (h / 2 - _folder.Height / 2), _folder, 0, 0, w, _folder.Height);
+                     width = _folder.Width + 8;
+                     Core.Screen.DrawImage(_cols[0].X + 4, y + (h / 2 - _folder.Height / 2), _folder, 0, 0, width, _folder.Height);
                   }
 
                   if (_iSel == i)
                   {
-                     Core.Screen.DrawTextInRect(_items[i].Name, _cols[0].X + w, y + 4, _cols[0].Width - w - 4, h, Bitmap.DT_TrimmingCharacterEllipsis, Core.SystemColors.SelectedFontColor, _font);
+                     Core.Screen.DrawTextInRect(_items[i].Name, _cols[0].X + width, y + 4, _cols[0].Width - width - 4, h, Bitmap.DT_TrimmingCharacterEllipsis, Core.SystemColors.SelectedFontColor, _font);
                      if (_cols.Length > 1)
                      {
                         Core.Screen.DrawTextInRect(_items[i].Size, _cols[1].X + 4, y + 4, _cols[1].Width - 8, h, Bitmap.DT_TrimmingCharacterEllipsis, Core.SystemColors.SelectedFontColor, _font);
@@ -327,7 +335,7 @@ namespace Skewworks.NETMF.Controls
                   }
                   else
                   {
-                     Core.Screen.DrawTextInRect(_items[i].Name, _cols[0].X + w, y + 4, _cols[0].Width - w - 4, h, Bitmap.DT_TrimmingCharacterEllipsis, Core.SystemColors.FontColor, _font);
+                     Core.Screen.DrawTextInRect(_items[i].Name, _cols[0].X + width, y + 4, _cols[0].Width - width - 4, h, Bitmap.DT_TrimmingCharacterEllipsis, Core.SystemColors.FontColor, _font);
                      if (_cols.Length > 1)
                      {
                         Core.Screen.DrawTextInRect(_items[i].Size, _cols[1].X + 4, y + 4, _cols[1].Width - 8, h, Bitmap.DT_TrimmingCharacterEllipsis, Core.SystemColors.FontColor, _font);
@@ -347,6 +355,7 @@ namespace Skewworks.NETMF.Controls
                }
             }
          }
+         base.OnRender(x, y, width, height);
       }
 
       #endregion
