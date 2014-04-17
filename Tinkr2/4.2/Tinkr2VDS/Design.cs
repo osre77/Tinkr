@@ -223,7 +223,7 @@ namespace Skewworks.VDS.Tinkr
             PressedColorBottom = ReadColor(fs),
             PressedColorTop = ReadColor(fs),
             PressedTextColor = ReadColor(fs),
-            BackgroundImageScaleMode = ReadScaleMode(fs),
+            BackgroundImageImageScaleModeMode = ReadScaleMode(fs),
             BackgroundImage = ReadImage(fs)
          };
 
@@ -313,7 +313,8 @@ namespace Skewworks.VDS.Tinkr
          {
             Enabled = ReadBool(fs),
             Visible = ReadBool(fs),
-            AutoSize = ReadBool(fs),
+            //AutoSize = ReadBool(fs),
+            AutoSizeMode = ReadBool(fs) ? AutoSizeModes.WidthAndHeight : AutoSizeModes.None,
             BackColor = ReadColor(fs),
             TextAlignment = (HorizontalAlignment)fs.ReadByte()
          };

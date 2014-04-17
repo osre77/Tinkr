@@ -37,6 +37,8 @@ Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "TinkrApiDoc", "TinkrApiDoc\
 		{24FE22F5-1A2E-4325-AB30-35DA0EFFF189} = {24FE22F5-1A2E-4325-AB30-35DA0EFFF189}
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestSandbox", "TestSandbox\TestSandbox.csproj", "{3C924A00-8413-4F50-907D-CC94E7118C4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,12 @@ Global
 		{5EA5DF67-30EB-455F-A820-E730F677A4E1}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{C0E12ABE-47A8-436D-A52C-B4329B612C38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C0E12ABE-47A8-436D-A52C-B4329B612C38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C924A00-8413-4F50-907D-CC94E7118C4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C924A00-8413-4F50-907D-CC94E7118C4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C924A00-8413-4F50-907D-CC94E7118C4C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{3C924A00-8413-4F50-907D-CC94E7118C4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C924A00-8413-4F50-907D-CC94E7118C4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3C924A00-8413-4F50-907D-CC94E7118C4C}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

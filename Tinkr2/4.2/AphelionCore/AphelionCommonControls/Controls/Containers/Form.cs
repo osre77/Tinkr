@@ -4,6 +4,17 @@ using Microsoft.SPOT.Presentation.Media;
 
 namespace Skewworks.NETMF.Controls
 {
+   /// <summary>
+   /// Default top-level container for controls
+   /// </summary>
+   /// <remarks>
+   /// This is the container that should be used by default to represent a Screen/Window/Form.
+   /// </remarks>
+   /// <example>
+   /// Form frm = new Form("frm");
+   /// frm.AddChild(new Label("lbl1", "This is a label", Fonts.Droid11, 4, 4)); 
+   /// Core.ActiveContainer = frm;
+   /// </example>
    [Serializable]
    public class Form : Container
    {
@@ -191,15 +202,26 @@ namespace Skewworks.NETMF.Controls
 
       #region Button Methods
 
+      /// <summary>
+      /// Override this message to handle button pressed events internally.
+      /// </summary>
+      /// <param name="buttonId">Integer ID corresponding to the affected button</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Forwards the message to <see cref="Container.ActiveChild"/> or if null, to the child under <see cref="Core.MousePosition"/>
+      /// </remarks>
       protected override void ButtonPressedMessage(int buttonId, ref bool handled)
       {
+         //TODO: check if this code shouldn't go to Container
          if (Children != null)
          {
             if (ActiveChild != null)
+            {
                ActiveChild.SendButtonEvent(buttonId, true);
+            }
             else
             {
-               for (int i = 0; i < Children.Length; i++)
+               for (var i = 0; i < Children.Length; i++)
                {
                   if (Children[i].ScreenBounds.Contains(Core.MousePosition))
                   {
@@ -210,17 +232,29 @@ namespace Skewworks.NETMF.Controls
                }
             }
          }
+         base.ButtonPressedMessage(buttonId, ref handled);
       }
 
+      /// <summary>
+      /// Override this message to handle button released events internally.
+      /// </summary>
+      /// <param name="buttonId">Integer ID corresponding to the affected button</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Forwards the message to <see cref="Container.ActiveChild"/> or if null, to the child under <see cref="Core.MousePosition"/>
+      /// </remarks>
       protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
       {
+         //TODO: check if this code shouldn't go to Container
          if (Children != null)
          {
             if (ActiveChild != null)
+            {
                ActiveChild.SendButtonEvent(buttonId, false);
+            }
             else
             {
-               for (int i = 0; i < Children.Length; i++)
+               for (var i = 0; i < Children.Length; i++)
                {
                   if (Children[i].ScreenBounds.Contains(Core.MousePosition))
                   {
@@ -231,14 +265,25 @@ namespace Skewworks.NETMF.Controls
                }
             }
          }
+         base.ButtonReleasedMessage(buttonId, ref handled);
       }
 
       #endregion
 
       #region Keyboard Methods
 
+      /// <summary>
+      /// Override this message to handle alt key events internally.
+      /// </summary>
+      /// <param name="key">Integer value of the Alt key affected</param>
+      /// <param name="pressed">True if the key is currently being pressed; false if released</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Forwards the message to <see cref="Container.ActiveChild"/>
+      /// </remarks>
       protected override void KeyboardAltKeyMessage(int key, bool pressed, ref bool handled)
       {
+         //TODO: check if this code shouldn't go to Container
          if (ActiveChild != null)
          {
             ActiveChild.SendKeyboardAltKeyEvent(key, pressed);
@@ -246,8 +291,18 @@ namespace Skewworks.NETMF.Controls
          base.KeyboardAltKeyMessage(key, pressed, ref handled);
       }
 
+      /// <summary>
+      /// Override this message to handle key events internally.
+      /// </summary>
+      /// <param name="key">Integer value of the key affected</param>
+      /// <param name="pressed">True if the key is currently being pressed; false if released</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Forwards the message to <see cref="Container.ActiveChild"/>
+      /// </remarks>
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
       {
+         //TODO: check if this code shouldn't go to Container
          if (ActiveChild != null)
          {
             ActiveChild.SendKeyboardKeyEvent(key, pressed);
@@ -259,14 +314,25 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch Methods
 
+      /// <summary>
+      /// Override this message to handle touch events internally.
+      /// </summary>
+      /// <param name="sender">Object sending the event</param>
+      /// <param name="point">Point on screen touch event is occurring</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Forwards the message to the top most child under the point.
+      /// The hit child is made the active child.
+      /// </remarks>
       protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
+         //TODO: check if this code shouldn't go to Container
          // Check Controls
          if (Children != null)
          {
             lock (Children)
             {
-               for (int i = Children.Length - 1; i >= 0; i--)
+               for (var i = Children.Length - 1; i >= 0; i--)
                {
                   if (Children[i].Visible && Children[i].HitTest(point))
                   {
@@ -285,10 +351,23 @@ namespace Skewworks.NETMF.Controls
             Render(ActiveChild.ScreenBounds, true);
             ActiveChild = null;
          }
+
+         //TODO: check if _touch shouldn't be set to true here
       }
 
+      /// <summary>
+      /// Override this message to handle touch events internally.
+      /// </summary>
+      /// <param name="sender">Object sending the event</param>
+      /// <param name="type">Type of touch gesture</param>
+      /// <param name="force">Force associated with gesture (0.0 to 1.0)</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Forwards the message to <see cref="Container.ActiveChild"/>
+      /// </remarks>
       protected override void TouchGestureMessage(object sender, TouchType type, float force, ref bool handled)
       {
+         //TODO: check if this code shouldn't go to Container
          if (ActiveChild != null)
          {
             handled = true;
@@ -296,14 +375,24 @@ namespace Skewworks.NETMF.Controls
          }
       }
 
+      /// <summary>
+      /// Override this message to handle touch events internally.
+      /// </summary>
+      /// <param name="sender">Object sending the event</param>
+      /// <param name="point">Point on screen touch event is occurring</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Moves the form if touch down was on the form.
+      /// If no then forwards the message to <see cref="Container.ActiveChild"/> or if null, to the child under point
+      /// </remarks>
       protected override void TouchMoveMessage(object sender, point point, ref bool handled)
       {
          if (Touching)
          {
-            bool bUpdated = false;
+            var bUpdated = false;
 
-            int diffY = 0;
-            int diffX = 0;
+            var diffY = 0;
+            var diffX = 0;
 
             // Scroll Y
             if (_maxY > _h)
@@ -321,9 +410,12 @@ namespace Skewworks.NETMF.Controls
                   bUpdated = true;
                }
                else
+               {
                   diffY = 0;
+               }
 
                _moving = true;
+               //handled = true; //TODO: check why not handled
             }
 
             // Scroll X
@@ -342,7 +434,9 @@ namespace Skewworks.NETMF.Controls
                   bUpdated = true;
                }
                else
+               {
                   diffX = 0;
+               }
 
                _moving = true;
                handled = true;
@@ -352,16 +446,21 @@ namespace Skewworks.NETMF.Controls
             if (bUpdated)
             {
                var ptOff = new point(diffX, diffY);
-               for (int i = 0; i < Children.Length; i++)
+               for (var i = 0; i < Children.Length; i++)
+               {
                   Children[i].UpdateOffsets(ptOff);
+               }
                Render(true);
                handled = true;
             }
             else if (_moving)
+            {
                Render(true);
+            }
          }
          else
          {
+            //TODO: check if this code shouldn't go to Container (or may be even the whole method?)
             // Check Controls
             if (ActiveChild != null && ActiveChild.Touching)
             {
@@ -371,15 +470,27 @@ namespace Skewworks.NETMF.Controls
             }
             if (Children != null)
             {
-               for (int i = Children.Length - 1; i >= 0; i--)
+               for (var i = Children.Length - 1; i >= 0; i--)
                {
                   if (Children[i].Touching || Children[i].HitTest(point))
+                  {
                      Children[i].SendTouchMove(this, point);
+                  }
                }
             }
          }
       }
 
+      /// <summary>
+      /// Override this message to handle touch events internally.
+      /// </summary>
+      /// <param name="sender">Object sending the event</param>
+      /// <param name="point">Point on screen touch event is occurring</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Finishes the from moving if touch down was on the form.
+      /// If not then it forwards the message to <see cref="Container.ActiveChild"/> or if null, to the child under point
+      /// </remarks>
       protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (_moving)
@@ -388,10 +499,11 @@ namespace Skewworks.NETMF.Controls
             Render(true);
             return;
          }
+         //TODO: check if this code shouldn't go to Container
          // Check Controls
          if (Children != null)
          {
-            for (int i = Children.Length - 1; i >= 0; i--)
+            for (var i = Children.Length - 1; i >= 0; i--)
             {
                try
                {
@@ -416,6 +528,16 @@ namespace Skewworks.NETMF.Controls
 
       #region GUI
 
+      /// <summary>
+      /// Renders the control contents
+      /// </summary>
+      /// <param name="x">X position in screen coordinates</param>
+      /// <param name="y">Y position in screen coordinates</param>
+      /// <param name="width">Width in pixel</param>
+      /// <param name="height">Height in pixel</param>
+      /// <remarks>
+      /// Renders the form and all its childes.
+      /// </remarks>
       protected override void OnRender(int x, int y, int width, int height)
       {
          var area = new rect(x, y, width, height);
@@ -425,15 +547,18 @@ namespace Skewworks.NETMF.Controls
          _maxX = _w;
          _maxY = _h;
 
+         //TODO: check if this code shouldn't go to Container
          // Render controls
          if (Children != null)
          {
-            for (int i = 0; i < Children.Length; i++)
+            for (var i = 0; i < Children.Length; i++)
             {
                if (Children[i] != null)
                {
                   if (Children[i].ScreenBounds.Intersects(area))
+                  {
                      Children[i].Render();
+                  }
 
                   //if (Children[i].Y < _minY)
                   //    _minY = Children[i].Y;
@@ -444,7 +569,6 @@ namespace Skewworks.NETMF.Controls
                   //    _minX = Children[i].X;
                   //else if (Children[i].X + Children[i].Width > _maxX)
                   //    _maxX = Children[i].X + Children[i].Width;
-
                }
             }
          }
@@ -498,10 +622,10 @@ namespace Skewworks.NETMF.Controls
                      }
                   }
 
-                  int dsW = (int)(_img.Width * multiplier);
-                  int dsH = (int)(_img.Height * multiplier);
-                  int dX = (int)(_w / 2.0f - dsW / 2.0f);
-                  int dY = (int)(_h / 2.0f - dsH / 2.0f);
+                  var dsW = (int)(_img.Width * multiplier);
+                  var dsH = (int)(_img.Height * multiplier);
+                  var dX = (int)(_w / 2.0f - dsW / 2.0f);
+                  var dY = (int)(_h / 2.0f - dsH / 2.0f);
 
                   Core.Screen.StretchImage(dX, dY, _img, dsW, dsH, 256);
                   break;
@@ -517,8 +641,6 @@ namespace Skewworks.NETMF.Controls
 
          }
       }
-
       #endregion
-
    }
 }

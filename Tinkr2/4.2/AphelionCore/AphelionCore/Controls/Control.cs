@@ -44,6 +44,49 @@ namespace Skewworks.NETMF.Controls
 
       #endregion
 
+      /// <summary>
+      /// Initializes the control
+      /// </summary>
+      protected Control()
+      { }
+
+      /// <summary>
+      /// Initializes the control
+      /// </summary>
+      /// <param name="name">Name of the control</param>
+      protected Control(string name)
+      {
+         _name = name;
+      }
+
+      /// <summary>
+      /// Initializes the control
+      /// </summary>
+      /// <param name="name">Name of the control</param>
+      /// <param name="x">X position relative to it's parent</param>
+      /// <param name="y">Y position relative to it's parent</param>
+      protected Control(string name, int x, int y) :
+         this(name)
+      {
+         _x = x;
+         _y = y;
+      }
+
+      /// <summary>
+      /// Initializes the control
+      /// </summary>
+      /// <param name="name">Name of the control</param>
+      /// <param name="x">X position relative to it's parent</param>
+      /// <param name="y">Y position relative to it's parent</param>
+      /// <param name="width">Width of the control in pixel</param>
+      /// <param name="height">Height of the control in pixel</param>
+      protected Control(string name, int x, int y, int width, int height) :
+         this(name, x, y)
+      {
+         _w = width;
+         _h = height;
+      }
+
       #region Events
 
       /// <summary>
@@ -408,10 +451,11 @@ namespace Skewworks.NETMF.Controls
             var r = new rect(Left, Top, Width, Math.Max(_h, value));
 
             _h = value;
-            if (_parent != null)
+            Invalidate(r);
+            /*if (_parent != null)
             {
                _parent.Render(r, true);
-            }
+            }*/
          }
       }
 
@@ -458,9 +502,10 @@ namespace Skewworks.NETMF.Controls
                changed = true;
             }
 
-            if (changed && _parent != null)
+            if (changed)// && _parent != null)
             {
-               _parent.Render(r, true);
+               Invalidate(r);
+               //_parent.Render(r, true);
             }
 
          }
@@ -619,10 +664,11 @@ namespace Skewworks.NETMF.Controls
             var r = new rect(Left, Top, Math.Max(_w, value), Height);
 
             _w = value;
-            if (_parent != null)
+            Invalidate(r);
+            /*if (_parent != null)
             {
                _parent.Render(r, true);
-            }
+            }*/
          }
       }
 
@@ -646,10 +692,11 @@ namespace Skewworks.NETMF.Controls
             var r = new rect(Math.Min(_x, value), Top, Math.Abs(_x - value) + Width, Height);
 
             _x = value;
-            if (_parent != null)
+            Invalidate(r);
+            /*if (_parent != null)
             {
                _parent.Render(r, true);
-            }
+            }*/
          }
       }
 
@@ -673,10 +720,11 @@ namespace Skewworks.NETMF.Controls
             var r = new rect(Left, Math.Min(_y, value), Width, Math.Abs(_y - value) + Height);
 
             _y = value;
-            if (_parent != null)
+            Invalidate(r);
+            /*if (_parent != null)
             {
                _parent.Render(r, true);
-            }
+            }*/
          }
       }
 

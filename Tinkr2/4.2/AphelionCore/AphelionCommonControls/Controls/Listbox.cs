@@ -6,10 +6,12 @@ using Microsoft.SPOT.Presentation.Media;
 
 namespace Skewworks.NETMF.Controls
 {
+   /// <summary>
+   /// Displays a list of options
+   /// </summary>
    [Serializable]
    public class Listbox : ScrollableControl
    {
-
       #region Variables
 
       private ListboxItem[] _items;
@@ -49,52 +51,35 @@ namespace Skewworks.NETMF.Controls
 
       #region Constructors
 
-      public Listbox(string name, Font font, int x, int y, int width, int height)
+      public Listbox(string name, Font font, int x, int y, int width, int height) :
+         base(name, x, y, width, height)
       {
-         Name = name;
          _font = font;
-         // ReSharper disable DoNotCallOverridableMethodsInConstructor
-         X = x;
-         Y = y;
-         Width = width;
-         Height = height;
-         // ReSharper restore DoNotCallOverridableMethodsInConstructor
          DefaultColors();
          _recalc = true;
       }
 
-      public Listbox(string name, Font font, int x, int y, int width, int height, ListboxItem[] items)
+      public Listbox(string name, Font font, int x, int y, int width, int height, ListboxItem[] items) :
+         base(name, x, y, width, height)
       {
-         Name = name;
          _font = font;
-         // ReSharper disable DoNotCallOverridableMethodsInConstructor
-         X = x;
-         Y = y;
-         Width = width;
-         Height = height;
-         // ReSharper restore DoNotCallOverridableMethodsInConstructor
-
          _items = items;
          if (_items != null)
          {
             for (int i = 0; i < _items.Length; i++)
+            {
                _items[i].Parent = this;
+            }
          }
 
          DefaultColors();
          _recalc = true;
       }
 
-      public Listbox(string name, Font font, int x, int y, int width, int height, bool displayCheckboxes, bool displayImages, size imageSize)
+      public Listbox(string name, Font font, int x, int y, int width, int height, bool displayCheckboxes, bool displayImages, size imageSize) :
+         base(name, x, y, width, height)
       {
-         Name = name;
          _font = font;
-         // ReSharper disable DoNotCallOverridableMethodsInConstructor
-         X = x;
-         Y = y;
-         Width = width;
-         Height = height;
-         // ReSharper restore DoNotCallOverridableMethodsInConstructor
          _showCheckboxes = displayCheckboxes;
          _showImages = displayImages;
          _imgSize = imageSize;
@@ -102,16 +87,10 @@ namespace Skewworks.NETMF.Controls
          _recalc = true;
       }
 
-      public Listbox(string name, Font font, int x, int y, int width, int height, ListboxItem[] items, bool displayCheckboxes, bool displayImages, size imageSize)
+      public Listbox(string name, Font font, int x, int y, int width, int height, ListboxItem[] items, bool displayCheckboxes, bool displayImages, size imageSize) :
+         base(name, x, y, width, height)
       {
-         Name = name;
          _font = font;
-         // ReSharper disable DoNotCallOverridableMethodsInConstructor
-         X = x;
-         Y = y;
-         Width = width;
-         Height = height;
-         // ReSharper restore DoNotCallOverridableMethodsInConstructor
          _showCheckboxes = displayCheckboxes;
          _showImages = displayImages;
          _imgSize = imageSize;
@@ -120,7 +99,9 @@ namespace Skewworks.NETMF.Controls
          if (_items != null)
          {
             for (int i = 0; i < _items.Length; i++)
+            {
                _items[i].Parent = this;
+            }
          }
          DefaultColors();
          _recalc = true;
@@ -392,17 +373,17 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          _continueScroll = false;
-         LastTouch = e;
+         LastTouch = point;
 
-         e.Y -= Top;
+         point.Y -= Top;
 
          if (_items != null)
          {
             // Find Selected Index
-            int y = e.Y + ScrollY;
+            int y = point.Y + ScrollY;
             int idx = y / _lineHeight;
 
             if (idx > _items.Length - 1)
@@ -456,7 +437,7 @@ namespace Skewworks.NETMF.Controls
 
             // Find Selected Index
             int y = point.Y + ScrollY;
-            int idx = y/_lineHeight;
+            int idx = y / _lineHeight;
 
             if (idx > _items.Length - 1)
             {
@@ -695,7 +676,7 @@ namespace Skewworks.NETMF.Controls
                {
                   if (i == _selIndex)
                   {
-                     Core.Screen.DrawRectangle(0, 0, x + 1, yy, Width - 2, _lineHeight, 0, 0, _sel, 0, 0, _sel, 0, 0,256);
+                     Core.Screen.DrawRectangle(0, 0, x + 1, yy, Width - 2, _lineHeight, 0, 0, _sel, 0, 0, _sel, 0, 0, 256);
                   }
                   else
                   {
@@ -721,7 +702,7 @@ namespace Skewworks.NETMF.Controls
                {
                   if (i == _selIndex)
                   {
-                     Core.Screen.DrawTextInRect(_items[i].Text, _txtX, yy + (_lineHeight/2 - _font.Height/2), _txtW,
+                     Core.Screen.DrawTextInRect(_items[i].Text, _txtX, yy + (_lineHeight / 2 - _font.Height / 2), _txtW,
                         _font.Height, Bitmap.DT_None, _selFore, _font);
                   }
                   else
@@ -738,7 +719,8 @@ namespace Skewworks.NETMF.Controls
                      if (Enabled)
                      {
                         Core.Screen.DrawRectangle(0, 0, chkX, yy + 4, _chkH, _chkH, 0, 0, Core.SystemColors.ControlBottom,
-                           Left, yy + 4, Core.SystemColors.ControlBottom, Left, yy + 4 + (_chkH/2), 256);}
+                           Left, yy + 4, Core.SystemColors.ControlBottom, Left, yy + 4 + (_chkH / 2), 256);
+                     }
                      else
                      {
                         Core.Screen.DrawRectangle(0, 0, chkX, yy + 4, _chkH, _chkH, 0, 0, Core.SystemColors.ControlTop, Left, yy + 4, Core.SystemColors.ControlTop, Left, yy + 4 + (_chkH / 2), 256);
@@ -752,7 +734,7 @@ namespace Skewworks.NETMF.Controls
                      {
                         Core.Screen.DrawRectangle(0, 0, chkX + 1, yy + 5, _chkH - 2, _chkH - 2, 0, 0,
                            Core.SystemColors.ControlTop, Left, yy + 4, Core.SystemColors.ControlBottom, Left,
-                           yy + 4 + (_chkH/2), 256);
+                           yy + 4 + (_chkH / 2), 256);
                      }
                      else
                      {

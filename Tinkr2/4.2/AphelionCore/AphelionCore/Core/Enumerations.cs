@@ -153,6 +153,27 @@ namespace Skewworks.NETMF
    }
 
    /// <summary>
+   /// Position to align object vertically
+   /// </summary>
+   public enum VerticalAlignment
+   {
+      /// <summary>
+      /// Align top
+      /// </summary>
+      Top,
+
+      /// <summary>
+      /// Align center
+      /// </summary>
+      Center,
+
+      /// <summary>
+      /// Align bottom
+      /// </summary>
+      Bottom,
+   }
+
+   /// <summary>
    /// Image types
    /// </summary>
    public enum ImageType
@@ -442,5 +463,32 @@ namespace Skewworks.NETMF
       /// Gesture user defined
       /// </summary>
       GestureUserDefined = 210,
+   }
+
+   /// <summary>
+   /// Flags to select which direction of a control should be sized automatically
+   /// </summary>
+   [Flags]
+   public enum AutoSizeModes
+   {
+      /// <summary>
+      /// Not auto sizing
+      /// </summary>
+      None = 0x00,
+
+      /// <summary>
+      /// Auto size width, height is fixed
+      /// </summary>
+      Width = 0x01,
+
+      /// <summary>
+      /// Auto size height, width is fixed
+      /// </summary>
+      Height = 0x02,
+
+      /// <summary>
+      ///  Auto size width and height
+      /// </summary>
+      WidthAndHeight = Width | Height
    }
 }

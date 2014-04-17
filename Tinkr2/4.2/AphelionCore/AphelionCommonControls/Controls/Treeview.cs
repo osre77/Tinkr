@@ -248,11 +248,11 @@ namespace Skewworks.NETMF.Controls
 
       #region Touch
 
-      protected override void TouchDownMessage(object sender, point e, ref bool handled)
+      protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          if (_nodes != null)
          {
-            TreeviewNode node = NodeFromPoint(e);
+            TreeviewNode node = NodeFromPoint(point);
             if (node != null)
                node.PenDown = true;
          }

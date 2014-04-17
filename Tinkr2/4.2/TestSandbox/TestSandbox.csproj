@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <AssemblyName>Skewworks.NETMF.Core</AssemblyName>
-    <OutputType>Library</OutputType>
-    <RootNamespace>Skewworks.NETMF</RootNamespace>
+    <AssemblyName>TestSandbox</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>TestSandbox</RootNamespace>
     <ProjectTypeGuids>{b69e3092-b931-443c-abe7-7e7b65f2a37f};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DA09A588-2AE0-4966-BACB-3397E5DBEB3F}</ProjectGuid>
+    <ProjectGuid>{3C924A00-8413-4F50-907D-CC94E7118C4C}</ProjectGuid>
     <TargetFrameworkVersion>v4.2</TargetFrameworkVersion>
     <NetMfTargetsBaseDir Condition="'$(NetMfTargetsBaseDir)'==''">$(MSBuildExtensionsPath32)\Microsoft\.NET Micro Framework\</NetMfTargetsBaseDir>
     <TargetFrameworkProfile />
@@ -28,36 +28,14 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Skewworks.NETMF.Core.XML</DocumentationFile>
   </PropertyGroup>
   <Import Project="$(NetMfTargetsBaseDir)$(TargetFrameworkVersion)\CSharp.Targets" />
   <ItemGroup>
-    <Compile Include="Controls\AutoSizeControl.cs" />
-    <Compile Include="Controls\Container.cs" />
-    <Compile Include="Controls\Control.cs" />
-    <Compile Include="Applications\ApplicationDetails.cs" />
-    <Compile Include="Applications\ApplicationImage.cs" />
-    <Compile Include="Core\Core.cs" />
-    <Compile Include="Core\Enumerations.cs" />
-    <Compile Include="Core\EventDelegates.cs" />
-    <Compile Include="Core\MessageClient.cs" />
-    <Compile Include="Core\TypeDef.cs" />
-    <Compile Include="Helpers\Colors.cs" />
-    <Compile Include="Helpers\FontManager.cs" />
-    <Compile Include="Helpers\SettingsManager.cs" />
-    <Compile Include="Helpers\Strings.cs" />
-    <Compile Include="Helpers\StringSorter.cs" />
-    <Compile Include="Helpers\SystemColors.cs" />
-    <Compile Include="Helpers\XMLNodeEx.cs" />
-    <Compile Include="Graphics\Image32.cs" />
-    <Compile Include="Graphics\TypeDef.cs" />
-    <Compile Include="Controls\IContainer.cs" />
-    <Compile Include="Controls\IControl.cs" />
-    <Compile Include="Helpers\Overlay.cs" />
-    <Compile Include="Applications\NETMFApplication.cs" />
-    <Compile Include="Helpers\XMLReaderEX.cs" />
+    <Compile Include="CommonControls\ButtonsForm.cs" />
+    <Compile Include="CommonControls\LabelsForm.cs" />
+    <Compile Include="MenuHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Controls\ScrollableControl.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -65,29 +43,42 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="MFDpwsExtensions" />
     <Reference Include="Microsoft.SPOT.Graphics" />
     <Reference Include="Microsoft.SPOT.Hardware" />
-    <Reference Include="Microsoft.SPOT.IO" />
     <Reference Include="Microsoft.SPOT.Native">
     </Reference>
-    <Reference Include="Microsoft.SPOT.Touch" />
-    <Reference Include="System" />
-    <Reference Include="System.IO" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\arrow.gif" />
+    <ProjectReference Include="..\AphelionCore\AphelionCommonControls\AphelionCommonControls.csproj">
+      <Project>{756FA8AF-72AB-4C64-B479-BDEEDA6E811B}</Project>
+      <Name>AphelionCommonControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AphelionCore\AphelionCore\AphelionCore.csproj">
+      <Project>{DA09A588-2AE0-4966-BACB-3397E5DBEB3F}</Project>
+      <Name>AphelionCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AphelionCore\AphelionExtendedControls\AphelionExtendedControls.csproj">
+      <Project>{24FE22F5-1A2E-4325-AB30-35DA0EFFF189}</Project>
+      <Name>AphelionExtendedControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AphelionCore\AphelionModal\AphelionModal.csproj">
+      <Project>{F25F11AB-6C52-4CF4-BA55-E56D50B3D4CA}</Project>
+      <Name>AphelionModal</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AphelionCore\AphelionResources\AphelionResources.csproj">
+      <Project>{207D8B63-02E6-48F9-8489-45C559B0B58A}</Project>
+      <Name>AphelionResources</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\AphelionCore\AphelionVDS\AphelionVDS.csproj">
+      <Project>{9A7673EF-511B-4B0B-B03D-48B125E65ACA}</Project>
+      <Name>AphelionVDS</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\droid12.tinyfnt" />
-  </ItemGroup>
-  <ItemGroup />
 </Project>

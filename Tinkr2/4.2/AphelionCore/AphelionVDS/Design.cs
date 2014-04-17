@@ -163,7 +163,7 @@ namespace Skewworks.VDS.Clix
             PressedColorBottom = ReadColor(fs),
             PressedColorTop = ReadColor(fs),
             PressedTextColor = ReadColor(fs),
-            BackgroundImageScaleMode = ReadScaleMode(fs),
+            BackgroundImageImageScaleModeMode = ReadScaleMode(fs),
             BackgroundImage = ReadImage(fs)
          };
 

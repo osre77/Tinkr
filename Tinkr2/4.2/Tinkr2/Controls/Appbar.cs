@@ -323,14 +323,18 @@ namespace Skewworks.Tinkr.Controls
       protected override void ButtonPressedMessage(int buttonId, ref bool handled)
       {
          if (!_expanded || _menus == null || _menus.Length == 0)
+         {
             return;
+         }
 
          if (buttonId == (int)ButtonIDs.Up)
          {
             _btnDown = true;
             _selIndex -= 1;
             if (_selIndex < 0)
+            {
                _selIndex = 0;
+            }
             Invalidate();
          }
          else if (buttonId == (int)ButtonIDs.Down)
@@ -338,7 +342,9 @@ namespace Skewworks.Tinkr.Controls
             _btnDown = true;
             _selIndex += 1;
             if (_selIndex > _menus.Length - 1)
+            {
                _selIndex = _menus.Length - 1;
+            }
             Invalidate();
          }
 

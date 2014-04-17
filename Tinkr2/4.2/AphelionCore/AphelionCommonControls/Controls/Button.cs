@@ -5,115 +5,184 @@ using Microsoft.SPOT.Presentation.Media;
 
 namespace Skewworks.NETMF.Controls
 {
-
+   /// <summary>
+   /// Displays a simple button
+   /// </summary>
    [Serializable]
-   public class Button : Control
+   public class Button : AutoSizeControl
    {
       #region Variables
 
       private string _text;
       private Font _font;
-      private Color _nfore;
-      private Color _pfore;
       private PressState _state;
-      private Color _normC1;
-      private Color _normC2;
-      private Color _pressC1;
-      private Color _pressC2;
-      private Color _border;
-      private Color _pressedBorder;
-      private Bitmap _img;
-      private ScaleMode _scale;
-      private bool _showFocus;
-      //private Color _shd;
-      private Color _pressedShd;
+      private Color _textColor;
+      private Color _pressedTextColor;
+      private Color _backgroundGradientTopColor;
+      private Color _backgroundGradientBottomColor;
+      private Color _pressdBackgroundGradientTopColor;
+      private Color _pressdBackgroundGradientBottomColor;
+      private Color _borderColor;
+      private Color _pressedBorderColor;
+      private Bitmap _image;
+      private ScaleMode _imageScaleMode;
+      private Color _textShadowColor;
+      private Color _pressedTextShadowColor;
+      private ButtonRenderStyles _renderStyle = ButtonRenderStyles.Default;
+      private HorizontalAlignment _horizontalTextAlignment = HorizontalAlignment.Center;
+      private VerticalAlignment _verticalTextAlignment = VerticalAlignment.Center;
 
       #endregion
 
       #region Constructors
 
-      public Button(string name, string text, Font font, int x, int y, bool showFocusRect = true)
+      /// <summary>
+      /// Creates a new button
+      /// </summary>
+      /// <param name="name">Name of the button</param>
+      /// <param name="text">Content text of the button</param>
+      /// <param name="font">Font to render the content text</param>
+      /// <param name="x">X position relative to it's parent</param>
+      /// <param name="y">Y position relative to it's parent</param>
+      /// <param name="showFocusRect">true if the focus rectangle should be visible; false if not</param>
+      /// <remarks>
+      /// The <see cref="Control.Width"/> and <see cref="Control.Height"/> are calculated automatically to fit the content text.
+      /// </remarks>
+      public Button(string name, string text, Font font, int x, int y, bool showFocusRect = true) :
+         base(name, x, y)
       {
          DefaultColors();
 
-         Name = name;
          _text = text;
          _font = font;
-         // ReSharper disable DoNotCallOverridableMethodsInConstructor
-         X = x;
-         Y = y;
-         _showFocus = showFocusRect;
+         if (!showFocusRect)
+         {
+            _renderStyle &= ~ButtonRenderStyles.ShowFocusRectangle;
+         }
          _state = PressState.Normal;
+         SetPadding(new Thickness(11, 6, 11, 7));
 
-         // Size button
+         if (!MeasureControl())
+         {
+            Invalidate();
+         }
+         /*// Size button
          size sz = FontManager.ComputeExtentEx(_font, _text);
+         // ReSharper disable DoNotCallOverridableMethodsInConstructor
          Width = sz.Width + 22;
          Height = sz.Height + 13;
-         // ReSharper restore DoNotCallOverridableMethodsInConstructor
+         // ReSharper restore DoNotCallOverridableMethodsInConstructor*/
       }
 
-      public Button(string name, string text, Font font, int x, int y, int width, int height, bool showFocusRect = true)
+      /// <summary>
+      /// Creates a new button
+      /// </summary>
+      /// <param name="name">Name of the button</param>
+      /// <param name="text">Content text of the button</param>
+      /// <param name="font">Font to render the content text</param>
+      /// <param name="x">X position relative to it's parent</param>
+      /// <param name="y">Y position relative to it's parent</param>
+      /// <param name="width">Width of the button in pixel</param>
+      /// <param name="height">Height of the button in pixel</param>
+      /// <param name="showFocusRect">true if the focus rectangle should be visible; false if not</param>
+      public Button(string name, string text, Font font, int x, int y, int width, int height, bool showFocusRect = true) :
+         base(name, x, y, width, height)
       {
          DefaultColors();
 
-         Name = name;
          _text = text;
          _font = font;
-         // ReSharper disable DoNotCallOverridableMethodsInConstructor
-         X = x;
-         Y = y;
-         Width = width;
-         Height = height;
-         // ReSharper restore DoNotCallOverridableMethodsInConstructor
 
-         _showFocus = showFocusRect;
+         if (!showFocusRect)
+         {
+            _renderStyle &= ~ButtonRenderStyles.ShowFocusRectangle;
+         }
          _state = PressState.Normal;
+
+         SetPadding(new Thickness(11, 6, 11, 7));
       }
 
-      public Button(string name, string text, Font font, int x, int y, Color normalTextColor, Color pressedTextColor, Color borderColor, Color pressedBorderColor, bool showFocusRect = true)
+      /// <summary>
+      /// Creates a new button
+      /// </summary>
+      /// <param name="name">Name of the button</param>
+      /// <param name="text">Content text of the button</param>
+      /// <param name="font">Font to render the content text</param>
+      /// <param name="x">X position relative to it's parent</param>
+      /// <param name="y">Y position relative to it's parent</param>
+      /// <param name="normalTextColor">Normal text color (unpressed)</param>
+      /// <param name="pressedTextColor">Text color for pressed state</param>
+      /// <param name="borderColorColor">Normal border color (unpressed)</param>
+      /// <param name="pressedBorderColorColor">Border color for pressed state</param>
+      /// <param name="showFocusRect">true if the focus rectangle should be visible; false if not</param>
+      /// <remarks>
+      /// The <see cref="Control.Width"/> and <see cref="Control.Height"/> are calculated automatically to fit the content text.
+      /// </remarks>
+      public Button(string name, string text, Font font, int x, int y, Color normalTextColor, Color pressedTextColor, Color borderColorColor, Color pressedBorderColorColor, bool showFocusRect = true) :
+         base(name, x, y)
       {
          DefaultColors();
 
-         Name = name;
          _text = text;
          _font = font;
-         // ReSharper disable DoNotCallOverridableMethodsInConstructor
-         X = x;
-         Y = y;
-         _nfore = normalTextColor;
-         _pfore = pressedTextColor;
-         _showFocus = showFocusRect;
+         _textColor = normalTextColor;
+         _pressedTextColor = pressedTextColor;
+         if (!showFocusRect)
+         {
+            _renderStyle &= ~ButtonRenderStyles.ShowFocusRectangle;
+         }
          _state = PressState.Normal;
-         _border = borderColor;
-         _pressedBorder = pressedBorderColor;
+         _borderColor = borderColorColor;
+         _pressedBorderColor = pressedBorderColorColor;
 
-         // Size button
+         SetPadding(new Thickness(11, 6, 11, 7));
+
+         /*// Size button
          size sz = FontManager.ComputeExtentEx(_font, _text);
+         // ReSharper disable DoNotCallOverridableMethodsInConstructor
          Width = sz.Width + 22;
          Height = sz.Height + 13;
-         // ReSharper restore DoNotCallOverridableMethodsInConstructor
+         // ReSharper restore DoNotCallOverridableMethodsInConstructor*/
+         if (!MeasureControl())
+         {
+            Invalidate();
+         }
       }
 
-      public Button(string name, string text, Font font, int x, int y, int width, int height, Color normalTextColor, Color pressedTextColor, Color borderColor, Color pressedBorderColor, bool showFocusRect = true)
+      /// <summary>
+      /// Creates a new button
+      /// </summary>
+      /// <param name="name">Name of the button</param>
+      /// <param name="text">Content text of the button</param>
+      /// <param name="font">Font to render the content text</param>
+      /// <param name="x">X position relative to it's parent</param>
+      /// <param name="y">Y position relative to it's parent</param>
+      /// <param name="width">Width of the button in pixel</param>
+      /// <param name="height">Height of the button in pixel</param>
+      /// <param name="normalTextColor">Normal text color (unpressed)</param>
+      /// <param name="pressedTextColor">Text color for pressed state</param>
+      /// <param name="borderColorColor">Normal border color (unpressed)</param>
+      /// <param name="pressedBorderColorColor">Border color for pressed state</param>
+      /// <param name="showFocusRect">true if the focus rectangle should be visible; false if not</param>
+      public Button(string name, string text, Font font, int x, int y, int width, int height, Color normalTextColor, Color pressedTextColor, Color borderColorColor, Color pressedBorderColorColor, bool showFocusRect = true) :
+         base(name, x, y, width, height)
       {
          DefaultColors();
 
-         Name = name;
          _text = text;
          _font = font;
-         // ReSharper disable DoNotCallOverridableMethodsInConstructor
-         X = x;
-         Y = y;
-         Width = width;
-         Height = height;
-         // ReSharper restore DoNotCallOverridableMethodsInConstructor
-         _nfore = normalTextColor;
-         _pfore = pressedTextColor;
-         _border = borderColor;
-         _pressedBorder = pressedBorderColor;
+         _textColor = normalTextColor;
+         _pressedTextColor = pressedTextColor;
+         _borderColor = borderColorColor;
+         _pressedBorderColor = pressedBorderColorColor;
 
-         _showFocus = showFocusRect;
+         if (!showFocusRect)
+         {
+            _renderStyle &= ~ButtonRenderStyles.ShowFocusRectangle;
+         }
          _state = PressState.Normal;
+
+         SetPadding(new Thickness(11, 6, 11, 7));
       }
 
       #endregion
@@ -121,68 +190,81 @@ namespace Skewworks.NETMF.Controls
       #region Properties
 
       /// <summary>
-      /// Image to display behind text
+      /// Gets/Sets the background image to display
       /// </summary>
+      /// <remarks>
+      /// The <see cref="Text"/> is rendered above the image
+      /// </remarks>
       public Bitmap BackgroundImage
       {
-         get { return _img; }
+         get { return _image; }
          set
          {
-            if (_img == value)
+            if (_image == value)
+            {
                return;
-            _img = value;
+            }
+            _image = value;
             Invalidate();
          }
       }
 
       /// <summary>
-      /// Scalemode to use when displaying background image
+      /// Gets/Sets the Scale Mode to use when rendering background image
       /// </summary>
-      public ScaleMode BackgroundImageScaleMode
+      public ScaleMode BackgroundImageImageScaleModeMode
       {
-         get { return _scale; }
+         get { return _imageScaleMode; }
          set
          {
-            if (_scale == value)
+            if (_imageScaleMode == value)
+            {
                return;
-            _scale = value;
+            }
+            _imageScaleMode = value;
             Invalidate();
          }
       }
 
       /// <summary>
-      /// Color of border to draw around control
+      /// Gets/Sets color to use for border
       /// </summary>
       public Color BorderColor
       {
-         get { return _border; }
+         get { return _borderColor; }
          set
          {
-            if (_border == value)
+            if (_borderColor == value)
+            {
                return;
-            _border = value;
+            }
+            _borderColor = value;
             Invalidate();
          }
       }
 
       /// <summary>
-      /// Color of border to use when pressed
+      /// Gets/Sets color to use for border when pressed
       /// </summary>
       public Color BorderColorPressed
       {
-         get { return _pressedBorder; }
+         get { return _pressedBorderColor; }
          set
          {
-            if (_pressedBorder == value)
+            if (_pressedBorderColor == value)
+            {
                return;
-            _pressedBorder = value;
+            }
+            _pressedBorderColor = value;
             if (_state == PressState.Pressed)
+            {
                Invalidate();
+            }
          }
       }
 
       /// <summary>
-      /// The font used when rendering text
+      /// Gets/Sets the Font for rendering text
       /// </summary>
       public Font Font
       {
@@ -190,119 +272,211 @@ namespace Skewworks.NETMF.Controls
          set
          {
             if (_font == value)
+            {
                return;
+            }
             _font = value;
-            Invalidate();
+            if (!MeasureControl())
+            {
+               Invalidate();
+            }
          }
       }
 
       /// <summary>
-      /// Bottom gradient color to use when button is not pressed
+      /// Gets/Sets bottom color to use in background gradient when button is not pressed
       /// </summary>
       public Color NormalColorBottom
       {
-         get { return _normC2; }
+         get { return _backgroundGradientBottomColor; }
          set
          {
-            if (_normC2 == value)
+            if (_backgroundGradientBottomColor == value)
+            {
                return;
-            _normC2 = value;
+            }
+            _backgroundGradientBottomColor = value;
             Invalidate();
          }
       }
 
       /// <summary>
-      /// Top gradient color to use when button is not pressed
+      /// Gets/Sets top color to use in background gradient when button is not pressed
       /// </summary>
       public Color NormalColorTop
       {
-         get { return _normC1; }
+         get { return _backgroundGradientTopColor; }
          set
          {
-            if (_normC1 == value)
+            if (_backgroundGradientTopColor == value)
+            {
                return;
-            _normC1 = value;
+            }
+            _backgroundGradientTopColor = value;
             Invalidate();
          }
       }
 
       /// <summary>
-      /// Color to draw text with when button is not pressed
+      /// Gets/Sets the color to use when rendering text when button is not pressed
       /// </summary>
       public Color NormalTextColor
       {
-         get { return _nfore; }
+         get { return _textColor; }
          set
          {
-            if (_nfore == value)
+            if (_textColor == value)
+            {
                return;
-            _nfore = value;
+            }
+            _textColor = value;
             Invalidate();
          }
       }
 
       /// <summary>
-      /// Bottom gradient color to use when button is pressed
+      /// Gets/Sets the color to use when rendering text shadow when button is not pressed
+      /// </summary>
+      /// <remarks>
+      /// Remove the <see cref="ButtonRenderStyles.TextShadow"/> flag from <see cref="RenderStyle"/> to turn off text shadows.
+      /// </remarks>
+      public Color NormalTextShadowColor
+      {
+         get { return _textShadowColor; }
+         set
+         {
+            if (_textShadowColor == value)
+            {
+               return;
+            }
+            _textShadowColor = value;
+            Invalidate();
+         }
+      }
+
+      /// <summary>
+      /// Gets/Sets pressed state bottom color to use in background gradient when button is pressed
       /// </summary>
       public Color PressedColorBottom
       {
-         get { return _pressC2; }
+         get { return _pressdBackgroundGradientBottomColor; }
          set
          {
-            if (_pressC2 == value)
+            if (_pressdBackgroundGradientBottomColor == value)
+            {
                return;
-            _pressC2 = value;
+            }
+            _pressdBackgroundGradientBottomColor = value;
             Invalidate();
          }
       }
 
       /// <summary>
-      /// Top gradient color to use when button is pressed
+      /// Gets/Sets pressed state top color to use in background gradient when button is pressed
       /// </summary>
       public Color PressedColorTop
       {
-         get { return _pressC1; }
+         get { return _pressdBackgroundGradientTopColor; }
          set
          {
-            if (_pressC1 == value)
+            if (_pressdBackgroundGradientTopColor == value)
+            {
                return;
-            _pressC1 = value;
+            }
+            _pressdBackgroundGradientTopColor = value;
             Invalidate();
          }
       }
 
       /// <summary>
-      /// Color to draw text with when button is pressed
+      /// Gets/Sets pressed state color to use when rendering text when button is pressed
       /// </summary>
       public Color PressedTextColor
       {
-         get { return _pfore; }
+         get { return _pressedTextColor; }
          set
          {
-            if (_pfore == value)
+            if (_pressedTextColor == value)
+            {
                return;
-            _pfore = value;
+            }
+            _pressedTextColor = value;
+            if (_state == PressState.Pressed)
+            {
+               Invalidate();
+            }
+         }
+      }
+
+      /// <summary>
+      /// Gets/Sets the color to use when rendering text shadow when button is pressed
+      /// </summary>
+      /// <remarks>
+      /// Remove the <see cref="ButtonRenderStyles.TextShadow"/> flag from <see cref="RenderStyle"/> to turn off text shadows.
+      /// </remarks>
+      public Color PressedTextShadowColor
+      {
+         get { return _pressedTextShadowColor; }
+         set
+         {
+            if (_pressedTextShadowColor == value)
+            {
+               return;
+            }
+            _pressedTextShadowColor = value;
+            if (_state == PressState.Pressed)
+            {
+               Invalidate();
+            }
+         }
+      }
+
+      /// <summary>
+      /// Gets/Sets the render style of the button
+      /// </summary>
+      public ButtonRenderStyles RenderStyle
+      {
+         get { return _renderStyle; }
+         set
+         {
+            if (value == _renderStyle)
+            {
+               return;
+            }
+            _renderStyle = value;
             Invalidate();
          }
       }
 
       /// <summary>
-      /// Displays a rect around the control when it has focus if true
+      /// Gets/Sets whether or not to draw focus rectangle
       /// </summary>
+      /// <remarks>
+      /// If false a focus rectangle will not be drawn even if control has focus
+      /// </remarks>
+      [Obsolete("Use RenderStlye, RenderStyles.ShowFocusRectangle")]
       public bool ShowFocusRectangle
       {
-         get { return _showFocus; }
+         get { return (RenderStyle & ButtonRenderStyles.ShowFocusRectangle) != 0; }
          set
          {
-            if (_showFocus == value)
+            if (ShowFocusRectangle == value)
+            {
                return;
-            _showFocus = value;
-            Invalidate();
+            }
+            if (value)
+            {
+               RenderStyle |= ButtonRenderStyles.ShowFocusRectangle;
+            }
+            else
+            {
+               RenderStyle &= ~ButtonRenderStyles.ShowFocusRectangle;
+            }
          }
       }
 
       /// <summary>
-      /// Text to display on button
+      /// Gets/Sets the content text
       /// </summary>
       public string Text
       {
@@ -310,10 +484,51 @@ namespace Skewworks.NETMF.Controls
          set
          {
             if (value == null)
+            {
                value = string.Empty;
+            }
             if (_text == value)
+            {
                return;
+            }
             _text = value;
+            if (!MeasureControl())
+            {
+               Invalidate();
+            }
+         }
+      }
+
+      /// <summary>
+      /// Gets/Sets horizontal text alignment
+      /// </summary>
+      public HorizontalAlignment HorizontalTextAlignment
+      {
+         get { return _horizontalTextAlignment; }
+         set
+         {
+            if (_horizontalTextAlignment == value)
+            {
+               return;
+            }
+            _horizontalTextAlignment = value;
+            Invalidate();
+         }
+      }
+
+      /// <summary>
+      /// Gets/Sets the vertical text alignment
+      /// </summary>
+      public VerticalAlignment VerticalTextAlignment
+      {
+         get { return _verticalTextAlignment; }
+         set
+         {
+            if (_verticalTextAlignment == value)
+            {
+               return;
+            }
+            _verticalTextAlignment = value;
             Invalidate();
          }
       }
@@ -322,6 +537,14 @@ namespace Skewworks.NETMF.Controls
 
       #region Button Invokes
 
+      /// <summary>
+      /// Override this message to handle button pressed events internally.
+      /// </summary>
+      /// <param name="buttonId">Integer ID corresponding to the affected button</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// On button id <see cref="ButtonIDs.Select"/> or <see cref="ButtonIDs.Click"/> the button is switched to <see cref="PressState.Pressed"/> state
+      /// </remarks>
       protected override void ButtonPressedMessage(int buttonId, ref bool handled)
       {
          if (buttonId == (int)ButtonIDs.Select || buttonId == (int)ButtonIDs.Click)
@@ -329,34 +552,67 @@ namespace Skewworks.NETMF.Controls
             _state = PressState.Pressed;
             Invalidate();
          }
+         base.ButtonPressedMessage(buttonId, ref handled);
       }
 
+      /// <summary>
+      /// Override this message to handle button released events internally.
+      /// </summary>
+      /// <param name="buttonId">Integer ID corresponding to the affected button</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// On button id <see cref="ButtonIDs.Select"/> or <see cref="ButtonIDs.Click"/> the button is switched back to <see cref="PressState.Normal"/> state
+      /// and the <see cref="Control.Tap"/> event is fired.
+      /// </remarks>
       protected override void ButtonReleasedMessage(int buttonId, ref bool handled)
       {
-         if ((buttonId == (int)ButtonIDs.Select && _state == PressState.Pressed) || (buttonId == (int)ButtonIDs.Click && _state == PressState.Pressed))
+         if (_state == PressState.Pressed && (buttonId == (int)ButtonIDs.Select || buttonId == (int)ButtonIDs.Click))
          {
             _state = PressState.Normal;
             Invalidate();
             OnTap(this, new point(X, Y));
          }
+         base.ButtonReleasedMessage(buttonId, ref handled);
       }
 
       #endregion
 
       #region Touch Invokes
 
+      // ReSharper disable once RedundantAssignment
+      /// <summary>
+      /// Override this message to handle touch events internally.
+      /// </summary>
+      /// <param name="sender">Object sending the event</param>
+      /// <param name="point">Point on screen touch event is occurring</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Switches the button into <see cref="PressState.Pressed"/> state
+      /// </remarks>
       protected override void TouchDownMessage(object sender, point point, ref bool handled)
       {
          _state = PressState.Pressed;
          Invalidate();
+         // do NOT set handled to true !
+         base.TouchDownMessage(sender, point, ref handled);
       }
 
+      /// <summary>
+      /// Override this message to handle touch events internally.
+      /// </summary>
+      /// <param name="sender">Object sending the event</param>
+      /// <param name="point">Point on screen touch event is occurring</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// Switches the button to <see cref="PressState.Normal"/> state if currently pressed
+      /// </remarks>
       protected override void TouchUpMessage(object sender, point point, ref bool handled)
       {
          if (Touching)
          {
             _state = PressState.Normal;
             Invalidate();
+            // do NOT set handled to true !
          }
          base.TouchUpMessage(sender, point, ref handled);
       }
@@ -365,6 +621,17 @@ namespace Skewworks.NETMF.Controls
 
       #region Keyboard Methods
 
+      /// <summary>
+      /// Override this message to handle key events internally.
+      /// </summary>
+      /// <param name="key">Integer value of the key affected</param>
+      /// <param name="pressed">True if the key is currently being pressed; false if released</param>
+      /// <param name="handled">true if the event is handled. Set to true if handled.</param>
+      /// <remarks>
+      /// If the return Key (key == 10) is pressed or released the button is switched to
+      /// <see cref="PressState.Pressed"/> and <see cref="PressState.Normal"/> state.
+      /// On release the <see cref="Control.Tap"/> event is fired.
+      /// </remarks>
       protected override void KeyboardKeyMessage(char key, bool pressed, ref bool handled)
       {
          if (key == 10)
@@ -395,50 +662,159 @@ namespace Skewworks.NETMF.Controls
 
       #region GUI
 
-      // ReSharper disable RedundantAssignment
-      protected override void OnRender(int x, int y, int width, int height)
-      // ReSharper restore RedundantAssignment
+      private void CalcTextMetrics(AutoSizeModes autoSizeMode, out int textWidth, out int texhtHeight, out uint textFlags)
       {
-         _font.ComputeTextInRect(_text, out width, out height, Width - 6);
+         int availableWidth;
+         int availHeight;
+         textFlags = Bitmap.DT_TrimmingNone;
+
+         if ((autoSizeMode & AutoSizeModes.Width) != 0)
+         {
+            availableWidth = Int32.MaxValue;
+         }
+         else
+         {
+            availableWidth = Width - Padding.Horizontal;
+            textFlags |= Bitmap.DT_WordWrap;
+         }
+         if ((autoSizeMode & AutoSizeModes.Height) != 0)
+         {
+            availHeight = Int32.MaxValue;
+         }
+         else
+         {
+            availHeight = Height - Padding.Vertical;
+         }
+         switch (HorizontalTextAlignment)
+         {
+            case HorizontalAlignment.Center:
+               textFlags |= Bitmap.DT_AlignmentCenter;
+               break;
+
+            case HorizontalAlignment.Right:
+               textFlags |= Bitmap.DT_AlignmentRight;
+               break;
+         }
+         _font.ComputeTextInRect(_text, out textWidth, out texhtHeight, 0, 0, availableWidth, availHeight, textFlags);
+      }
+
+      /// <summary>
+      /// Is called when ever the size of the control needs to be calculated.
+      /// </summary>
+      /// <param name="autoSizeMode">Current <see cref="AutoSizeControl.AutoSizeMode"/></param>
+      /// <returns>Returns the needed size for the control</returns>
+      protected override size OnMeasureControl(AutoSizeModes autoSizeMode)
+      {
+         int textWidth;
+         int textHeight;
+         uint textFlags;
+
+         CalcTextMetrics(autoSizeMode, out textWidth, out textHeight, out textFlags);
+
+         return new size(textWidth + Padding.Horizontal, textHeight + Padding.Vertical);
+
+         //var size = FontManager.ComputeExtentEx(_font, _text);
+         //size.Grow(Padding.Horizontal, Padding.Vertical);
+         //return size;
+      }
+
+      /// <summary>
+      /// Renders the control contents
+      /// </summary>
+      /// <param name="x">X position in screen coordinates</param>
+      /// <param name="y">Y position in screen coordinates</param>
+      /// <param name="width">Width in pixel</param>
+      /// <param name="height">Height in pixel</param>
+      /// <remarks>
+      /// Renders the button in disabled, normal and pressed state and the focus rectangle if needed.
+      /// </remarks>
+      protected override void OnRender(int x, int y, int width, int height)
+      {
+         /*int w;
+         int h;
+         //_font.ComputeTextInRect(_text, out w, out h, Width - 6);
+         _font.ComputeTextInRect(_text, out w, out h, Width - Padding.Horizontal);*/
+
+         int textWidth;
+         int textHeight;
+         uint textFlags;
+
+         CalcTextMetrics(AutoSizeMode, out textWidth, out textHeight, out textFlags);
+
+         int textY;
+         switch (VerticalTextAlignment)
+         {
+            case VerticalAlignment.Center:
+               textY = Top + Padding.Top + ((Height - Padding.Vertical) - textHeight)/2;
+               break;
+
+            case VerticalAlignment.Bottom:
+               textY = Top + Height - Padding.Bottom - textHeight;
+               break;
+
+            default:
+               textY = Top + Padding.Top;
+               break;
+         }
 
          // Draw Background
          if (Enabled)
          {
             if (_state == PressState.Pressed)
             {
-               Core.Screen.DrawRectangle(_pressedBorder, 1, Left, Top, Width, Height, 0, 0, _pressC1, Left, Top, _pressC2, Left, Top + Height, 256);
+               Core.Screen.DrawRectangle(_pressedBorderColor, 1, Left, Top, Width, Height, 0, 0, _pressdBackgroundGradientTopColor, Left, Top, _pressdBackgroundGradientBottomColor, Left, Top + Height, 256);
 
-               if (_img != null)
+               if (_image != null)
+               {
                   DrawBackground();
+               }
 
-               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2) - 1, Width - 9, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _pressedShd, _font);
-               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2), Width - 8, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _pfore, _font);
-               Core.ShadowRegionInset(Left, Top, Width, Height);
+               if ((RenderStyle & ButtonRenderStyles.TextShadow) != 0)
+               {
+                  //Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2) - 1, Width - 9, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _pressedShd, _font);
+                  Core.Screen.DrawTextInRect(_text, Left + Padding.Left, textY - 1, Width - Padding.Horizontal - 1, textHeight, textFlags, _pressedTextShadowColor, _font);
+               }
+               //Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2), Width - 8, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _pfore, _font);
+               Core.Screen.DrawTextInRect(_text, Left + Padding.Left, textY, Width - Padding.Horizontal, textHeight, textFlags, _pressedTextColor, _font);
+
+               if ((RenderStyle & ButtonRenderStyles.PressedShadowBorder) != 0)
+               {
+                  Core.ShadowRegionInset(Left, Top, Width, Height);
+               }
             }
             else
             {
-               Core.Screen.DrawRectangle(_border, 1, Left, Top, Width, Height, 0, 0, _normC1, Left, Top, _normC2, Left, Top + Height, 256);
+               Core.Screen.DrawRectangle(_borderColor, 1, Left, Top, Width, Height, 0, 0, _backgroundGradientTopColor, Left, Top, _backgroundGradientBottomColor, Left, Top + Height, 256);
 
-               if (_img != null)
+               if (_image != null)
+               {
                   DrawBackground();
+               }
 
-               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2) + 1, Width - 7, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, Colors.White, _font);
-               Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2), Width - 8, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _nfore, _font);
+               if ((RenderStyle & ButtonRenderStyles.TextShadow) != 0)
+               {
+                  //Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2) + 1, Width - 7, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, Colors.White, _font);
+                  Core.Screen.DrawTextInRect(_text, Left + Padding.Left, textY + 1, Width - Padding.Horizontal + 1, textHeight, textFlags, _textShadowColor, _font);
+               }
+               //Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2), Width - 8, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _nfore, _font);
+               Core.Screen.DrawTextInRect(_text, Left + Padding.Left, textY, Width - Padding.Horizontal, textHeight, textFlags, _textColor, _font);
             }
          }
          else
          {
-            Core.Screen.DrawRectangle(_border, 1, Left, Top, Width, Height, 0, 0, _normC2, Left, Top, _normC2, Left, Top + Height, 256);
+            Core.Screen.DrawRectangle(_borderColor, 1, Left, Top, Width, Height, 0, 0, _backgroundGradientBottomColor, Left, Top, _backgroundGradientBottomColor, Left, Top + Height, 256);
 
-            if (_img != null)
+            if (_image != null)
+            {
                DrawBackground();
+            }
 
-            Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - height / 2), Width - 8, height, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _nfore, _font);
+            //Core.Screen.DrawTextInRect(_text, Left + 4, Top + (Height / 2 - h / 2), Width - 8, h, Bitmap.DT_AlignmentCenter + Bitmap.DT_WordWrap + Bitmap.DT_TrimmingNone, _nfore, _font);
+            Core.Screen.DrawTextInRect(_text, Left + Padding.Left, textY, Width - Padding.Horizontal, textHeight, textFlags, _textColor, _font);
          }
 
-
-         // Focus rect
-         if (_state != PressState.Pressed && _showFocus && Focused)
+         // Focus rectangle
+         if (_state != PressState.Pressed && Focused && (RenderStyle & ButtonRenderStyles.ShowFocusRectangle) != 0 && (Enabled || (RenderStyle & ButtonRenderStyles.ShowDisabledFocusRectangle) != 0))
          {
             Core.Screen.DrawRectangle(0, 0, Left + 1, Top + 1, Width - 2, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
             Core.Screen.DrawRectangle(0, 0, Left + 1, Top + Height - 2, Width - 2, 1, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 90);
@@ -449,6 +825,8 @@ namespace Skewworks.NETMF.Controls
             Core.Screen.DrawRectangle(0, 0, Left + 2, Top + 3, 1, Height - 6, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
             Core.Screen.DrawRectangle(0, 0, Left + Width - 3, Top + 3, 1, Height - 6, 0, 0, Core.SystemColors.SelectionColor, 0, 0, Core.SystemColors.SelectionColor, 0, 0, 40);
          }
+
+         // no need to call base.OnRender
       }
 
       #endregion
@@ -457,19 +835,19 @@ namespace Skewworks.NETMF.Controls
 
       private void DefaultColors()
       {
-         _nfore = Core.SystemColors.FontColor;
-         _pfore = Core.SystemColors.SelectedFontColor;
-         _border = Core.SystemColors.BorderColor;
-         _pressedBorder = Core.SystemColors.PressedControlTop;
+         _textColor = Core.SystemColors.FontColor;
+         _pressedTextColor = Core.SystemColors.SelectedFontColor;
+         _borderColor = Core.SystemColors.BorderColor;
+         _pressedBorderColor = Core.SystemColors.PressedControlTop;
 
-         _normC1 = Core.SystemColors.ControlTop;
-         _normC2 = Core.SystemColors.ControlBottom;
+         _backgroundGradientTopColor = Core.SystemColors.ControlTop;
+         _backgroundGradientBottomColor = Core.SystemColors.ControlBottom;
 
-         _pressC1 = Core.SystemColors.PressedControlTop;
-         _pressC2 = Core.SystemColors.PressedControlBottom;
+         _pressdBackgroundGradientTopColor = Core.SystemColors.PressedControlTop;
+         _pressdBackgroundGradientBottomColor = Core.SystemColors.PressedControlBottom;
 
-         //_shd = Core.SystemColors.TextShadow;
-         _pressedShd = Core.SystemColors.PressedTextShadow;
+         _textShadowColor = Core.SystemColors.TextShadow;
+         _pressedTextShadowColor = Core.SystemColors.PressedTextShadow;
       }
 
       private void DrawBackground()
@@ -477,56 +855,102 @@ namespace Skewworks.NETMF.Controls
          int w = Width;
          int h = Height;
 
-         switch (_scale)
+         switch (_imageScaleMode)
          {
             case ScaleMode.Center:
-               Core.Screen.DrawImage(Left + (w / 2 - _img.Width / 2), Top + (h / 2 - _img.Height / 2), _img, 0, 0, _img.Width, _img.Height);
+               Core.Screen.DrawImage(Left + (w / 2 - _image.Width / 2), Top + (h / 2 - _image.Height / 2), _image, 0, 0, _image.Width, _image.Height);
                break;
+
             case ScaleMode.Normal:
-               Core.Screen.DrawImage(Left, Top, _img, 0, 0, _img.Width, _img.Height);
+               Core.Screen.DrawImage(Left, Top, _image, 0, 0, _image.Width, _image.Height);
                break;
+
             case ScaleMode.Scale:
                float multiplier;
 
-               if (_img.Height > _img.Width)
+               if (_image.Height > _image.Width)
                {
                   // Portrait
                   if (h > w)
-                     multiplier = w / (float)_img.Width;
+                  {
+                     multiplier = w/(float) _image.Width;
+                  }
                   else
-                     multiplier = h / (float)_img.Height;
+                  {
+                     multiplier = h / (float)_image.Height;
+                  }
                }
                else
                {
                   // Landscape
                   if (h > w)
                   {
-                     multiplier = w / (float)_img.Width;
+                     multiplier = w / (float)_image.Width;
                   }
                   else
                   {
-                     multiplier = h / (float)_img.Height;
+                     multiplier = h / (float)_image.Height;
                   }
                }
 
-               var dsW = (int)(_img.Width * multiplier);
-               var dsH = (int)(_img.Height * multiplier);
+               var dsW = (int)(_image.Width * multiplier);
+               var dsH = (int)(_image.Height * multiplier);
                var dX = (int)((float)w / 2 - (float)dsW / 2);
                var dY = (int)((float)h / 2 - (float)dsH / 2);
 
-               Core.Screen.StretchImage(Left + dX, Top + dY, _img, dsW, dsH, 256);
+               Core.Screen.StretchImage(Left + dX, Top + dY, _image, dsW, dsH, 256);
                break;
 
             case ScaleMode.Stretch:
-               Core.Screen.StretchImage(Left, Top, _img, w, h, 256);
+               Core.Screen.StretchImage(Left, Top, _image, w, h, 256);
                break;
 
             case ScaleMode.Tile:
-               Core.Screen.TileImage(Left, Top, _img, w, h, 256);
+               Core.Screen.TileImage(Left, Top, _image, w, h, 256);
                break;
          }
       }
 
       #endregion
+   }
+
+   /// <summary>
+   /// Render style flags for <see cref="Button"/>
+   /// </summary>
+   [Flags]
+   public enum ButtonRenderStyles
+   {
+      /// <summary>
+      /// Disables all render styles
+      /// </summary>
+      None = 0,
+
+      /// <summary>
+      /// Render text shadow
+      /// </summary>
+      TextShadow = 0x01,
+
+      /// <summary>
+      /// Draw inner shadow on <see cref="Button"/> when pressed
+      /// </summary>
+      PressedShadowBorder = 0x02,
+
+      /// <summary>
+      /// Draw rectangle around <see cref="Button"/> when focused
+      /// </summary>
+      ShowFocusRectangle = 0x04,
+
+      /// <summary>
+      /// Draw focus rectangle around <see cref="Button"/> even when disabled
+      /// </summary>
+      ShowDisabledFocusRectangle = 0x08,
+
+      /// <summary>
+      /// Default <see cref="Button"/> render style
+      /// </summary>
+      /// <remarks>
+      /// The default style includes <see cref="TextShadow"/>, <see cref="PressedShadowBorder"/>, <see cref="ShowFocusRectangle"/> and <see cref="ShowDisabledFocusRectangle"/>.
+      /// </remarks>
+      Default = TextShadow | PressedShadowBorder | ShowFocusRectangle | ShowDisabledFocusRectangle
    }
 }

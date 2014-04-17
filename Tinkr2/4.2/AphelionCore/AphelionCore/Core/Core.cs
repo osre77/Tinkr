@@ -2001,34 +2001,54 @@ namespace Skewworks.NETMF
 
          int d = (e.Y - _ptDownAt.Y);
          if (d > 50)
+         {
             sw = TouchType.GestureDown;
+         }
          else if (d < -50)
+         {
             sw = TouchType.GestureUp;
+         }
 
          d = (e.X - _ptDownAt.X);
          if (d > 50)
          {
             if (sw == TouchType.GestureUp)
+            {
                sw = TouchType.GestureUpRight;
+            }
             else if (sw == TouchType.GestureDown)
+            {
                sw = TouchType.GestureDownRight;
+            }
             else
+            {
                sw = TouchType.GestureRight;
+            }
          }
          else if (d < -50)
          {
             if (sw == TouchType.GestureUp)
+            {
                sw = TouchType.GestureUpLeft;
+            }
             else if (sw == TouchType.GestureDown)
+            {
                sw = TouchType.GestureDownLeft;
+            }
             else
+            {
                sw = TouchType.GestureLeft;
+            }
          }
 
          if (_tt == TouchType.NoGesture)
+         {
             _tt = sw;
+         }
          else if (_tt != sw)
+         {
             _cancelSwipe = true;
+         }
       }
 
       private void CalcForce(point e)
@@ -2036,15 +2056,21 @@ namespace Skewworks.NETMF
          // Calculate by time alone
          float dDiff = DateTime.Now.Ticks - _lgDownAt;
 
-         if (dDiff > TimeSpan.TicksPerSecond * .75)
+         if (dDiff > TimeSpan.TicksPerSecond*.75)
+         {
             return;
+         }
 
          // 1.0 = < 1/7th second
          dDiff = TimeSpan.TicksPerSecond / 7 / dDiff;
          if (dDiff > .99)
+         {
             dDiff = .99f;
+         }
          else if (dDiff < 0)
+         {
             dDiff = 0;
+         }
 
          // Raise TouchEvent
          RaiseTouchEvent(_tt, e, dDiff);

@@ -55,6 +55,42 @@ namespace Skewworks.NETMF.Controls
 
       #endregion
 
+      /// <summary>
+      /// Initializes the control
+      /// </summary>
+      protected ScrollableControl()
+      { }
+
+      /// <summary>
+      /// Initializes the control
+      /// </summary>
+      /// <param name="name">Name of the control</param>
+      protected ScrollableControl(string name) :
+         base(name)
+      { }
+
+      /// <summary>
+      /// Initializes the control
+      /// </summary>
+      /// <param name="name">Name of the control</param>
+      /// <param name="x">X position relative to it's parent</param>
+      /// <param name="y">Y position relative to it's parent</param>
+      protected ScrollableControl(string name, int x, int y) :
+         base(name, x, y)
+      { }
+
+      /// <summary>
+      /// Initializes the control
+      /// </summary>
+      /// <param name="name">Name of the control</param>
+      /// <param name="x">X position relative to it's parent</param>
+      /// <param name="y">Y position relative to it's parent</param>
+      /// <param name="width">Width of the control in pixel</param>
+      /// <param name="height">Height of the control in pixel</param>
+      protected ScrollableControl(string name, int x, int y, int width, int height) :
+         base(name, x, y, width, height)
+      { }
+
       /*#region Events
 
       public event OnButtonPressed ButtonPressed;
