@@ -28,6 +28,7 @@
     </TransformComponentArguments>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\AphelionCore\AphelionCore\AphelionCore.csproj" />
+      <DocumentationSource sourceFile="..\AphelionCore\AphelionCommonControls\AphelionCommonControls.csproj" />
     </DocumentationSources>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
     <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
@@ -41,7 +42,7 @@
     <SyntaxFilters>C#</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <RootNamespaceContainer>False</RootNamespaceContainer>
-    <PresentationStyle>VS2010</PresentationStyle>
+    <PresentationStyle>VS2005</PresentationStyle>
     <Preliminary>False</Preliminary>
     <NamingMethod>Guid</NamingMethod>
     <HelpTitle>Tinkr GUI library for NETMF</HelpTitle>
@@ -49,53 +50,13 @@
     <ProjectSummary>&amp;lt%3bh1&amp;gt%3bTinkr GUI library for NETMF&amp;lt%3b/h1&amp;gt%3b
 Tinkr provides a comprehensive set of GUI controls that allow you to quickly develop graphic applications for NETMF devices with natively supported screens as well as support for the new Skewworks Image32 and multiple application standards!</ProjectSummary>
     <PlugInConfigurations>
-      <PlugInConfig id="Assembly Binding Redirection" enabled="True">
-        <configuration useGAC="false">
-          <assemblyBinding />
-          <ignoreIfUnresolved>
-            <assemblyIdentity name="BusinessObjects.Licensing.KeycodeDecoder" />
-            <assemblyIdentity name="MFDpwsClient" />
-            <assemblyIdentity name="MFDpwsDevice" />
-            <assemblyIdentity name="MFDpwsExtensions" />
-            <assemblyIdentity name="MFUpdate" />
-            <assemblyIdentity name="MFWsStack" />
-            <assemblyIdentity name="Microsoft.SPOT.Graphics" />
-            <assemblyIdentity name="Microsoft.SPOT.Hardware" />
-            <assemblyIdentity name="Microsoft.SPOT.Hardware.OneWire" />
-            <assemblyIdentity name="Microsoft.SPOT.Hardware.PWM" />
-            <assemblyIdentity name="Microsoft.SPOT.Hardware.SerialPort" />
-            <assemblyIdentity name="Microsoft.SPOT.Hardware.Usb" />
-            <assemblyIdentity name="Microsoft.SPOT.Ink" />
-            <assemblyIdentity name="Microsoft.SPOT.IO" />
-            <assemblyIdentity name="Microsoft.SPOT.Native" />
-            <assemblyIdentity name="Microsoft.SPOT.Net" />
-            <assemblyIdentity name="Microsoft.SPOT.Net.Security" />
-            <assemblyIdentity name="Microsoft.SPOT.RPC" />
-            <assemblyIdentity name="Microsoft.SPOT.Security.PKCS11" />
-            <assemblyIdentity name="Microsoft.SPOT.Time" />
-            <assemblyIdentity name="Microsoft.SPOT.TinyCore" />
-            <assemblyIdentity name="Microsoft.SPOT.Touch" />
-            <assemblyIdentity name="Microsoft.SPOT.Update" />
-            <assemblyIdentity name="Microsoft.VisualBasic" />
-            <assemblyIdentity name="mscorlib" />
-            <assemblyIdentity name="System" />
-            <assemblyIdentity name="System.Ftp" />
-            <assemblyIdentity name="System.Http" />
-            <assemblyIdentity name="System.IO" />
-            <assemblyIdentity name="System.Net.Security" />
-            <assemblyIdentity name="System.Security" />
-            <assemblyIdentity name="System.Text.RegularExpressions" />
-            <assemblyIdentity name="System.Xml" />
-            <assemblyIdentity name="System.Xml.Legacy" />
-          </ignoreIfUnresolved>
-        </configuration>
-      </PlugInConfig>
     </PlugInConfigurations>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="Skewworks.NETMF" isDocumented="True" xmlns="">Contains the main types for Skewworks libraries</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Skewworks.NETMF.Applications" isDocumented="True" xmlns="">Contains helpers for launching multiple applications</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Skewworks.NETMF.Controls" isDocumented="True" xmlns="">Contains GUI controls</NamespaceSummaryItem>
-<NamespaceSummaryItem name="Skewworks.NETMF.Graphics" isDocumented="True" xmlns="">Contains alpha-blended image support</NamespaceSummaryItem></NamespaceSummaries>
+      <NamespaceSummaryItem name="Skewworks.NETMF.Applications" isDocumented="True" xmlns="">Contains helpers for launching multiple applications</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Skewworks.NETMF.Controls" isDocumented="True" xmlns="">Contains GUI controls</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="Skewworks.NETMF.Graphics" isDocumented="True" xmlns="">Contains alpha-blended image support</NamespaceSummaryItem>
+    </NamespaceSummaries>
     <FeedbackEMailLinkText>%40Tinkr</FeedbackEMailLinkText>
     <FeedbackEMailAddress>tinkr%40aarpg.net</FeedbackEMailAddress>
     <CopyrightText>Tinkr is released under Apache License v2</CopyrightText>
@@ -104,6 +65,7 @@ Tinkr provides a comprehensive set of GUI controls that allow you to quickly dev
     <HtmlSdkLinkType>Msdn</HtmlSdkLinkType>
     <IncludeFavorites>False</IncludeFavorites>
     <BinaryTOC>True</BinaryTOC>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected</VisibleItems>
   </PropertyGroup>
   <!-- There are no properties for these groups.  AnyCPU needs to appear in order for Visual Studio to perform
 			 the build.  The others are optional common platform types that may appear. -->
@@ -128,17 +90,21 @@ Tinkr provides a comprehensive set of GUI controls that allow you to quickly dev
     <Folder Include="Content\VersionHistory" />
     <Folder Include="icons" />
     <Folder Include="Media" />
+    <Folder Include="SHFBPatch" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Content\VersionHistory\v2.5.0.0.aml" />
     <None Include="Content\VersionHistory\VersionHistory.aml" />
     <None Include="Content\Welcome.aml" />
+    <None Include="SHFBPatch\MRefBuilder.exe" />
   </ItemGroup>
   <ItemGroup>
     <ContentLayout Include="ContentLayout.content" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\Help.png" />
+    <None Include="SHFBPatch\Frameworks.xml" />
+    <None Include="SHFBPatch\HowToPatch.txt" />
   </ItemGroup>
   <!-- Import the SHFB build targets -->
   <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />

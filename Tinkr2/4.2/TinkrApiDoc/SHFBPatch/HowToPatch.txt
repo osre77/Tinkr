@@ -1,0 +1,14 @@
+﻿Since SHFB does currently not support NETMF, two files must be exchanged:
+
+%ProgramFilesx86%\EWSoftware\Sandcastle Help File Builder\Frameworks.xml
+This files contains all Framework assemblies
+
+%ProgramFilesx86%\EWSoftware\Sandcastle Help File Builder\MRefBuilder.exe
+There is a problem when MRefBuilder tries to find out if a member is the default member.
+This project contains a patched version of MRefBuilder.exe which ignores the exception in this case.
+
+Simply overwrite these two files in the SHFB installation folder.
+Please make backup copies before that.
+
+There is no guaranty that this will work in all cases.
+All changes are based on SHFB v2014.2.15.0 Beta.
